@@ -24,4 +24,12 @@ class Transaction(Base):
         return Session.query(Transaction).filter_by(id=id).one_or_none()
 
 
+def get_categories():
+    return Session.query(Transaction.category).distinct().all()
+
+
+def get_suppliers():
+    return Session.query(Transaction.supplier).distinct().all()
+
+
 Base.metadata.create_all(engine)

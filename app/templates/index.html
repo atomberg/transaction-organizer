@@ -38,25 +38,37 @@
     <script src="/static/js/typeahead.bundle.js"></script>
     <script type="text/javascript">
       $(document).ready(function() {
-        // Defining the local dataset
-        var car_list = ['Audi', 'BMW', 'Bugatti', 'Ferrari', 'Ford', 'Lamborghini', 'Mercedes Benz', 'Porsche', 'Rolls-Royce', 'Volkswagen'];
 
         // Constructing the suggestion engine
-        var cars = new Bloodhound({
+        var categories = new Bloodhound({
             datumTokenizer: Bloodhound.tokenizers.whitespace,
             queryTokenizer: Bloodhound.tokenizers.whitespace,
-            local: car_list
+            local: {{categories|tojson|safe}}
+        });
+        var suppliers = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            local: {{suppliers|tojson|safe}}
         });
 
         // Initializing the typeahead
-        $('#bloodhound .typeahead').typeahead({
+        $('.typeahead.categories').typeahead({
           hint: true,
           highlight: true,
           minLength: 1
         },
         {
-          name: 'cars',
-          source: cars
+          name: 'categories',
+          source: categories
+        });
+        $('.typeahead.suppliers').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+        },
+        {
+          name: 'suppliers',
+          source: suppliers
         });
       });
     </script>
@@ -109,9 +121,17 @@
         </div>
         <!-- /.row -->
 
-        <div id="bloodhound">
-          <input class="typeahead" type="text" placeholder="my cars">
+        <div class="row">
+          <form method="post" action="/add_transaction">
+            <input type="date" value="{{ today }}">
+            <input name="supps" class="typeahead suppliers" type="text" placeholder="Supplier">
+            <input name="amount" class="typeahead" type="text" placeholder="Amount">
+            <input name="cats" class="typeahead categories" type="text" placeholder="Category">
+            <input type="submit">
+            <input type="reset">
+          </form>
         </div>
+
     <!-- /.container -->
 
 </body>
