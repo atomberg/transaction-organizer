@@ -28,11 +28,15 @@ class Transaction(Base):
 
 
 def get_categories():
-    return Session.query(Transaction.category).distinct().all()
+    return [r[0] for r in Session.query(Transaction.category).distinct().all()]
 
 
 def get_suppliers():
-    return Session.query(Transaction.supplier).distinct().all()
+    return [r[0] for r in Session.query(Transaction.supplier).distinct().all()]
+
+
+def get_all_transactions():
+    return Session.query(Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category).all()
 
 
 Base.metadata.create_all(engine)

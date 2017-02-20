@@ -1,6 +1,45 @@
 {% extends "base.html" %}
 {% block title %}Index{% endblock %}
 
+{% block scripts %}
+<script type="text/javascript">
+  $(document).ready(function() {
+
+    // Constructing the suggestion engine
+    var categories = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: {{categories|tojson|safe}}
+    });
+    var suppliers = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: {{suppliers|tojson|safe}}
+    });
+
+    // Initializing the typeahead
+    $('.typeahead.categories').typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: 'categories',
+      source: categories
+    });
+    $('.typeahead.suppliers').typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: 'suppliers',
+      source: suppliers
+    });
+  });
+</script>
+{% endblock %}
+
 {% block content %}
         <div class="row">
             <div class="col-lg-12 text-center">
@@ -15,7 +54,7 @@
         <!-- /.row -->
 
         <div class="row">
-          <form method="post" action="/transaction">
+          <form method="post" action="/transactions">
             <input name="day" type="date" value="{{ today }}">
             <input name="supplier" class="typeahead suppliers" type="text" placeholder="Supplier">
             <input name="amount" class="typeahead" type="text" placeholder="Amount">
