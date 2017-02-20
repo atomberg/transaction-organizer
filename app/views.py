@@ -1,5 +1,8 @@
-import datetime
-from flask import Flask, render_template
+from datetime import date, datetime
+from models.db_session import Session
+from models.transaction import Transaction
+
+from flask import Flask, render_template, request
 backend = Flask(__name__)
 
 
@@ -7,16 +10,25 @@ backend = Flask(__name__)
 def home():
     return render_template(
         'index.html',
-        today=datetime.date.today().strftime('%Y-%m-%d'),
+        today=date.today().strftime('%Y-%m-%d'),
         suppliers=['Cdef', 'Cefd'],
         categories=['Abcdef', 'Acbdef', 'Bacdef'])
 
 
-@backend.route('/add_transaction')
+@backend.route('/transaction', methods=['POST'])
 def add_transaction():
+    s = Session()
+    t = Transaction(
+        datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
+        request.values['supplier'],
+        float(request.values['amount']),
+        request.values['category'])
+    s.add(t)
+    s.commit()
+    Session.remove()
     return render_template(
         'index.html',
-        today=datetime.date.today().strftime('%Y-%m-%d'),
+        today=date.today().strftime('%Y-%m-%d'),
         suppliers=['Cdef', 'Cefd'],
         categories=['Abcdef', 'Acbdef', 'Bacdef'])
 

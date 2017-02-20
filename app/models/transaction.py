@@ -1,4 +1,4 @@
-from app.models.db_session import engine, Session
+from db_session import engine, Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, Date
 
@@ -22,6 +22,9 @@ class Transaction(Base):
     @classmethod
     def get_by_id(cls, id):
         return Session.query(Transaction).filter_by(id=id).one_or_none()
+
+    def __str__(self):
+        return '%s | %s | %2.2f | %s' % (self.date.strftime('%Y-%m-%d'), self.supplier, self.amount, self.category)
 
 
 def get_categories():
