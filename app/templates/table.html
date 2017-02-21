@@ -30,6 +30,7 @@ $(document).ready( function () {
                       <th>Supplier</th>
                       <th>Amount</th>
                       <th>Category</th>
+                      <th>Actions</th>
                   </tr>
               </thead>
               <tbody>
@@ -38,6 +39,10 @@ $(document).ready( function () {
                       {% for cell in row %}
                       <td>{{ cell }}</td>
                       {% endfor %}
+                      <td>
+                        <button type="button" class="btn btn-success">Edit</button>
+                        <button type="button" class="btn btn-danger">Delete</button>
+                      </td>
                   </tr>
                 {% endfor %}
               </tbody>

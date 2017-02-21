@@ -1,6 +1,7 @@
 from db_session import engine, Session
+from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, Date
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime
 
 Base = declarative_base()
 
@@ -11,13 +12,19 @@ class Transaction(Base):
     date = Column(Date, nullable=False)
     supplier = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
-    category = Column(String(250))
+    category = Column(String)
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)
+    notes = Column(String)
 
-    def __init__(self, date, supplier, amount, category=None):
+    def __init__(self, date, supplier, amount, category=None, notes=None):
         self.date = date
         self.supplier = supplier
         self.amount = amount
         self.category = category
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
+        self.notes = notes
 
     @classmethod
     def get_by_id(cls, id):
@@ -35,8 +42,13 @@ def get_suppliers():
     return [r[0] for r in Session.query(Transaction.supplier).distinct().all()]
 
 
-def get_all_transactions():
-    return Session.query(Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category).all()
+def get_transactions(limit=None):
+    if not limit:
+        return Session.query(Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category).all()
+    else:
+        return (Session.query(
+            Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category)
+            .order_by(Transaction.updated_at.desc()).limit(limit).all())[::-1]
 
 
 Base.metadata.create_all(engine)

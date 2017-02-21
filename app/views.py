@@ -1,23 +1,16 @@
 from datetime import date, datetime
 from models.db_session import Session
-from models.transaction import Transaction, get_categories, get_suppliers, get_all_transactions
+from models.transaction import Transaction, get_categories, get_suppliers, get_transactions
 
 from flask import Flask, render_template, request
 backend = Flask(__name__)
 
 
 @backend.route('/')
-def home():
-    return render_template(
-        'index.html',
-        today=date.today().strftime('%Y-%m-%d'),
-        suppliers=get_suppliers(),
-        categories=get_categories())
-
-
 @backend.route('/transactions', methods=['GET', 'POST'])
 def add_transaction():
     if request.method == 'POST':
+        print request.values
         t = Transaction(
             datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
             request.values['supplier'],
@@ -29,14 +22,15 @@ def add_transaction():
         'index.html',
         today=date.today().strftime('%Y-%m-%d'),
         suppliers=get_suppliers(),
-        categories=get_categories())
+        categories=get_categories(),
+        table_rows=get_transactions(3))
 
 
 @backend.route('/view', methods=['GET'])
 def view_transaction():
     return render_template(
         'table.html',
-        table_rows=get_all_transactions())
+        table_rows=get_transactions())
 
 
 if __name__ == "__main__":

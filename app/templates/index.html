@@ -18,22 +18,20 @@
     });
 
     // Initializing the typeahead
-    $('.typeahead.categories').typeahead({
+    $('.categories').typeahead({
       hint: true,
       highlight: true,
       minLength: 1
     },
     {
-      name: 'categories',
       source: categories
     });
-    $('.typeahead.suppliers').typeahead({
+    $('.suppliers').typeahead({
       hint: true,
       highlight: true,
       minLength: 1
     },
     {
-      name: 'suppliers',
       source: suppliers
     });
   });
@@ -54,13 +52,49 @@
         <!-- /.row -->
 
         <div class="row">
-          <form method="post" action="/transactions">
-            <input name="day" type="date" value="{{ today }}">
-            <input name="supplier" class="typeahead suppliers" type="text" placeholder="Supplier">
-            <input name="amount" class="typeahead" type="text" placeholder="Amount">
-            <input name="category" class="typeahead categories" type="text" placeholder="Category">
-            <input type="submit">
-            <input type="reset">
-          </form>
+            <table id="table_id" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Supplier</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for row in table_rows %}
+                    <tr>
+                        {% for cell in row %}
+                        <td>{{ cell }}</td>
+                        {% endfor %}
+                        <td><button type="button" class="btn btn-info"> View </button></td>
+                    </tr>
+                  {% endfor %}
+                    <form id="add" method="post" action="/transactions">
+                      <tr>
+                        <td>
+                          <input name="day" form="add" type="date" value="{{ today }}">
+                        </td>
+                        <td>
+                          <input name="supplier" form="add" class="suppliers" type="text" placeholder="Supplier">
+                        </td>
+                        <td>
+                          <input name="amount" form="add" type="text" placeholder="Amount">
+                        </td>
+                        <td>
+                          <input name="category" form="add" class="categories" type="text" placeholder="Category">
+                        </td>
+                        <td>
+                          <input type="submit" form="add" class="btn btn-success">
+                        </td>
+                      </tr>
+                    </form>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row">
+
         </div>
 {% endblock %}
