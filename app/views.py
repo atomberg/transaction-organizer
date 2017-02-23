@@ -26,8 +26,22 @@ def add_transaction():
         table_rows=get_transactions(3))
 
 
+@backend.route('/transaction/<int:transaction_id>', methods=['GET'])
+def view_transaction(transaction_id):
+    if request.method == 'POST':
+        print request.values
+        t = Transaction(
+            datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
+            request.values['supplier'],
+            float(request.values['amount']),
+            request.values['category'])
+        Session.add(t)
+        Session.commit()
+    return Transaction.get_by_id(transaction_id).__str__()
+
+
 @backend.route('/view', methods=['GET'])
-def view_transaction():
+def view_all_transactions():
     return render_template(
         'table.html',
         table_rows=get_transactions())
