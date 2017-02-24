@@ -20,28 +20,37 @@ def input_transactions():
         Session.commit()
     return render_template(
         'input.html',
-        today=date.today().strftime('%Y-%m-%d'),
-        suppliers=get_suppliers(),
-        categories=get_categories(),
+        today=date.today().strftime('%Y-%m-%d'), suppliers=get_suppliers(), categories=get_categories(),
         table_rows=get_transactions(3))
 
 
-@backend.route('/transaction/<int:transaction_id>', methods=['GET'])
-def view_transaction(transaction_id):
+@backend.route('/transaction/<int:transaction_id>', methods=['GET', 'POST', 'DELETE'])
+def transaction(transaction_id):
+    if request.method == 'DELETE':
+        t = Transaction.get_by_id(transaction_id)
+        Session.remove(t)
+        Session.commit()
+        return render_template(
+            'input.html',
+            today=date.today().strftime('%Y-%m-%d'), suppliers=get_suppliers(), categories=get_categories(),
+            table_rows=get_transactions(3))
     if request.method == 'POST':
-        print request.values
-        t = Transaction(
-            datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
-            request.values['supplier'],
-            float(request.values['amount']),
-            request.values['category'])
+        t = Transaction.get_by_id(transaction_id)
+        t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
+        t.supplier = request.values['supplier']
+        t.amount = float(request.values['amount'])
+        t.category = request.values['category']
+        t.notes = request.values['notes']
+        t.updated_at = datetime.now()
+
         Session.add(t)
         Session.commit()
+        print t.to_dict()
+
     return render_template(
         'edit.html',
         transaction=Transaction.get_by_id(transaction_id).to_dict()
     )
-
 
 
 @backend.route('/view', methods=['GET'])

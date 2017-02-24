@@ -28,6 +28,7 @@ class Transaction(Base):
 
     def to_dict(self):
         return {
+            'id': self.id,
             'date': self.date.strftime('%Y-%m-%d'),
             'supplier': self.supplier,
             'amount': '%.2f' % self.amount,
@@ -54,7 +55,8 @@ def get_suppliers():
 
 def get_transactions(limit=None):
     if not limit:
-        return Session.query(Transaction.id, Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category).all()
+        return Session.query(
+            Transaction.id, Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category).all()
     else:
         return (Session.query(
             Transaction.id, Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category)
