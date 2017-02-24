@@ -26,12 +26,22 @@ class Transaction(Base):
         self.updated_at = datetime.now()
         self.notes = notes
 
+    def to_dict(self):
+        return {
+            'date': self.date.strftime('%Y-%m-%d'),
+            'supplier': self.supplier,
+            'amount': '%.2f' % self.amount,
+            'category': self.category,
+            'last_modified': self.updated_at.strftime('%c'),
+            'notes': self.notes or ''
+        }
+
     @classmethod
     def get_by_id(cls, id):
         return Session.query(Transaction).filter_by(id=id).one_or_none()
 
     def __str__(self):
-        return '%s | %s | %2.2f | %s' % (self.date.strftime('%Y-%m-%d'), self.supplier, self.amount, self.category)
+        return '%s | %s | %2.2f | %s' % (self.date.strftime('%d %b %Y'), self.supplier, self.amount, self.category)
 
 
 def get_categories():
@@ -44,10 +54,10 @@ def get_suppliers():
 
 def get_transactions(limit=None):
     if not limit:
-        return Session.query(Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category).all()
+        return Session.query(Transaction.id, Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category).all()
     else:
         return (Session.query(
-            Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category)
+            Transaction.id, Transaction.date, Transaction.supplier, Transaction.amount, Transaction.category)
             .order_by(Transaction.updated_at.desc()).limit(limit).all())[::-1]
 
 

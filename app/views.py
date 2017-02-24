@@ -7,8 +7,8 @@ backend = Flask(__name__)
 
 
 @backend.route('/')
-@backend.route('/transactions', methods=['GET', 'POST'])
-def add_transaction():
+@backend.route('/input', methods=['GET', 'POST'])
+def input_transactions():
     if request.method == 'POST':
         print request.values
         t = Transaction(
@@ -19,7 +19,7 @@ def add_transaction():
         Session.add(t)
         Session.commit()
     return render_template(
-        'index.html',
+        'input.html',
         today=date.today().strftime('%Y-%m-%d'),
         suppliers=get_suppliers(),
         categories=get_categories(),
@@ -37,7 +37,11 @@ def view_transaction(transaction_id):
             request.values['category'])
         Session.add(t)
         Session.commit()
-    return Transaction.get_by_id(transaction_id).__str__()
+    return render_template(
+        'edit.html',
+        transaction=Transaction.get_by_id(transaction_id).to_dict()
+    )
+
 
 
 @backend.route('/view', methods=['GET'])
