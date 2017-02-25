@@ -64,7 +64,11 @@
                         {% for cell in row[1:] %}
                         <td>{{ cell }}</td>
                         {% endfor %}
-                        <td><a href="/transaction/{{ row[0] }}" class="btn btn-info">View</a></td>
+                        <td>
+                          <a href="/transaction/{{ row[0] }}" class="btn btn-info">
+                            View <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                          </a>
+                        </td>
                     </tr>
                   {% endfor %}
                     <form id="add" method="post" action="/input">
@@ -82,7 +86,9 @@
                           <input name="category" form="add" class="categories form-control" type="text" placeholder="Category">
                         </td>
                         <td>
-                          <input type="submit" form="add" class="btn btn-success" value="Add">
+                          <button type="submit" form="add" class="btn btn-success">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
+                          </button>
                         </td>
                       </tr>
                     </form>

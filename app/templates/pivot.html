@@ -16,7 +16,19 @@ $(document).ready( function () {
                 <p class="lead">So much better than Excel, isn't it?</p>
             </div>
         </div>
-        <!-- /.row -->
+
+        <div class="row">
+            <div class="col-lg-12 text-right">
+              <p class="lead">
+                <a href="/download/pivot?format=csv" class="btn btn-success">
+                  <span class="glyphicon glyphicon-save" aria-hidden="true"></span> CSV
+                </a>
+                <a href="/download/pivot?format=xlsx" class="btn btn-success">
+                  <span class="glyphicon glyphicon-save" aria-hidden="true"></span> XLSX
+                </a>
+              </p>
+            </div>
+        </div>
 
         <div class="row">
           <table id="pivot" class="table table-hover">

@@ -28,17 +28,6 @@ class Transaction(Base):
         self.updated_at = datetime.now()
         self.notes = notes
 
-    # @hybrid_property
-    # def month(self):
-    #     return self.date.strftime('%b')
-    #
-    # @month.expression
-    # def month(cls):
-    #     return case(
-    #         num_to_month_dict,
-    #         value=sqlfunc.extract('month', cls.date),
-    #         else_=None)
-
     @hybrid_property
     def month(self):
         return self.date.strftime('%m')
