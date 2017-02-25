@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from models.db_session import Session
-from models.transaction import Transaction, get_categories, get_suppliers, get_transactions
+from models.transaction import Transaction, get_categories, get_suppliers, get_transactions, pivot_transactions
 
 from flask import Flask, render_template, request
 backend = Flask(__name__)
@@ -21,7 +21,7 @@ def input_transactions():
     return render_template(
         'input.html',
         today=date.today().strftime('%Y-%m-%d'), suppliers=get_suppliers(), categories=get_categories(),
-        table_rows=get_transactions(3))
+        table_rows=get_transactions(3, True))
 
 
 @backend.route('/transaction/<int:transaction_id>', methods=['GET', 'POST', 'DELETE'])
@@ -57,7 +57,9 @@ def del_transaction(transaction_id):
 
 
 @backend.route('/view', methods=['GET'])
-def view_all_transactions():
+def view_transactions():
+    # table = [ pivot_transactions()]:
+    print pivot_transactions()
     return render_template(
         'table.html',
         table_rows=get_transactions())

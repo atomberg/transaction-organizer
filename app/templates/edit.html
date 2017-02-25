@@ -82,7 +82,7 @@
                                 <input type="submit" form="edit" value="Save changes" class="btn btn-success">
                                 <form style="display: inline;" method="POST"
                                   action="/transaction/{{ transaction['id'] }}/delete">
-                                    <input type="submit" class="btn btn-danger" value="Delete">
+                                    <input type="submit" class="btn btn-danger" value="Delete transaction">
                                 </form>
                             </td>
                         </tr>
@@ -92,5 +92,8 @@
 
         <div class="row">
             <i>Last modified {{ transaction['last_modified'] }}</i>
+        </div>
+        <div class="row">
+            <i>Created on {{ transaction['created_at'] }}</i>
         </div>
 {% endblock %}
