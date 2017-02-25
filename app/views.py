@@ -5,6 +5,11 @@ from models.transaction import Transaction, get_categories, get_suppliers, get_t
 from flask import Flask, render_template, request
 backend = Flask(__name__)
 
+num_to_month_dict = {
+    1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+    7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+}
+
 
 @backend.route('/')
 @backend.route('/input', methods=['GET', 'POST'])
@@ -58,11 +63,29 @@ def del_transaction(transaction_id):
 
 @backend.route('/view', methods=['GET'])
 def view_transactions():
-    # table = [ pivot_transactions()]:
-    print pivot_transactions()
     return render_template(
         'table.html',
         table_rows=get_transactions())
+
+
+@backend.route('/pivot', methods=['GET'])
+def pivot():
+    p = pivot_transactions()
+    # print p
+    cols = [c for m, c in p]
+    table_rows = [[''] + cols + ['Total']]
+    grand_total = 0
+    for n, m in sorted(num_to_month_dict.items()):
+        s = sum([p.get((n, c), 0.0) for c in cols], 0)
+        table_rows.append([m] + [p.get((n, c), 0.0) for c in cols] + [s])
+        grand_total += s
+    table_rows.append(
+        ['Total'] + [sum([p.get((n, c), 0.0) for n in num_to_month_dict.keys()], 0) for c in cols] + [grand_total]
+    )
+    print table_rows
+    return render_template(
+        'pivot.html',
+        table_rows=table_rows)
 
 
 if __name__ == "__main__":

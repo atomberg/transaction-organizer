@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+
+<!-- {% block scripts %}
+<script>
+$(document).ready( function () {
+    $('#table_id').DataTable();
+} );
+</script>
+{% endblock %} -->
+
+{% block content %}
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1>Pivot table</h1>
+                <p class="lead">So much better than Excel, isn't it?</p>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+          <table id="pivot" class="table table-hover">
+              <thead>
+                  <tr>
+                    {% for c in table_rows[0] %}
+                      <th>{{ c }}</th>
+                    {% endfor %}
+                  </tr>
+              </thead>
+              <tbody>
+                {% for row in table_rows[1:] %}
+                  <tr>
+                      <th>{{ row[0] }}</th>
+                      {% for cell in row[1:] %}
+                      <td>{{ cell }}</td>
+                      {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+          </table>
+        </div>
+{% endblock %}

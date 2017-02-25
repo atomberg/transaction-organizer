@@ -1,15 +1,11 @@
 from db_session import engine, Session
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, Date, DateTime, func as sqlfunc, case
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime, func as sqlfunc
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
 Base = declarative_base()
-num_to_month_dict = {
-    '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun',
-    '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'
-}
 
 
 class Transaction(Base):
@@ -32,16 +28,24 @@ class Transaction(Base):
         self.updated_at = datetime.now()
         self.notes = notes
 
+    # @hybrid_property
+    # def month(self):
+    #     return self.date.strftime('%b')
+    #
+    # @month.expression
+    # def month(cls):
+    #     return case(
+    #         num_to_month_dict,
+    #         value=sqlfunc.extract('month', cls.date),
+    #         else_=None)
+
     @hybrid_property
     def month(self):
-        return self.date.strftime('%b')
+        return self.date.strftime('%m')
 
     @month.expression
     def month(cls):
-        return case(
-            num_to_month_dict,
-            value=sqlfunc.extract('month', cls.date),
-            else_=None)
+        return sqlfunc.extract('month', cls.date)
 
     def to_dict(self):
         return {
