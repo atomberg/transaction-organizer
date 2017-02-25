@@ -1,6 +1,43 @@
 {% extends "base.html" %}
 {% block title %}Index{% endblock %}
 
+{% block scripts %}
+<script type="text/javascript">
+  $(document).ready(function() {
+
+    // Constructing the suggestion engine
+    var categories = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: {{categories|tojson|safe}}
+    });
+    var suppliers = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: {{suppliers|tojson|safe}}
+    });
+
+    // Initializing the typeahead
+    $('.categories').typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      source: categories
+    });
+    $('.suppliers').typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      source: suppliers
+    });
+  });
+</script>
+{% endblock %}
+
 {% block content %}
         <div class="row">
             <div class="col-lg-12 text-center">
@@ -25,7 +62,7 @@
                         </tr>
                         <tr>
                             <th>Supplier</th>
-                            <td><input name="supplier" form="edit" class="form-control" type="text"
+                            <td><input name="supplier" form="edit" class="suppliers form-control" type="text"
                                 value="{{ transaction['supplier'] }}"></td>
                         </tr>
                         <tr>
@@ -35,7 +72,7 @@
                         </tr>
                         <tr>
                             <th>Category</th>
-                            <td><input name="category" form="edit" class="form-control" type="text"
+                            <td><input name="category" form="edit" class="categories form-control" type="text"
                                 value="{{ transaction['category'] }}"></td>
                         </tr>
                     </form>

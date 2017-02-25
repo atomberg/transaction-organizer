@@ -40,14 +40,13 @@ def transaction(transaction_id):
 
     return render_template(
         'edit.html',
+        suppliers=get_suppliers(), categories=get_categories(),
         transaction=Transaction.get_by_id(transaction_id).to_dict()
     )
 
 
 @backend.route('/transaction/<int:transaction_id>/delete', methods=['POST'])
 def del_transaction(transaction_id):
-    print request.method
-    print 'Deleting transaction #%d' % transaction_id
     t = Transaction.get_by_id(transaction_id)
     Session.delete(t)
     Session.commit()
