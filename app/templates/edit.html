@@ -43,8 +43,8 @@
                             <th>Actions</th>
                             <td>
                                 <input type="submit" form="edit" value="Save changes" class="btn btn-success">
-                                <form style="display: inline;" method="DELETE"
-                                  action="/transaction/{{ transaction['id'] }}">
+                                <form style="display: inline;" method="POST"
+                                  action="/transaction/{{ transaction['id'] }}/delete">
                                     <input type="submit" class="btn btn-danger" value="Delete">
                                 </form>
                             </td>

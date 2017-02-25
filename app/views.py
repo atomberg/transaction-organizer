@@ -26,14 +26,6 @@ def input_transactions():
 
 @backend.route('/transaction/<int:transaction_id>', methods=['GET', 'POST', 'DELETE'])
 def transaction(transaction_id):
-    if request.method == 'DELETE':
-        t = Transaction.get_by_id(transaction_id)
-        Session.remove(t)
-        Session.commit()
-        return render_template(
-            'input.html',
-            today=date.today().strftime('%Y-%m-%d'), suppliers=get_suppliers(), categories=get_categories(),
-            table_rows=get_transactions(3))
     if request.method == 'POST':
         t = Transaction.get_by_id(transaction_id)
         t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
@@ -45,12 +37,24 @@ def transaction(transaction_id):
 
         Session.add(t)
         Session.commit()
-        print t.to_dict()
 
     return render_template(
         'edit.html',
         transaction=Transaction.get_by_id(transaction_id).to_dict()
     )
+
+
+@backend.route('/transaction/<int:transaction_id>/delete', methods=['POST'])
+def del_transaction(transaction_id):
+    print request.method
+    print 'Deleting transaction #%d' % transaction_id
+    t = Transaction.get_by_id(transaction_id)
+    Session.delete(t)
+    Session.commit()
+    return render_template(
+        'input.html',
+        today=date.today().strftime('%Y-%m-%d'), suppliers=get_suppliers(), categories=get_categories(),
+        table_rows=get_transactions(3))
 
 
 @backend.route('/view', methods=['GET'])
