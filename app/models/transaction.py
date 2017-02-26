@@ -68,9 +68,15 @@ def get_suppliers():
     return [r[0] for r in Session.query(Transaction.supplier).distinct().all()]
 
 
-def get_transactions(lim=None, reverse=False):
-    q = Session.query(Transaction).order_by(Transaction.updated_at.desc()).limit(lim)
-    q = q.all()
+def get_transactions(lim=None, reverse=False, begin=None, end=None):
+    q = Session.query(Transaction)
+    if begin and end:
+        q = q.filter(Transaction.date.between(begin, end))
+    elif begin:
+        q = q.filter(Transaction.date >= begin)
+    elif end:
+        q = q.filter(Transaction.date <= end)
+    q = q.order_by(Transaction.updated_at.desc()).limit(lim).all()
     if reverse:
         q = q[::-1]
     return [t.to_table_row() for t in q]

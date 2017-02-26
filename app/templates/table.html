@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}All transactions{% endblock %}
 
 {% block scripts %}
 <script>
@@ -10,42 +10,69 @@ $(document).ready( function () {
 {% endblock %}
 
 {% block content %}
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h1>All your transactions</h1>
-                <p class="lead">Search, filter and have fun!</p>
-            </div>
-        </div>
-        <!-- /.row -->
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="offset1 span8 pull-right">
+        <a href="{{ url_for('download', filename='transactions', format='csv', begin=begin, end=end)}}" class="btn btn-success">
+          <span class="glyphicon glyphicon-save" aria-hidden="true"></span> CSV
+        </a>
+        <a href="{{ url_for('download', filename='transactions', format='xlsx', begin=begin, end=end)}}" class="btn btn-success">
+          <span class="glyphicon glyphicon-save" aria-hidden="true"></span> XLSX
+        </a>
+    </div>
+  </div>
+</div>
 
-        <div class="row">
-          <table id="table_id" class="display">
-              <thead>
-                  <tr>
-                      <th>Date</th>
-                      <th>Supplier</th>
-                      <th>Amount</th>
-                      <th>Category</th>
-                      <th>Actions</th>
-                  </tr>
-              </thead>
-              <tbody>
-                {% for row in table_rows %}
-                  <tr>
-                      {% for cell in row[1:] %}
-                      <td>{{ cell }}</td>
-                      {% endfor %}
-                      <td>
-                        <a href="/transaction/{{ row[0] }}" class="btn btn-success">
-                          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
-                        </a>
-                        <!--form style="display: inline;" method="DELETE" action="/transaction/{{ row[0] }}">
-                            <input type="submit" class="btn btn-danger" value="Delete">
-                        </form-->
-                      </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-          </table>
-        </div>
+<div class="row">
+    <div class="col-lg-12 text-center">
+        <h1>All your transactions</h1>
+        <p class="lead">Search, filter and have fun!</p>
+    </div>
+</div>
+<!-- /.row -->
+
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <p class="lead">
+      <form id="filter" class="form-inline">
+        <input name="begin" form="filter" class="form-control" type="date", value="{{ begin }}">
+        <input name="end" form="filter" class="form-control" type="date" value="{{ end }}">
+        <button type="submit" form="filter" class="btn btn-success">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Filter
+        </button>
+        <button type="reset" form="filter" class="btn btn-danger">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Reset
+        </button>
+      </form>
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <table id="table_id" class="display">
+      <thead>
+          <tr>
+              <th>Date</th>
+              <th>Supplier</th>
+              <th>Amount</th>
+              <th>Category</th>
+              <th>Actions</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for row in table_rows %}
+          <tr>
+              {% for cell in row[1:] %}
+              <td>{{ cell }}</td>
+              {% endfor %}
+              <td>
+                <a href="{{ url_for('transaction', transaction_id=row[0]) }}" class="btn btn-success">
+                  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                </a>
+              </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+</div>
 {% endblock %}

@@ -66,9 +66,12 @@ def del_transaction(transaction_id):
 
 @backend.route('/view', methods=['GET'])
 def view_transactions():
+    begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
+    end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
     return render_template(
         'table.html',
-        table_rows=get_transactions())
+        begin=begin, end=end,
+        table_rows=get_transactions(begin=begin, end=end))
 
 
 @backend.route('/pivot', methods=['GET'])
@@ -85,7 +88,9 @@ def download(filename):
         data = make_pivot_table()
         print data
     elif filename == 'transactions':
-        data = get_transactions()
+        begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
+        end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
+        data = get_transactions(begin=begin, end=end)
     else:
         return make_response()
 

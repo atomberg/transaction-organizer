@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}Transaction input{% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
@@ -65,13 +65,13 @@
                         <td>{{ cell }}</td>
                         {% endfor %}
                         <td>
-                          <a href="/transaction/{{ row[0] }}" class="btn btn-info">
+                          <a href="{{ url_for('transaction', transaction_id=row[0]) }}" class="btn btn-info">
                             View <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
                           </a>
                         </td>
                     </tr>
                   {% endfor %}
-                    <form id="add" method="post" action="/input">
+                    <form id="add" method="post" action="{{ url_for('input_transactions') }}">
                       <tr>
                         <td>
                           <input name="day" form="add" class="form-control" type="date" value="{{ today }}">
