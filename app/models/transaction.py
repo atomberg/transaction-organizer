@@ -9,6 +9,8 @@ Base = declarative_base()
 
 
 class Transaction(Base):
+    """Model of a transaction from the transactions table in database."""
+
     __tablename__ = 'transactions'
     id = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False)
@@ -20,6 +22,7 @@ class Transaction(Base):
     notes = Column(String)
 
     def __init__(self, date, supplier, amount, category=None, notes=None):
+        """Create a new transaction."""
         self.date = date
         self.supplier = supplier
         self.amount = amount

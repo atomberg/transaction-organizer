@@ -1,6 +1,6 @@
 from datetime import date, datetime
-import StringIO
-import csv
+# import StringIO
+# import csv
 from models.db_session import Session
 from models.transaction import Transaction, get_categories, get_suppliers, get_transactions, pivot_transactions
 
@@ -106,9 +106,9 @@ def download(filename):
     return output
 
 
-def make_pivot_table():
+def make_pivot_table(vertical=True):
         p = pivot_transactions()
-        cols = [c for m, c in p]
+        cols = list(set([c for m, c in p]))
         pivot_table = [[''] + cols + ['Total']]
         grand_total = 0
         for n, m in sorted(num_to_month_dict.items()):
@@ -118,7 +118,16 @@ def make_pivot_table():
         pivot_table.append(
             ['Total'] + [sum([p.get((n, c), 0.0) for n in num_to_month_dict.keys()], 0) for c in cols] + [grand_total]
         )
-        return pivot_table
+        return transpose(pivot_table, len(pivot_table), len(pivot_table[0])) if vertical else pivot_table
+
+
+def transpose(M, nrows, ncols):
+    T = []
+    for i in range(ncols):
+        T.append([])
+        for j in range(nrows):
+            T[-1].append(M[j][i])
+    return T
 
 
 if __name__ == "__main__":
