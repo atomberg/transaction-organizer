@@ -4,7 +4,9 @@
 {% block scripts %}
 <script>
 $(document).ready( function () {
-    $('#pivot').DataTable();
+    $('#pivot').DataTable({
+      stateSave: true
+    });
 } );
 </script>
 {% endblock %}
