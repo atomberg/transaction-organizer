@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Pivot table{% endblock %}
 
+{% block scripts %}
+<script>
+$(document).ready( function () {
+    $('#pivot').DataTable();
+} );
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
   <div class="row-fluid">
@@ -31,15 +39,23 @@
           </tr>
       </thead>
       <tbody>
-        {% for row in table_rows[1:] %}
+        {% for row in table_rows[1:-1] %}
           <tr>
               <th>{{ row[0] }}</th>
               {% for cell in row[1:] %}
-              <td>{{ cell }}</td>
+                <td>{{ cell }}</td>
               {% endfor %}
           </tr>
         {% endfor %}
       </tbody>
+      <tfoot>
+        <tr>
+            <th>{{ table_rows[-1][0] }}</th>
+            {% for cell in table_rows[-1][1:] %}
+              <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+      </tfoot>
   </table>
 </div>
 {% endblock %}

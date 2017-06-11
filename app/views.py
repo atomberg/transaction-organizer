@@ -113,10 +113,12 @@ def make_pivot_table(vertical=True):
         grand_total = 0
         for n, m in sorted(num_to_month_dict.items()):
             s = sum([p.get((n, c), 0.0) for c in cols], 0)
-            pivot_table.append([m] + [p.get((n, c), 0.0) for c in cols] + [s])
+            pivot_table.append([m] + ['%0.2f' % p.get((n, c), 0.0) for c in cols] + ['%0.2f' % s])
             grand_total += s
         pivot_table.append(
-            ['Total'] + [sum([p.get((n, c), 0.0) for n in num_to_month_dict.keys()], 0) for c in cols] + [grand_total]
+            ['Total'] +
+            ['%0.2f' % sum([p.get((n, c), 0.0) for n in num_to_month_dict.keys()], 0.0) for c in cols] +
+            ['%0.2f' % grand_total]
         )
         return transpose(pivot_table, len(pivot_table), len(pivot_table[0])) if vertical else pivot_table
 

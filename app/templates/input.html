@@ -61,13 +61,16 @@
                 <tbody>
                   {% for row in table_rows %}
                     <tr>
-                        {% for cell in row[1:] %}
+                        {% for cell in row[1:-1] %}
                         <td>{{ cell }}</td>
                         {% endfor %}
                         <td>
                           <a href="{{ url_for('transaction', transaction_id=row[0]) }}" class="btn btn-info">
                             View <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
                           </a>
+                          {% if row[-1] %}
+                            <span class="glyphicon glyphicon-tag" aria-hidden="true" style="color:mediumvioletred"></span>
+                          {% endif %}
                         </td>
                     </tr>
                   {% endfor %}

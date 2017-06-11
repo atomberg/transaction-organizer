@@ -52,7 +52,7 @@ class Transaction(Base):
         }
 
     def to_table_row(self):
-        return (self.id, self.date, self.supplier, self.amount, self.category)
+        return (self.id, self.date, self.supplier, self.amount, self.category, bool(self.notes))
 
     @classmethod
     def get_by_id(cls, id):
