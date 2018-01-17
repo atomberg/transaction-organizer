@@ -13,27 +13,24 @@ $(document).ready( function () {
 </script>
 {% endblock %}
 
-{% block content %}
-<div class="container-fluid">
-  <div class="row-fluid">
-    <div class="offset1 span8 pull-right">
-        <a href="{{ url_for('download', filename='transactions', format='csv', begin=begin, end=end)}}" class="btn btn-success">
-          <i class="fa fa-cloud-download"></i> CSV
-        </a>
-        <a href="{{ url_for('download', filename='transactions', format='xlsx', begin=begin, end=end)}}" class="btn btn-success">
-          <i class="fa fa-cloud-download"></i> XLSX
-        </a>
-    </div>
-  </div>
-</div>
+{% block taskbar %}
+<a class="btn btn-success btn-sm mx-sm-1"
+   href="{{ url_for('download', filename='transactions', format='csv', begin=begin, end=end)}}">
+  <i class="fa fa-cloud-download"></i> CSV
+</a>
+<a class="btn btn-success btn-sm mx-sm-1"
+   href="{{ url_for('download', filename='transactions', format='xlsx', begin=begin, end=end)}}">
+  <i class="fa fa-cloud-download"></i> XLSX
+</a>
+{% endblock %}
 
+{% block content %}
 <div class="row">
     <div class="col-lg-12 text-center">
         <h1>All your transactions</h1>
         <p class="lead">Search, filter and have fun!</p>
     </div>
 </div>
-<!-- /.row -->
 
 <div class="row">
   <div class="col-lg-3 text-left">
@@ -63,12 +60,12 @@ $(document).ready( function () {
   <div class="col-lg-8 text-center">
     <p class="lead">
       <form id="filter" class="form-inline">
-        <input name="begin" form="filter" class="form-control" type="date", value="{{ begin }}">
-        <input name="end" form="filter" class="form-control" type="date" value="{{ end }}">
-        <button type="submit" form="filter" class="btn btn-success">
+        <input name="begin" form="filter" class="form-control-sm" type="date", value="{{ begin }}">
+        <input name="end" form="filter" class="form-control-sm" type="date" value="{{ end }}">
+        <button type="submit" form="filter" class="btn btn-success btn-sm">
           <i class="fa fa-search"></i> Filter
         </button>
-        <button type="reset" form="filter" class="btn btn-danger">
+        <button type="reset" form="filter" class="btn btn-danger btn-sm">
           Reset
         </button>
       </form>
@@ -77,7 +74,7 @@ $(document).ready( function () {
 </div>
 
 <div class="row">
-  <table id="table_id" class="display">
+  <table id="table_id" class="table table-striped table-bordered" cellspacing="0" width="100%">
       <thead>
           <tr>
               <th>Date</th>
@@ -94,11 +91,11 @@ $(document).ready( function () {
               <td>{{ cell }}</td>
               {% endfor %}
               <td>
-                <a href="{{ url_for('transaction', transaction_id=row[0]) }}" class="btn btn-success">
+                <a href="{{ url_for('transaction', transaction_id=row[0]) }}" class="btn btn-success btn-sm">
                   <i class="fa fa-pencil"></i> Edit
                 </a>
                 {% if row[-1] %}
-                  <i class="fa fa-file-text-o" style="color:mediumvioletred"></i>
+                  <i class="fa fa-tag" style="color:mediumvioletred"></i>
                 {% endif %}
               </td>
           </tr>
