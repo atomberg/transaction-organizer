@@ -5,7 +5,9 @@
 <script>
 $(document).ready( function () {
     $('#table_id').DataTable({
-      stateSave: true
+      "stateSave": true,
+      "lengthMenu": [ 50, 75, 100 ],
+      "order": [],
     });
 } );
 </script>
@@ -16,10 +18,10 @@ $(document).ready( function () {
   <div class="row-fluid">
     <div class="offset1 span8 pull-right">
         <a href="{{ url_for('download', filename='transactions', format='csv', begin=begin, end=end)}}" class="btn btn-success">
-          <span class="glyphicon glyphicon-save" aria-hidden="true"></span> CSV
+          <i class="fa fa-cloud-download"></i> CSV
         </a>
         <a href="{{ url_for('download', filename='transactions', format='xlsx', begin=begin, end=end)}}" class="btn btn-success">
-          <span class="glyphicon glyphicon-save" aria-hidden="true"></span> XLSX
+          <i class="fa fa-cloud-download"></i> XLSX
         </a>
     </div>
   </div>
@@ -34,16 +36,33 @@ $(document).ready( function () {
 <!-- /.row -->
 
 <div class="row">
-  <div class="col-lg-12 text-center">
+  <div class="col-lg-3 text-left">
+    <p class="lead">
+      <div class="dropdown show">
+        <a class="btn btn-success dropdown-toggle" href="#" role="button" id="dropdownMonth"
+           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Filter by month
+          <!-- <i class="fa fa-camera-retro"></i> -->
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <a class="dropdown-item" href="?begin=2018-01-01&end=2018-01-31">Jan</a>
+          <a class="dropdown-item" href="?begin=2018-02-01&end=2018-02-28">Feb</a>
+          <a class="dropdown-item" href="?begin=2018-03-01&end=2018-03-31">Mar</a>
+        </div>
+      </div>
+    </p>
+  </div>
+  <div class="col-lg-8 text-center">
     <p class="lead">
       <form id="filter" class="form-inline">
         <input name="begin" form="filter" class="form-control" type="date", value="{{ begin }}">
         <input name="end" form="filter" class="form-control" type="date" value="{{ end }}">
         <button type="submit" form="filter" class="btn btn-success">
-          <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Filter
+          <i class="fa fa-search"></i> Filter
         </button>
         <button type="reset" form="filter" class="btn btn-danger">
-          <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Reset
+          Reset
         </button>
       </form>
     </p>
@@ -69,10 +88,10 @@ $(document).ready( function () {
               {% endfor %}
               <td>
                 <a href="{{ url_for('transaction', transaction_id=row[0]) }}" class="btn btn-success">
-                  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                  <i class="fa fa-pencil"></i> Edit
                 </a>
                 {% if row[-1] %}
-                  <span class="glyphicon glyphicon-tag" aria-hidden="true" style="color:mediumvioletred"></span>
+                  <i class="fa fa-file-text-o" style="color:mediumvioletred"></i>
                 {% endif %}
               </td>
           </tr>

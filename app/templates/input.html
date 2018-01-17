@@ -66,10 +66,10 @@
                         {% endfor %}
                         <td>
                           <a href="{{ url_for('transaction', transaction_id=row[0]) }}" class="btn btn-info">
-                            View <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                            View <i class="fa fa-chevron-right"></i>
                           </a>
                           {% if row[-1] %}
-                            <span class="glyphicon glyphicon-tag" aria-hidden="true" style="color:mediumvioletred"></span>
+                            <i class="fa fa-file-text-o" style="color:mediumvioletred"></i>
                           {% endif %}
                         </td>
                     </tr>
@@ -90,7 +90,7 @@
                         </td>
                         <td>
                           <button type="submit" form="add" class="btn btn-success">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
+                            Add <i class="fa fa-plus-circle"></i>
                           </button>
                         </td>
                       </tr>

@@ -16,10 +16,10 @@ $(document).ready( function () {
   <div class="row-fluid">
     <div class="offset1 span8 pull-right">
         <a href="{{ url_for('download', filename='pivot', format='csv') }}" class="btn btn-success">
-        <span class="glyphicon glyphicon-save" aria-hidden="true"></span> CSV
+        <i class="fa fa-cloud-download"></i> CSV
       </a>
       <a href="{{ url_for('download', filename='pivot', format='xlsx') }}" class="btn btn-success">
-        <span class="glyphicon glyphicon-save" aria-hidden="true"></span> XLSX
+        <i class="fa fa-cloud-download"></i> XLSX
       </a>
     </div>
   </div>
