@@ -62,3 +62,7 @@ instance/
 
 # IPython Notebook
 .ipynb_checkpoints
+
+# Databases
+*.db
+*.db.bak
