@@ -13,12 +13,27 @@ num_to_month_dict = {
     7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
 }
 
+month_to_num_dict = {
+    'jan': 1, 'january': 1,
+    'feb': 2, 'february': 2,
+    'mar': 3, 'march': 3,
+    'apr': 4, 'april': 4,
+    'may': 5,
+    'jun': 6, 'june': 6,
+    'jul': 7, 'july': 7,
+    'aug': 8, 'august': 8,
+    'sep': 9, 'september': 9,
+    'oct': 10, 'october': 10,
+    'nov': 11, 'november': 11,
+    'dec': 12, 'december': 12
+}
+
 
 @backend.route('/')
 @backend.route('/input', methods=['GET', 'POST'])
 def input_transactions():
     if request.method == 'POST':
-        print request.values
+        print(request.values)
         t = Transaction(
             datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
             request.values['supplier'],
@@ -66,19 +81,22 @@ def del_transaction(transaction_id):
 
 @backend.route('/view', methods=['GET'])
 def view_transactions():
+    month = month_to_num_dict.get(request.values.get('month', '').lower())
     begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
     end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
     return render_template(
         'table.html',
-        begin=begin, end=end,
-        table_rows=get_transactions(begin=begin, end=end))
+        begin=begin, end=end, month=request.values.get('month', 'Filter by month'),
+        table_rows=get_transactions(begin=begin, end=end, month=month))
 
 
 @backend.route('/pivot', methods=['GET'])
 def pivot():
+    year = int(request.values.get('year', datetime.now().year))
     return render_template(
         'pivot.html',
-        table_rows=make_pivot_table())
+        year=year,
+        table_rows=make_pivot_table(year))
 
 
 @backend.route('/download/<string:filename>', methods=['GET'])
@@ -86,7 +104,7 @@ def download(filename):
     # Prepare data for download
     if filename == 'pivot':
         data = make_pivot_table()
-        print data
+        print(data)
     elif filename == 'transactions':
         begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
         end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
@@ -106,8 +124,8 @@ def download(filename):
     return output
 
 
-def make_pivot_table(vertical=True):
-        p = pivot_transactions()
+def make_pivot_table(year, vertical=True):
+        p = pivot_transactions(year)
         cols = list(set([c for m, c in p]))
         pivot_table = [[''] + cols + ['Total']]
         grand_total = 0

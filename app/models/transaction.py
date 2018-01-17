@@ -39,6 +39,14 @@ class Transaction(Base):
     def month(cls):
         return sqlfunc.extract('month', cls.date)
 
+    @hybrid_property
+    def year(self):
+        return self.date.strftime('%Y')
+
+    @year.expression
+    def year(cls):
+        return sqlfunc.extract('year', cls.date)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -71,22 +79,26 @@ def get_suppliers():
     return [r[0] for r in Session.query(Transaction.supplier).distinct().all()]
 
 
-def get_transactions(lim=None, reverse=False, begin=None, end=None):
+def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
     q = Session.query(Transaction)
-    if begin and end:
-        q = q.filter(Transaction.date.between(begin, end))
-    elif begin:
-        q = q.filter(Transaction.date >= begin)
-    elif end:
-        q = q.filter(Transaction.date <= end)
+    if month:
+        q = q.filter(Transaction.month == month).filter(Transaction.year == datetime.now().year)
+    else:
+        if begin and end:
+            q = q.filter(Transaction.date.between(begin, end))
+        elif begin:
+            q = q.filter(Transaction.date >= begin)
+        elif end:
+            q = q.filter(Transaction.date <= end)
     q = q.order_by(Transaction.updated_at.desc()).limit(lim).all()
     if reverse:
         q = q[::-1]
     return [t.to_table_row() for t in q]
 
 
-def pivot_transactions():
+def pivot_transactions(year):
     q = Session.query(Transaction.month, Transaction.category, sqlfunc.sum(Transaction.amount))
+    q = q.filter(Transaction.year == year)
     q = q.group_by(Transaction.month, Transaction.category)
     return dict([((m, c), a) for m, c, a in q.all()])
 

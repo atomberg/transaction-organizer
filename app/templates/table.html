@@ -41,14 +41,21 @@ $(document).ready( function () {
       <div class="dropdown show">
         <a class="btn btn-success dropdown-toggle" href="#" role="button" id="dropdownMonth"
            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Filter by month
-          <!-- <i class="fa fa-camera-retro"></i> -->
+          {{ month }}
         </a>
-
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <a class="dropdown-item" href="?begin=2018-01-01&end=2018-01-31">Jan</a>
-          <a class="dropdown-item" href="?begin=2018-02-01&end=2018-02-28">Feb</a>
-          <a class="dropdown-item" href="?begin=2018-03-01&end=2018-03-31">Mar</a>
+          <a class="dropdown-item" href="?month=January">January</a>
+          <a class="dropdown-item" href="?month=February">February</a>
+          <a class="dropdown-item" href="?month=March">March</a>
+          <a class="dropdown-item" href="?month=April">April</a>
+          <a class="dropdown-item" href="?month=May">May</a>
+          <a class="dropdown-item" href="?month=June">June</a>
+          <a class="dropdown-item" href="?month=July">July</a>
+          <a class="dropdown-item" href="?month=August">August</a>
+          <a class="dropdown-item" href="?month=September">September</a>
+          <a class="dropdown-item" href="?month=October">October</a>
+          <a class="dropdown-item" href="?month=November">November</a>
+          <a class="dropdown-item" href="?month=December">December</a>
         </div>
       </div>
     </p>
