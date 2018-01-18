@@ -4,11 +4,16 @@
 {% block scripts %}
 <script>
 $(document).ready( function () {
-    $('#pivot').DataTable({
-      "stateSave": true,
-      "lengthMenu": [ 50, 75, 100 ],
-      "order": []
-    });
+
+  $("#input-nav").removeClass("active");
+  $("#view-nav").removeClass("active");
+  $("#pivot-nav").addClass("active");
+
+  $('#pivot').DataTable({
+    "stateSave": true,
+    "lengthMenu": [ 50, 75, 100 ],
+    "order": []
+  });
 } );
 </script>
 {% endblock %}

@@ -5,6 +5,10 @@
 <script type="text/javascript">
   $(document).ready(function() {
 
+    $("#input-nav").addClass("active");
+    $("#view-nav").removeClass("active");
+    $("#pivot-nav").removeClass("active");
+
     // Constructing the suggestion engine
     var categories = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.whitespace,
