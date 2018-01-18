@@ -22,7 +22,7 @@
     });
 
     // Initializing the typeahead
-    $('.categories').typeahead({
+    $("#category-input-id").typeahead({
       hint: true,
       highlight: true,
       minLength: 1
@@ -30,13 +30,19 @@
     {
       source: categories
     });
-    $('.suppliers').typeahead({
+    $("#supplier-input-id").typeahead({
       hint: true,
       highlight: true,
       minLength: 1
     },
     {
       source: suppliers
+    });
+  });
+
+  $("#supplier-input-id").focusout(function() {
+    $.get( "/guess/category?q=" + $("#supplier-input-id").val(), function( data ) {
+      $("#category-input-id").val(data.category);
     });
   });
 </script>
@@ -84,13 +90,13 @@
                           <input name="day" form="add" class="form-control" type="date" value="{{ today }}">
                         </td>
                         <td>
-                          <input name="supplier" form="add" class="suppliers form-control" type="text" placeholder="Supplier">
+                          <input name="supplier" form="add" class="suppliers form-control" id="supplier-input-id" type="text" placeholder="Supplier">
                         </td>
                         <td>
                           <input name="amount" form="add" class="form-control" type="text" placeholder="Amount">
                         </td>
                         <td>
-                          <input name="category" form="add" class="categories form-control" type="text" placeholder="Category">
+                          <input name="category" form="add" class="categories form-control" id="category-input-id" type="text" placeholder="Category">
                         </td>
                         <td>
                           <button type="submit" form="add" class="btn btn-success">

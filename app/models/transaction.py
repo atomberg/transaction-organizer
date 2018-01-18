@@ -1,7 +1,7 @@
 from db_session import engine, Session
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, Date, DateTime, func as sqlfunc
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime, func as sqlfunc, desc
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
@@ -101,6 +101,13 @@ def pivot_transactions(year):
     q = q.filter(Transaction.year == year)
     q = q.group_by(Transaction.month, Transaction.category)
     return dict([((m, c), a) for m, c, a in q.all()])
+
+
+def guess_category(supplier):
+    q = Session.query(Transaction.category, sqlfunc.count().label('count'))
+    q = q.filter(Transaction.supplier == supplier)
+    q = q.group_by(Transaction.category).order_by(desc('count')).limit(1)
+    return q.scalar() or ''
 
 
 Base.metadata.create_all(engine)

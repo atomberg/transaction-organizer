@@ -3,8 +3,9 @@ from datetime import date, datetime
 # import csv
 from models.db_session import Session
 from models.transaction import Transaction, get_categories, get_suppliers, get_transactions, pivot_transactions
+from models.transaction import guess_category
 
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, jsonify
 import flask_excel
 backend = Flask(__name__)
 
@@ -123,6 +124,15 @@ def download(filename):
         output.headers["Content-Disposition"] = "attachment; filename=%s.csv" % filename
         output.headers["Content-type"] = "text/csv"
     return output
+
+
+@backend.route('/guess/<string:what>', methods=['GET'])
+def guess(what):
+    if what == 'category':
+        q = request.values.get('q')
+        return jsonify(dict(category=guess_category(q)))
+    else:
+        return jsonify(dict())
 
 
 def make_pivot_table(year, vertical=True):
