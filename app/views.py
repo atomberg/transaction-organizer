@@ -106,9 +106,10 @@ def download(filename):
         data = make_pivot_table()
         print(data)
     elif filename == 'transactions':
+        month = month_to_num_dict.get(request.values.get('month', '').lower())
         begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
         end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
-        data = get_transactions(begin=begin, end=end)
+        data = get_transactions(begin=begin, end=end, month=month)
     else:
         return make_response()
 
