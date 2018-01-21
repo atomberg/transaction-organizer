@@ -45,7 +45,7 @@ def input_transactions():
     return render_template(
         'input.html',
         today=date.today().strftime('%Y-%m-%d'), suppliers=get_suppliers(), categories=get_categories(),
-        table_rows=get_transactions(5, True))
+        table_rows=get_transactions(3, True))
 
 
 @backend.route('/transaction/<int:transaction_id>', methods=['GET', 'POST', 'DELETE'])
