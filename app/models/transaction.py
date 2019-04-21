@@ -1,4 +1,4 @@
-from db_session import engine, Session
+from models.db_session import engine, Session
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, Date, DateTime, func as sqlfunc, desc

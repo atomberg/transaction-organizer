@@ -136,20 +136,20 @@ def guess(what):
 
 
 def make_pivot_table(year, vertical=True):
-        p = pivot_transactions(year)
-        cols = list(set([c for m, c in p]))
-        pivot_table = [[''] + cols + ['Total']]
-        grand_total = 0
-        for n, m in sorted(num_to_month_dict.items()):
-            s = sum([p.get((n, c), 0.0) for c in cols], 0)
-            pivot_table.append([m] + ['{:,.2f}'.format(p.get((n, c), 0.0)) for c in cols] + ['{:,.2f}'.format(s)])
-            grand_total += s
-        pivot_table.append(
-            ['Total'] +
-            ['{:,.2f}'.format(sum([p.get((n, c), 0.0) for n in num_to_month_dict.keys()], 0.0)) for c in cols] +
-            ['{:,.2f}'.format(grand_total)]
-        )
-        return transpose(pivot_table, len(pivot_table), len(pivot_table[0])) if vertical else pivot_table
+    p = pivot_transactions(year)
+    cols = list(set([c for m, c in p]))
+    pivot_table = [[''] + cols + ['Total']]
+    grand_total = 0
+    for n, m in sorted(num_to_month_dict.items()):
+        s = sum([p.get((n, c), 0.0) for c in cols], 0)
+        pivot_table.append([m] + ['{:,.2f}'.format(p.get((n, c), 0.0)) for c in cols] + ['{:,.2f}'.format(s)])
+        grand_total += s
+    pivot_table.append(
+        ['Total'] +
+        ['{:,.2f}'.format(sum([p.get((n, c), 0.0) for n in num_to_month_dict.keys()], 0.0)) for c in cols] +
+        ['{:,.2f}'.format(grand_total)]
+    )
+    return transpose(pivot_table, len(pivot_table), len(pivot_table[0])) if vertical else pivot_table
 
 
 def transpose(M, nrows, ncols):
