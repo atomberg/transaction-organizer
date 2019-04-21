@@ -66,3 +66,7 @@ instance/
 # Databases
 *.db
 *.db.bak
+
+# Editor configs
+.vscode/*
+.idea/*

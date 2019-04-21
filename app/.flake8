@@ -1,0 +1,5 @@
+[flake8]
+ignore = D203,D100,D101,D102,D103,D104,D105,D107,D413,W503,N803,N806,N802
+max_line_length = 120
+hang_closing = False
+exclude = .git,__pycache__
