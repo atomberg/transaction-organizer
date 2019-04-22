@@ -2,10 +2,10 @@ from datetime import datetime
 from flask import Blueprint
 
 from models.transaction import get_transactions, pivot_transactions
-from flask import render_template, request, make_response
+from flask import render_template, request
 import flask_excel
 
-bp = Blueprint('views', __name__)
+bp = Blueprint('tables', __name__, url_prefix='/table')
 
 
 num_to_month_dict = {
@@ -29,8 +29,8 @@ month_to_num_dict = {
 }
 
 
-@bp.route('/view', methods=['GET'])
-def view_transactions():
+@bp.route('/', methods=['GET'])
+def get_table():
     month = month_to_num_dict.get(request.values.get('month', '').lower())
     begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
     end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
@@ -40,8 +40,18 @@ def view_transactions():
         table_rows=get_transactions(begin=begin, end=end, month=month))
 
 
+@bp.route('/download', methods=['GET'])
+def download_table():
+    month = month_to_num_dict.get(request.values.get('month', '').lower())
+    begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
+    end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
+    data = get_transactions(begin=begin, end=end, month=month)
+
+    return download_data(data, request.values.get('format'))
+
+
 @bp.route('/pivot', methods=['GET'])
-def pivot():
+def get_pivot():
     year = int(request.values.get('year', datetime.now().year))
     return render_template(
         'pivot.html',
@@ -49,28 +59,21 @@ def pivot():
         table_rows=make_pivot_table(year))
 
 
-@bp.route('/download/<string:filename>', methods=['GET'])
-def download(filename):
-    # Prepare data for download
-    if filename == 'pivot':
-        data = make_pivot_table()
-        print(data)
-    elif filename == 'transactions':
-        month = month_to_num_dict.get(request.values.get('month', '').lower())
-        begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
-        end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
-        data = get_transactions(begin=begin, end=end, month=month)
-    else:
-        return make_response()
+@bp.route('pivot/download', methods=['GET'])
+def download_pivot():
+    data = make_pivot_table()
+    print(data)
+    return download_data(data, request.values.get('format'))
 
-    # Prepare response
-    if request.values.get('format') == 'xlsx':
+
+def download_data(data, download_format):
+    if download_format == 'xlsx':
         output = flask_excel.make_response_from_array(data, 'xlsx')
-        output.headers["Content-Disposition"] = "attachment; filename=%s.xlsx" % filename
+        output.headers["Content-Disposition"] = "attachment; filename=pivot.xlsx"
         # output.headers["Content-type"] = "text/csv"
     else:
         output = flask_excel.make_response_from_array(data, 'csv')
-        output.headers["Content-Disposition"] = "attachment; filename=%s.csv" % filename
+        output.headers["Content-Disposition"] = "attachment; filename=pivot.csv"
         output.headers["Content-type"] = "text/csv"
     return output
 

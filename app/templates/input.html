@@ -75,7 +75,7 @@
         <td>{{ cell }}</td>
         {% endfor %}
         <td>
-          <a href="{{ url_for('views.view_transactions', transaction_id=row[0]) }}" class="btn btn-info">
+          <a href="{{ url_for('transactions.get_transaction', transaction_id=row[0]) }}" class="btn btn-info">
             View <i class="fa fa-chevron-right"></i>
           </a>
           {% if row[-1] %}
@@ -84,7 +84,7 @@
         </td>
       </tr>
       {% endfor %}
-      <form id="add" method="post" action="{{ url_for('transaction.input_transactions') }}">
+      <form id="add" method="post" action="{{ url_for('transactions.input_transaction') }}">
         <tr>
           <td>
             <input name="day" form="add" class="form-control" type="date" value="{{ today }}">

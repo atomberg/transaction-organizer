@@ -25,11 +25,11 @@
 
 {% block taskbar %}
 <a class="btn btn-success btn-sm mx-sm-1"
-  href="{{ url_for('views.download', filename='transactions', format='csv', begin=begin, end=end)}}">
+  href="{{ url_for('tables.download_table', format='csv', begin=begin, end=end)}}">
   <i class="fa fa-cloud-download"></i> CSV
 </a>
 <a class="btn btn-success btn-sm mx-sm-1"
-  href="{{ url_for('views.download', filename='transactions', format='xlsx', begin=begin, end=end)}}">
+  href="{{ url_for('tables.download_table', format='xlsx', begin=begin, end=end)}}">
   <i class="fa fa-cloud-download"></i> XLSX
 </a>
 {% endblock %}
@@ -101,7 +101,7 @@
         <td>{{ cell }}</td>
         {% endfor %}
         <td>
-          <a href="{{ url_for('views.view_transactions', transaction_id=row[0]) }}" class="btn btn-success btn-sm">
+          <a href="{{ url_for('transactions.get_transaction', transaction_id=row[0]) }}" class="btn btn-success btn-sm">
             <i class="fa fa-pencil"></i> Edit
           </a>
           {% if row[-1] %}

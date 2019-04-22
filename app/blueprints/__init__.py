@@ -1,9 +1,9 @@
 from .autocomplete import bp as autocomplete_bp
-from .transaction import bp as transaction_bp
-from .view import bp as view_bp
+from .tables import bp as tables_bp
+from .transactions import bp as transactions_bp
 
 __all__ = [
     autocomplete_bp,
-    transaction_bp,
-    view_bp
+    tables_bp,
+    transactions_bp
 ]
