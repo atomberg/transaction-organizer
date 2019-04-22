@@ -1,12 +1,11 @@
-from datetime import datetime
-from flask import Blueprint
-
-from models.transaction import get_transactions, pivot_transactions
-from flask import render_template, request
 import flask_excel
 
-bp = Blueprint('tables', __name__, url_prefix='/table')
+from datetime import datetime
+from flask import Blueprint
+from models.transaction import get_transactions, pivot_transactions
+from flask import render_template, request
 
+bp = Blueprint('tables', __name__, url_prefix='/table')
 
 num_to_month_dict = {
     1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
