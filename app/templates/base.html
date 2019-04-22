@@ -1,91 +1,95 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
-          integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-    <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+    integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+  <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"
           integrity="sha384-1UXhfqyOyO+W+XsGhiIFwwD3hsaHRz2XDGMle3b8bXPH5+cMsXVShDoHA3AH/y/p" crossorigin="anonymous"> -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"
-          integrity="sha384-bsGkvB1NLsaPUZL6GG0N5H9GOW9DK6KiHrrDvO57EJXoD9H3gzlohtuPENw9/24L" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <!-- Custom CSS -->
-    <style>
-      body {
-        padding-top: 5rem;
-      }
-      .starter-template {
-        padding: 3rem 1.5rem;
-        text-align: center;
-      }
-    </style>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css"
+    integrity="sha384-bsGkvB1NLsaPUZL6GG0N5H9GOW9DK6KiHrrDvO57EJXoD9H3gzlohtuPENw9/24L" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      padding-top: 5rem;
+    }
 
-    <title>{% block title %}Some Title{% endblock %}</title>
-  </head>
-  <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <span class="navbar-brand mb-0 h2">Transaction Organizer</span>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-              aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    .starter-template {
+      padding: 3rem 1.5rem;
+      text-align: center;
+    }
+  </style>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" id="input-nav" href="/">Input new</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="view-nav" href="/view">View all</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="pivot-nav" href="/pivot" id="dropdown01"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Pivot
-            </a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="/pivot?year=2019">2019</a>
-              <a class="dropdown-item" href="/pivot?year=2018">2018</a>
-              <a class="dropdown-item" href="/pivot?year=2017">2017</a>
-            </div>
-          </li>
-        </ul>
-        {% block taskbar %}{% endblock %}
-        <!-- <form class="form-inline my-2 my-lg-0">
+  <title>{% block title %}Some Title{% endblock %}</title>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <span class="navbar-brand mb-0 h2">Transaction Organizer</span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+      aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" id="input-nav" href="{{ url_for('transactions.get_latest_transactions') }}">Input new</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="view-nav" href="{{ url_for('tables.get_table') }}">View all</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="pivot-nav" href="{{ url_for('tables.get_pivot') }}" id="dropdown01"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Pivot
+          </a>
+          <div class="dropdown-menu" aria-labelledby="dropdown01">
+            <a class="dropdown-item" href="{{ url_for('tables.get_pivot', year=2019) }}">2019</a>
+            <a class="dropdown-item" href="{{ url_for('tables.get_pivot', year=2018) }}">2018</a>
+            <a class="dropdown-item" href="{{ url_for('tables.get_pivot', year=2017) }}">2017</a>
+          </div>
+        </li>
+      </ul>
+      {% block taskbar %}{% endblock %}
+      <!-- <form class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form> -->
-      </div>
-    </nav>
+    </div>
+  </nav>
 
-    <main role="main" class="container">
+  <main role="main" class="container">
     <!-- Page Content -->
-      <div class="container">
-        {% block content %} {% endblock %}
-      </div>
+    <div class="container">
+      {% block content %} {% endblock %}
+    </div>
 
-    </main>
+  </main>
 
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"
-            integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" crossorigin="anonymous"
-            integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js" crossorigin="anonymous"
-            integrity="sha384-Z9D45cp3elqajO+xEyjRTIK1Gr3eYsXiyCPIKNog1sIQzpo2fqFDqFdADGiJjzOv"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"
-            integrity="sha384-ldQcdLcQS6WdInz7/H5EvUsc+DFY6IZGZkAzFAOln7RKseNuPvXOm9txFW6hr8rI"></script>
-    <script src="/static/js/typeahead.bundle.js"></script>
-    {% block scripts %}{% endblock %}
-  </body>
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"
+    integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" crossorigin="anonymous"
+    integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js" crossorigin="anonymous"
+    integrity="sha384-Z9D45cp3elqajO+xEyjRTIK1Gr3eYsXiyCPIKNog1sIQzpo2fqFDqFdADGiJjzOv"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"
+    integrity="sha384-ldQcdLcQS6WdInz7/H5EvUsc+DFY6IZGZkAzFAOln7RKseNuPvXOm9txFW6hr8rI"></script>
+  <script src="/static/js/typeahead.bundle.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+
 </html>
