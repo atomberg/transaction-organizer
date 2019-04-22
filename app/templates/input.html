@@ -41,7 +41,7 @@
   });
 
   $("#supplier-input-id").focusout(function () {
-    $.get("/guess/category?q=" + $("#supplier-input-id").val(), function (data) {
+    $.get("{{ url_for('autocomplete.autocomplete', what='category', q='') }}" + $("#supplier-input-id").val(), function (data) {
       $("#category-input-id").val(data.category);
     });
   });
