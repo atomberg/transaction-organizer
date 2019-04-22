@@ -1,2 +1,3 @@
-start "Transaction Organizer Server" python manage.py runserver
-explorer "http://localhost:5555
+cd app/
+start "Transaction Organizer Server" python server.py
+explorer "http://localhost:5555/transactions
