@@ -97,7 +97,7 @@ def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
 
 
 def get_years():
-    q = Session.query(Transaction.year).distinct()
+    q = Session.query(Transaction.year).distinct().order_by(Transaction.year.desc())
     return [r.year for r in q.all()]
 
 
