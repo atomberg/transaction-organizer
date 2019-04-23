@@ -51,11 +51,14 @@ def download_table():
 
 @bp.route('/pivot', methods=['GET'])
 def get_pivot():
-    year = int(request.values.get('year', datetime.now().year))
+    # year = int(request.values.get('year', datetime.now().year))
     return render_template(
         'pivot.html',
-        year=year,
-        table_rows=make_pivot_table(year))
+        data=[{'year': year, 'table_rows': make_pivot_table(
+            year), 'active': year == 2019} for year in (2019, 2018, 2017)]
+        # year=year,
+        # table_rows=make_pivot_table(year)
+    )
 
 
 @bp.route('pivot/download', methods=['GET'])
