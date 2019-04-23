@@ -2,7 +2,7 @@ import flask_excel
 
 from datetime import datetime
 from flask import Blueprint
-from models.transaction import get_transactions, pivot_transactions
+from models.transaction import get_transactions, pivot_transactions, get_years
 from flask import render_template, request
 
 bp = Blueprint('tables', __name__, url_prefix='/table')
@@ -51,13 +51,14 @@ def download_table():
 
 @bp.route('/pivot', methods=['GET'])
 def get_pivot():
-    # year = int(request.values.get('year', datetime.now().year))
+    years = get_years()
     return render_template(
         'pivot.html',
-        data=[{'year': year, 'table_rows': make_pivot_table(
-            year), 'active': year == 2019} for year in (2019, 2018, 2017)]
-        # year=year,
-        # table_rows=make_pivot_table(year)
+        data=[{
+            'year': year,
+            'table_rows': make_pivot_table(year),
+            'active': year == max(years)
+        } for year in years]
     )
 
 

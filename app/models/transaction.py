@@ -72,11 +72,11 @@ class Transaction(Base):
 
 
 def get_categories():
-    return [r[0] for r in Session.query(Transaction.category).distinct().all()]
+    return [r.category for r in Session.query(Transaction.category).distinct().all()]
 
 
 def get_suppliers():
-    return [r[0] for r in Session.query(Transaction.supplier).distinct().all()]
+    return [r.supplier for r in Session.query(Transaction.supplier).distinct().all()]
 
 
 def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
@@ -94,6 +94,11 @@ def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
     if reverse:
         q = q[::-1]
     return [t.to_table_row() for t in q]
+
+
+def get_years():
+    q = Session.query(Transaction.year).distinct()
+    return [r.year for r in q.all()]
 
 
 def pivot_transactions(year):
