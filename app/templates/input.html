@@ -9,40 +9,10 @@
     $("#view-nav").removeClass("active");
     $("#pivot-nav").removeClass("active");
 
-    // Constructing the suggestion engine
-    var categories = new Bloodhound({
-      datumTokenizer: Bloodhound.tokenizers.whitespace,
-      queryTokenizer: Bloodhound.tokenizers.whitespace,
-      local: {{ categories| tojson | safe}}
-    });
-  var suppliers = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.whitespace,
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: {{ suppliers| tojson | safe}}
-    });
-
-  // Initializing the typeahead
-  $("#category-input-id").typeahead({
-    hint: true,
-    highlight: true,
-    minLength: 1
-  },
-    {
-      source: categories
-    });
-  $("#supplier-input-id").typeahead({
-    hint: true,
-    highlight: true,
-    minLength: 1
-  },
-    {
-      source: suppliers
-    });
-  });
-
-  $("#supplier-input-id").focusout(function () {
-    $.get("{{ url_for('autocomplete.autocomplete', what='category', q='') }}" + $("#supplier-input-id").val(), function (data) {
-      $("#category-input-id").val(data.category);
+    $("#supplier-input-id").focusout(function () {
+      $.get("{{ url_for('autocomplete.category_guess', q='') }}" + $("#supplier-input-id").val(), function (data) {
+        $("#category-input-id").val(data.category);
+      });
     });
   });
 </script>
@@ -91,14 +61,25 @@
           </td>
           <td>
             <input name="supplier" form="add" class="suppliers form-control" id="supplier-input-id" type="text"
-              placeholder="Supplier">
+              placeholder="Supplier" list="suppliers">
+            <datalist id="suppliers">
+              {% for supplier in suppliers %}
+              <option value="{{ supplier }}"></option>
+              {% endfor %}
+            </datalist>
           </td>
           <td>
             <input name="amount" form="add" class="form-control" type="text" placeholder="Amount">
           </td>
           <td>
             <input name="category" form="add" class="categories form-control" id="category-input-id" type="text"
-              placeholder="Category">
+              placeholder="Category" list="categories">
+            <datalist id="categories">
+              {% for category in categories %}
+              <option value="{{ category }}"></option>
+              {% endfor %}
+            </datalist>
+
           </td>
           <td>
             <button type="submit" form="add" class="btn btn-success">
