@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}Transaction input{% endblock %}
 
 {% block scripts %}
@@ -9,10 +9,12 @@
     $("#view-nav").removeClass("active");
     $("#pivot-nav").removeClass("active");
 
-    $("#supplier-input-id").focusout(function () {
-      $.get("{{ url_for('autocomplete.category_guess', q='') }}" + $("#supplier-input-id").val(), function (data) {
-        $("#category-input-id").val(data.category);
-      });
+    {
+      # $("#supplier-input-id").focusout(function () {
+        $.get("{{ url_for('autocomplete.category_guess', q='') }}" + $("#supplier-input-id").val(), function (data) {
+          $("#category-input-id").val(data.category);
+        }); #
+      }
     });
   });
 </script>
@@ -25,16 +27,16 @@
     <p class="lead">Why not add a new transaction now?</p>
   </div>
 </div>
-<!-- /.row -->
 
 <div class="row">
   <table id="last_transactions_table" class="table table-striped table-bordered" cellspacing="0" width="100%">
     <thead>
       <tr>
+        <th>Person ID</th>
         <th>Date</th>
-        <th>Supplier</th>
+        <th>Method</th>
         <th>Amount</th>
-        <th>Category</th>
+        <th>Accepted by</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -45,7 +47,7 @@
         <td>{{ cell }}</td>
         {% endfor %}
         <td>
-          <a href="{{ url_for('transactions.get_transaction', transaction_id=row[0]) }}" class="btn btn-info">
+          <a href="{{ url_for('transactions.get', transaction_id=row[0]) }}" class="btn btn-info">
             View <i class="fa fa-chevron-right"></i>
           </a>
           {% if row[-1] %}
@@ -54,17 +56,26 @@
         </td>
       </tr>
       {% endfor %}
-      <form id="add" method="post" action="{{ url_for('transactions.input_transaction') }}">
+      <form id="add" method="post" action="{{ url_for('transactions.add') }}">
         <tr>
+          <td>
+            <select name="person_id" form="add" class="persons form-control" id="person-input-id" placeholder="Person"
+              list="persons">
+              {# <datalist id="persons"> #}
+              {% for id, person in persons %}
+              <option value="{{ id }}">{{ person }}</option>
+              {% endfor %}
+            </select>
+          </td>
           <td>
             <input name="day" form="add" class="form-control" type="date" value="{{ today }}">
           </td>
           <td>
-            <input name="supplier" form="add" class="suppliers form-control" id="supplier-input-id" type="text"
-              placeholder="Supplier" list="suppliers">
-            <datalist id="suppliers">
-              {% for supplier in suppliers %}
-              <option value="{{ supplier }}"></option>
+            <input name="method" form="add" class="methods form-control" id="method-input-id" type="text"
+              placeholder="Method" list="methods">
+            <datalist id="methods">
+              {% for method in methods %}
+              <option value="{{ method }}"></option>
               {% endfor %}
             </datalist>
           </td>
@@ -72,11 +83,11 @@
             <input name="amount" form="add" class="form-control" type="text" placeholder="Amount">
           </td>
           <td>
-            <input name="category" form="add" class="categories form-control" id="category-input-id" type="text"
-              placeholder="Category" list="categories">
-            <datalist id="categories">
-              {% for category in categories %}
-              <option value="{{ category }}"></option>
+            <input name="accepted_by" form="add" class="accepted_bys form-control" id="accepted_by-input-id" type="text"
+              placeholder="Accepted by" list="accepted_bys">
+            <datalist id="accepted_bys">
+              {% for by in accepted_bys %}
+              <option value="{{ by }}"></option>
               {% endfor %}
             </datalist>
 

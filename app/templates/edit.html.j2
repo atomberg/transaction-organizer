@@ -1,40 +1,9 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}Index{% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
-    $(document).ready(function () {
 
-        // Constructing the suggestion engine
-        var categories = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.whitespace,
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            local: {{ categories| tojson | safe}}
-    });
-    var suppliers = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.whitespace,
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: {{ suppliers| tojson | safe}}
-    });
-
-    // Initializing the typeahead
-    $('.categories').typeahead({
-        hint: true,
-        highlight: true,
-        minLength: 1
-    },
-        {
-            source: categories
-        });
-    $('.suppliers').typeahead({
-        hint: true,
-        highlight: true,
-        minLength: 1
-    },
-        {
-            source: suppliers
-        });
-  });
 </script>
 {% endblock %}
 
@@ -51,19 +20,26 @@
     <table id="table_id" class="table">
         <tbody>
             <form id="edit" method="POST"
-                action="{{ url_for('transactions.update_transaction', transaction_id=transaction['id']) }}">
+                action="{{ url_for('transactions.update', transaction_id=transaction['id']) }}">
                 <tr>
-                    <th>Date</th>
-                    <td><input name="day" form="edit" class="form-control" type="date"
-                            value="{{ transaction['date'] }}"></td>
+                    <th>Person</th>
+                    <td><select name="person_id" form="edit" class="form-control" value="{{ transaction['person'] }}">
+                            <option value="{{ transaction['person_id'] }}">{{ transaction['person'] }}</option>
+                        </select>
+                    </td>
                     <td rowspan="4"><textarea name="notes" form="edit" class="form-control" rows="8"
                             {% if not transaction['notes'] %} placeholder="You can add notes here"
                             {% endif %}>{{ transaction['notes'] }}</textarea></td>
                 </tr>
                 <tr>
-                    <th>Supplier</th>
-                    <td><input name="supplier" form="edit" class="suppliers form-control" type="text"
-                            value="{{ transaction['supplier'] }}"></td>
+                    <th>Date</th>
+                    <td><input name="day" form="edit" class="form-control" type="date"
+                            value="{{ transaction['date'] }}"></td>
+                </tr>
+                <tr>
+                    <th>Method</th>
+                    <td><input name="method" form="edit" class="suppliers form-control" type="text"
+                            value="{{ transaction['method'] }}"></td>
                 </tr>
                 <tr>
                     <th>Amount</th>
@@ -71,9 +47,9 @@
                             value="{{ transaction['amount'] }}"></td>
                 </tr>
                 <tr>
-                    <th>Category</th>
-                    <td><input name="category" form="edit" class="categories form-control" type="text"
-                            value="{{ transaction['category'] }}"></td>
+                    <th>Accepted by</th>
+                    <td><input name="accepted_by" form="edit" class="categories form-control" type="text"
+                            value="{{ transaction['accepted_by'] }}"></td>
                 </tr>
             </form>
             <tr>
@@ -81,7 +57,7 @@
                 <td>
                     <input type="submit" form="edit" value="Save changes" class="btn btn-success">
                     <form style="display: inline;" method="POST"
-                        action="{{ url_for('transactions.delete_transaction', transaction_id=transaction['id']) }}">
+                        action="{{ url_for('transactions.delete', transaction_id=transaction['id']) }}">
                         <input type="submit" class="btn btn-danger" value="Delete transaction">
                     </form>
                 </td>

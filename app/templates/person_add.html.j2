@@ -1,0 +1,107 @@
+{% extends "base.html.j2" %}
+{% block title %}Transaction input{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $(document).ready(function () {
+
+    $("#input-nav").addClass("active");
+    $("#view-nav").removeClass("active");
+    $("#pivot-nav").removeClass("active");
+
+    {# $("#supplier-input-id").focusout(function () {
+      $.get("{{ url_for('autocomplete.category_guess', q='') }}" + $("#supplier-input-id").val(), function (data) {
+        $("#category-input-id").val(data.category);
+      }); #}
+    });
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <h1>Latest transactions</h1>
+    <p class="lead">Why not add a new transaction now?</p>
+  </div>
+</div>
+
+<div class="row">
+  <table id="last_transactions_table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Person ID</th>
+        <th>Date</th>
+        <th>Method</th>
+        <th>Amount</th>
+        <th>Accepted by</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in table_rows %}
+      <tr>
+        {% for cell in row[1:-1] %}
+        <td>{{ cell }}</td>
+        {% endfor %}
+        <td>
+          <a href="{{ url_for('transactions.get', transaction_id=row[0]) }}" class="btn btn-info">
+            View <i class="fa fa-chevron-right"></i>
+          </a>
+          {% if row[-1] %}
+          <i class="fa fa-tag" style="color:mediumvioletred"></i>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      <form id="add" method="post" action="{{ url_for('transactions.add') }}">
+        <tr>
+          <td>
+            <select name="person_id" form="add" class="persons form-control" id="person-input-id"
+              placeholder="Person" list="persons">
+            {# <datalist id="persons"> #}
+              {% for id, person in persons %}
+              <option value="{{ id }}">{{ person }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <input name="day" form="add" class="form-control" type="date" value="{{ today }}">
+          </td>
+          <td>
+            <input name="method" form="add" class="methods form-control" id="method-input-id" type="text"
+              placeholder="Method" list="methods">
+            <datalist id="methods">
+              {% for method in methods %}
+              <option value="{{ method }}"></option>
+              {% endfor %}
+            </datalist>
+          </td>
+          <td>
+            <input name="amount" form="add" class="form-control" type="text" placeholder="Amount">
+          </td>
+          <td>
+            <input name="accepted_by" form="add" class="accepted_bys form-control" id="accepted_by-input-id" type="text"
+              placeholder="Accepted by" list="accepted_bys">
+            <datalist id="accepted_bys">
+              {% for by in accepted_bys %}
+              <option value="{{ by }}"></option>
+              {% endfor %}
+            </datalist>
+
+          </td>
+          <td>
+            <button type="submit" form="add" class="btn btn-success">
+              Add <i class="fa fa-plus-circle"></i>
+            </button>
+          </td>
+        </tr>
+      </form>
+    </tbody>
+  </table>
+</div>
+
+<div class="row">
+
+</div>
+{% endblock %}
