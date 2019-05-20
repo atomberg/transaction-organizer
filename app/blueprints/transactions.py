@@ -16,7 +16,7 @@ def get_latest():
         'transaction_add.html.j2',
         today=date.today().strftime('%Y-%m-%d'),
         persons=get_persons(),
-        methods=get_methods(),
+        # methods=get_methods(),
         accepted_bys=get_accepted_bys(),
         table_rows=get_transactions(limit, True)
     )
@@ -42,9 +42,6 @@ def get(transaction_id):
     """Get a transation by id."""
     return render_template(
         'transaction_edit.html.j2',
-        # persons=get_persons(),
-        # methods=get_methods(),
-        # accepted_bys=get_accepted_bys(),
         transaction=Transaction.get_by_id(transaction_id).to_dict()
     )
 
