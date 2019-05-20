@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from flask import Blueprint, request, render_template
 from models.db_session import Session
-from models.person import Person
+from models.person import Person, get_persons_table
 
 
 bp = Blueprint('persons', __name__, url_prefix='/persons')
@@ -15,7 +15,7 @@ def get_all():
         today=date.today().strftime('%Y-%m-%d'),
         # suppliers=get_suppliers(),
         # categories=get_categories(),
-        # table_rows=get_transactions(3, True)
+        table_rows=get_persons_table(3, False)
     )
 
 

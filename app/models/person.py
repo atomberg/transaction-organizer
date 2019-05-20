@@ -52,7 +52,8 @@ class Person(Base):
         }
 
     def to_table_row(self):
-        return self.id, self.last_name, self.first_name, self.phone, self.email, bool(self.notes)
+        total = sum([t.amount for t in self.transactions])
+        return self.id, self.last_name, self.first_name, self.phone, self.email, total, bool(self.notes)
 
     @classmethod
     def get_by_id(cls, id):
@@ -70,21 +71,12 @@ def get_persons():
 #     return [r.supplier for r in Session.query(Transaction.supplier).distinct().all()]
 
 
-# def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
-#     q = Session.query(Transaction)
-#     if month:
-#         q = q.filter(Transaction.month == month).filter(Transaction.year == datetime.now().year)
-#     else:
-#         if begin and end:
-#             q = q.filter(Transaction.date.between(begin, end))
-#         elif begin:
-#             q = q.filter(Transaction.date >= begin)
-#         elif end:
-#             q = q.filter(Transaction.date <= end)
-#     q = q.order_by(Transaction.updated_at.desc()).limit(lim).all()
-#     if reverse:
-#         q = q[::-1]
-#     return [t.to_table_row() for t in q]
+def get_persons_table(lim=None, reverse=False):
+    q = Session.query(Person).filter(Person.deleted_at.is_(None))
+    q = q.order_by(Person.updated_at.desc()).limit(lim).all()
+    if reverse:
+        q = q[::-1]
+    return [t.to_table_row() for t in q]
 
 
 # def get_years():
