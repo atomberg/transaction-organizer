@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from flask import Blueprint, request, render_template
 from models.db_session import Session
-from models.transaction import Transaction, get_transactions, get_methods, get_accepted_bys
+from models.transaction import Transaction, get_transactions, get_accepted_bys
 from models.person import get_persons
 
 

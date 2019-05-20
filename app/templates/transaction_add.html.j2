@@ -59,11 +59,12 @@
       <form id="add" method="post" action="{{ url_for('transactions.add') }}">
         <tr>
           <td>
-            <select name="person_id" form="add" class="persons form-control" id="person-input-id" placeholder="Person"
-              list="persons">
+            <select class="selectpicker persons form-control" data-live-search="true" name="person_id" form="add" 
+               id="person-input-id" placeholder="Person" list="persons">
               {# <datalist id="persons"> #}
               {% for id, person in persons %}
               <option value="{{ id }}">{{ person }}</option>
+              
               {% endfor %}
             </select>
           </td>
