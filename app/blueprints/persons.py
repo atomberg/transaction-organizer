@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, request, render_template
 from models.db_session import Session
-from models.person import Person, get_persons_table
+from models.person import Person, get_persons
 
 
 bp = Blueprint('persons', __name__, url_prefix='/persons')
@@ -12,7 +12,7 @@ def get_all():
     """Display all persons in a table."""
     return render_template(
         'person_table.html.j2',
-        table_rows=get_persons_table()
+        persons=get_persons()
     )
 
 

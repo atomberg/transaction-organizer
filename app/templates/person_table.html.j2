@@ -16,12 +16,6 @@
     });
   });
 </script>
-
-<script>
-  $("#input-nav").removeClass("active");
-  $("#view-nav").addClass("active");
-  $("#pivot-nav").removeClass("active");
-</script>
 {% endblock %}
 
 {# {% block taskbar %}
@@ -56,16 +50,18 @@
       </tr>
     </thead>
     <tbody>
-      {% for row in table_rows %}
+      {% for person in persons %}
       <tr>
-        {% for cell in row[1:-1] %}
-        <td>{{ cell }}</td>
-        {% endfor %}
+        <td>{{ person.last_name }}</td>
+        <td>{{ person.first_name }}</td>
+        <td>{{ person.phone }}</td>
+        <td>{{ person.email }}</td>
+        <td>{{ person.total | currency_format }}</td>
         <td>
-          <a href="{{ url_for('persons.get', person_id=row[0]) }}" class="btn btn-success btn-sm">
+          <a href="{{ url_for('persons.get', person_id=person.id) }}" class="btn btn-success btn-sm">
             View <i class="fa fa-chevron-right"></i>
           </a>
-          {% if row[-1] %}
+          {% if person.notes %}
           <i class="fa fa-tag" style="color:mediumvioletred"></i>
           {% endif %}
         </td>

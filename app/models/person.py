@@ -36,6 +36,10 @@ class Person(Base):
     def full_name(self):
         return f'{self.last_name}, {self.first_name}'
 
+    @hybrid_property
+    def total(self):
+        return sum([t.amount for t in self.transactions])
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -51,10 +55,6 @@ class Person(Base):
             'created_at': self.created_at.strftime('%c'),
         }
 
-    def to_table_row(self):
-        total = sum([t.amount for t in self.transactions])
-        return self.id, self.last_name, self.first_name, self.phone, self.email, total, bool(self.notes)
-
     @classmethod
     def get_by_id(cls, id):
         return Session.query(Person).get(id)
@@ -63,11 +63,10 @@ class Person(Base):
         return (f"#{self.id:d} {self.last_name}, {self.first_name} | {self.phone} | {self.email}")
 
 
-def get_persons():
+def get_person_names():
     return [(r.id, r.full_name) for r in Session.query(Person).filter(Person.deleted_at.is_(None)).all()]
 
 
-def get_persons_table(lim=None):
+def get_persons(lim=None):
     q = Session.query(Person).filter(Person.deleted_at.is_(None))
-    q = q.order_by(Person.updated_at.desc()).limit(lim).all()
-    return [t.to_table_row() for t in q]
+    return q.order_by(Person.updated_at.desc()).limit(lim).all()
