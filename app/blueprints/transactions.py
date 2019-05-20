@@ -13,7 +13,7 @@ def get_latest():
     """Get the latest transactions."""
     limit = request.values.get('limit', 5)
     return render_template(
-        'input.html.j2',
+        'transaction_add.html.j2',
         today=date.today().strftime('%Y-%m-%d'),
         persons=get_persons(),
         methods=get_methods(),
@@ -41,7 +41,7 @@ def add():
 def get(transaction_id):
     """Get a transation by id."""
     return render_template(
-        'edit.html.j2',
+        'transaction_edit.html.j2',
         # persons=get_persons(),
         # methods=get_methods(),
         # accepted_bys=get_accepted_bys(),

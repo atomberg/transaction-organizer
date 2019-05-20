@@ -11,7 +11,7 @@ bp = Blueprint('persons', __name__, url_prefix='/persons')
 def get_all():
     """Get all persons."""
     return render_template(
-        'input.html.j2',
+        'person_table.html.j2',
         today=date.today().strftime('%Y-%m-%d'),
         # suppliers=get_suppliers(),
         # categories=get_categories(),
