@@ -1,11 +1,7 @@
-from models.db_session import engine, Session
+from models.db_session import Session, Base
 from datetime import datetime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, Date, DateTime, func as sqlfunc, desc
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, DateTime, func as sqlfunc, desc
 from sqlalchemy.ext.hybrid import hybrid_property
-
-
-Base = declarative_base()
 
 
 class Transaction(Base):
@@ -13,70 +9,76 @@ class Transaction(Base):
 
     __tablename__ = 'transactions'
     id = Column(Integer, primary_key=True)
+    person_id = Column(Integer, ForeignKey('persons.id'), nullable=False)
     date = Column(Date, nullable=False)
-    supplier = Column(String, nullable=False)
+    method = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
-    category = Column(String)
+    accepted_by = Column(String, nullable=False)
+    memo = Column(String)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
-    notes = Column(String)
+    deleted_at = Column(DateTime)
 
-    def __init__(self, date, supplier, amount, category=None, notes=None):
+    def __init__(self, person_id, date, method, amount, accepted_by, memo=None):
         """Create a new transaction."""
+        self.person_id = person_id
         self.date = date
-        self.supplier = supplier
+        self.method = method
         self.amount = amount
-        self.category = category
+        self.accepted_by = accepted_by
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
-        self.notes = notes
+        self.memo = memo
 
     @hybrid_property
     def month(self):
         return self.date.strftime('%m')
 
     @month.expression
-    def month(cls):
-        return sqlfunc.extract('month', cls.date)
+    def month(self):
+        return sqlfunc.extract('month', self.date)
 
     @hybrid_property
     def year(self):
         return self.date.strftime('%Y')
 
     @year.expression
-    def year(cls):
-        return sqlfunc.extract('year', cls.date)
+    def year(self):
+        return sqlfunc.extract('year', self.date)
 
     def to_dict(self):
         return {
             'id': self.id,
+            'person_id': self.person_id,
+            'person': self.person.full_name,
             'date': self.date.strftime('%Y-%m-%d'),
-            'supplier': self.supplier,
-            'amount': '%.2f' % self.amount,
-            'category': self.category,
+            'method': self.method,
+            'amount': self.amount,
+            'accepted_by': self.accepted_by,
             'last_modified': self.updated_at.strftime('%c'),
             'created_at': self.created_at.strftime('%c'),
-            'notes': self.notes or ''
+            'memo': self.memo or ''
         }
 
     def to_table_row(self):
-        return (self.id, self.date, self.supplier, self.amount, self.category, bool(self.notes))
+        return self.id, self.person.full_name, self.date, self.method, self.amount, self.accepted_by, bool(self.memo)
 
     @classmethod
     def get_by_id(cls, id):
         return Session.query(Transaction).get(id)
 
     def __str__(self):
-        return ' | '.join(
-            ('#%d' % self.id, self.date.strftime('%d %b %Y'), self.supplier, '%.2f' % self.amount, self.category))
+        return (
+            f"#{self.id:d} | {self.date.strftime('%d %b %Y')} | {self.method} | {self.amount:.2f} | {self.accepted_by}"
+        )
 
 
-def get_categories():
-    return [r.category for r in Session.query(Transaction.category).distinct().all()]
+def get_methods():
+    return [r.method for r in Session.query(Transaction.method).distinct().all()]
 
 
-def get_suppliers():
-    return [r.supplier for r in Session.query(Transaction.supplier).distinct().all()]
+def get_accepted_bys():
+    return [r.accepted_by for r in Session.query(Transaction.accepted_by).distinct().all()]
 
 
 def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
@@ -113,6 +115,3 @@ def guess_category(supplier):
     q = q.filter(Transaction.supplier == supplier)
     q = q.group_by(Transaction.category).order_by(desc('count')).limit(1)
     return q.scalar() or ''
-
-
-Base.metadata.create_all(engine)
