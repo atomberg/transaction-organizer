@@ -1,72 +1,80 @@
 from datetime import date, datetime
 from flask import Blueprint, request, render_template
 from models.db_session import Session
-from models.transaction import Transaction, get_categories, get_suppliers, get_transactions
+from models.transaction import Transaction, get_transactions, get_methods, get_accepted_bys
+from models.person import get_persons
 
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
 
 @bp.route('/', methods=['GET'])
-def get_latest_transactions():
-    """Get 3 latest transactions."""
+def get_latest():
+    """Get the latest transactions."""
+    limit = request.values.get('limit', 5)
     return render_template(
-        'input.html',
+        'input.html.j2',
         today=date.today().strftime('%Y-%m-%d'),
-        suppliers=get_suppliers(),
-        categories=get_categories(),
-        table_rows=get_transactions(3, True)
+        persons=get_persons(),
+        methods=get_methods(),
+        accepted_bys=get_accepted_bys(),
+        table_rows=get_transactions(limit, True)
     )
 
 
-@bp.route('/input', methods=['POST'])
 @bp.route('/', methods=['POST'])
-def input_transaction():
-    """Input transaction."""
-    print(request.values)
-    t = Transaction(
-        datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
-        request.values['supplier'],
-        float(request.values['amount']),
-        request.values['category'])
-    Session.add(t)
+def add():
+    """Add a new transaction."""
+    Session.add(Transaction(
+        person_id=request.values['person_id'],
+        date=datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
+        method=request.values['method'],
+        amount=float(request.values['amount']),
+        accepted_by=request.values['accepted_by'],
+        # memo=request.values['memo']
+    ))
     Session.commit()
-    return get_latest_transactions()
+    return get_latest()
 
 
 @bp.route('/<int:transaction_id>', methods=['GET'])
-def get_transaction(transaction_id):
+def get(transaction_id):
     """Get a transation by id."""
     return render_template(
-        'edit.html',
-        suppliers=get_suppliers(),
-        categories=get_categories(),
+        'edit.html.j2',
+        # persons=get_persons(),
+        # methods=get_methods(),
+        # accepted_bys=get_accepted_bys(),
         transaction=Transaction.get_by_id(transaction_id).to_dict()
     )
 
 
 @bp.route('/<int:transaction_id>', methods=['POST'])
-def update_transaction(transaction_id):
-    """Update transaction by id."""
+def update(transaction_id):
+    """Update a transaction by id."""
+    print(request.values)
     t = Transaction.get_by_id(transaction_id)
+    t.person_id = request.values['person_id']
     t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
-    t.supplier = request.values['supplier']
+    t.method = request.values['method']
     t.amount = float(request.values['amount'])
-    t.category = request.values['category']
-    t.notes = request.values['notes']
+    t.accepted_by = request.values['accepted_by']
+    t.memo = request.values['memo']
     t.updated_at = datetime.now()
 
     Session.add(t)
     Session.commit()
 
-    return get_transaction(transaction_id)
+    return get(transaction_id)
 
 
 @bp.route('/<int:transaction_id>', methods=['DELETE'])
 @bp.route('/<int:transaction_id>/delete', methods=['POST'])
-def delete_transaction(transaction_id):
-    """."""
+def delete(transaction_id):
+    """Delete a transaction by id."""
     t = Transaction.get_by_id(transaction_id)
-    Session.delete(t)
+    t.deleted_at = datetime.now()
+    Session.add(t)
     Session.commit()
-    return get_latest_transactions()
+
+    return get_latest()
