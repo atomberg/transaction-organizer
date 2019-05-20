@@ -63,7 +63,7 @@ class Person(Base):
 
 
 def get_persons():
-    return [(r.id, r.full_name) for r in Session.query(Person).all()]
+    return [(r.id, r.full_name) for r in Session.query(Person).filter(Person.deleted_at.is_(None)).all()]
 
 
 # def get_suppliers():

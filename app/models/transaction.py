@@ -82,7 +82,7 @@ def get_accepted_bys():
 
 
 def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
-    q = Session.query(Transaction)
+    q = Session.query(Transaction).filter(Transaction.deleted_at.is_(None))
     if month:
         q = q.filter(Transaction.month == month).filter(Transaction.year == datetime.now().year)
     else:
@@ -99,13 +99,14 @@ def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
 
 
 def get_years():
-    q = Session.query(Transaction.year).distinct().order_by(Transaction.year.desc())
+    q = Session.query(Transaction.year).filter(Transaction.deleted_at.is_(None)).distinct()
+    q = q.order_by(Transaction.year.desc())
     return [r.year for r in q.all()]
 
 
 def pivot_transactions(year):
     q = Session.query(Transaction.month, Transaction.category, sqlfunc.sum(Transaction.amount))
-    q = q.filter(Transaction.year == year)
+    q = q.filter(Transaction.deleted_at.is_(None)).filter(Transaction.year == year)
     q = q.group_by(Transaction.month, Transaction.category)
     return dict([((m, c), a) for m, c, a in q.all()])
 
