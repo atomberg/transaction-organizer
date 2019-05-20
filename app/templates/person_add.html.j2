@@ -9,11 +9,6 @@
     $("#view-nav").removeClass("active");
     $("#pivot-nav").removeClass("active");
 
-    {# $("#supplier-input-id").focusout(function () {
-      $.get("{{ url_for('autocomplete.category_guess', q='') }}" + $("#supplier-input-id").val(), function (data) {
-        $("#category-input-id").val(data.category);
-      }); #}
-    });
   });
 </script>
 {% endblock %}
