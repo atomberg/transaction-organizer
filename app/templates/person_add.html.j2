@@ -4,10 +4,11 @@
 {% block scripts %}
 <script type="text/javascript">
   $(document).ready(function () {
+    $("#people-nav").removeClass("active");
+    $("#transactions-nav").removeClass("active");
+    $("#add-person-nav").addClass("active");
+    $("#add-transaction-nav").removeClass("active");
 
-    $("#input-nav").addClass("active");
-    $("#view-nav").removeClass("active");
-    $("#pivot-nav").removeClass("active");
 
   });
 </script>

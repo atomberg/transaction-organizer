@@ -1,12 +1,13 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}All transactions{% endblock %}
 
 {% block scripts %}
 <script>
   $(document).ready(function () {
-    $("#input-nav").removeClass("active");
-    $("#view-nav").addClass("active");
-    $("#pivot-nav").removeClass("active");
+    $("#people-nav").removeClass("active");
+    $("#transactions-nav").addClass("active");
+    $("#add-person-nav").removeClass("active");
+    $("#add-transaction-nav").removeClass("active");
 
     $("#table_id").DataTable({
       "stateSave": true,
@@ -24,14 +25,14 @@
 {% endblock %}
 
 {% block taskbar %}
-<a class="btn btn-success btn-sm mx-sm-1"
+{# <a class="btn btn-success btn-sm mx-sm-1"
   href="{{ url_for('tables.download_table', format='csv', begin=begin, end=end)}}">
   <i class="fa fa-cloud-download"></i> CSV
 </a>
 <a class="btn btn-success btn-sm mx-sm-1"
   href="{{ url_for('tables.download_table', format='xlsx', begin=begin, end=end)}}">
   <i class="fa fa-cloud-download"></i> XLSX
-</a>
+</a> #}
 {% endblock %}
 
 {% block content %}
@@ -101,7 +102,7 @@
         <td>{{ cell }}</td>
         {% endfor %}
         <td>
-          <a href="{{ url_for('transactions.get_transaction', transaction_id=row[0]) }}" class="btn btn-success btn-sm">
+          <a href="{{ url_for('transactions.get', transaction_id=row[0]) }}" class="btn btn-success btn-sm">
             <i class="fa fa-pencil"></i> Edit
           </a>
           {% if row[-1] %}
