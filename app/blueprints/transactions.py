@@ -2,7 +2,7 @@ from datetime import date, datetime
 from flask import Blueprint, request, render_template
 from models.db_session import Session
 from models.transaction import Transaction, get_transactions, get_accepted_bys
-from models.person import get_persons
+from models.person import get_person_names
 
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
@@ -13,8 +13,7 @@ def get_all():
     """Display all transactions in a table."""
     return render_template(
         'transaction_table.html.j2',
-        today=date.today().strftime('%Y-%m-%d'),
-        table_rows=get_transactions(None, False)
+        transactions=get_transactions(None, False)
     )
 
 
@@ -25,7 +24,7 @@ def get_latest():
     return render_template(
         'transaction_add.html.j2',
         today=date.today().strftime('%Y-%m-%d'),
-        persons=get_persons(),
+        persons=get_person_names(),
         accepted_bys=get_accepted_bys(),
         table_rows=get_transactions(limit, True)
     )
@@ -58,7 +57,6 @@ def get(transaction_id):
 @bp.route('/<int:transaction_id>', methods=['POST'])
 def update(transaction_id):
     """Update a transaction by id."""
-    print(request.values)
     t = Transaction.get_by_id(transaction_id)
     t.person_id = request.values['person_id']
     t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
