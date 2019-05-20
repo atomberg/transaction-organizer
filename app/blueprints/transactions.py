@@ -9,14 +9,23 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
 
 @bp.route('/', methods=['GET'])
+def get_all():
+    """Display all transactions in a table."""
+    return render_template(
+        'transaction_table.html.j2',
+        today=date.today().strftime('%Y-%m-%d'),
+        table_rows=get_transactions(None, False)
+    )
+
+
+@bp.route('/latest', methods=['GET'])
 def get_latest():
-    """Get the latest transactions."""
+    """Get the latest transactions and render a transaction input form."""
     limit = request.values.get('limit', 5)
     return render_template(
         'transaction_add.html.j2',
         today=date.today().strftime('%Y-%m-%d'),
         persons=get_persons(),
-        # methods=get_methods(),
         accepted_bys=get_accepted_bys(),
         table_rows=get_transactions(limit, True)
     )

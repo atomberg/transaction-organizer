@@ -1,6 +1,6 @@
 from models.db_session import Session, Base
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime  # , func as sqlfunc, desc
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -67,32 +67,7 @@ def get_persons():
     return [(r.id, r.full_name) for r in Session.query(Person).filter(Person.deleted_at.is_(None)).all()]
 
 
-# def get_suppliers():
-#     return [r.supplier for r in Session.query(Transaction.supplier).distinct().all()]
-
-
-def get_persons_table(lim=None, reverse=False):
+def get_persons_table(lim=None):
     q = Session.query(Person).filter(Person.deleted_at.is_(None))
     q = q.order_by(Person.updated_at.desc()).limit(lim).all()
-    if reverse:
-        q = q[::-1]
     return [t.to_table_row() for t in q]
-
-
-# def get_years():
-#     q = Session.query(Transaction.year).distinct().order_by(Transaction.year.desc())
-#     return [r.year for r in q.all()]
-
-
-# def pivot_transactions(year):
-#     q = Session.query(Transaction.month, Transaction.category, sqlfunc.sum(Transaction.amount))
-#     q = q.filter(Transaction.year == year)
-#     q = q.group_by(Transaction.month, Transaction.category)
-#     return dict([((m, c), a) for m, c, a in q.all()])
-
-
-# def guess_category(supplier):
-#     q = Session.query(Transaction.category, sqlfunc.count().label('count'))
-#     q = q.filter(Transaction.supplier == supplier)
-#     q = q.group_by(Transaction.category).order_by(desc('count')).limit(1)
-#     return q.scalar() or ''
