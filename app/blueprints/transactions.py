@@ -90,7 +90,7 @@ def delete(transaction_id):
     return get_latest()
 
 
-@bp.route('/data.csv', methods=['GET'])
+@bp.route('/data', methods=['GET'])
 def get_data():
     """Get all of transactions data."""
-    return Response(get_as_csv(), mimetype='mime/text')
+    return render_template('transaction_data.html.j2', transactions=get_transactions())

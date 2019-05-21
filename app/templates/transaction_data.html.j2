@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<body>
+  <table id="data_table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Person ID</th>
+        <th>Date</th>
+        <th>Method</th>
+        <th>Amount</th>
+        <th>Accepted by</th>
+        <th>Memo</th>
+        <th>Created at</th>
+        <th>Updated at</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transaction in transactions %}
+      <tr>
+        <td>{{ transaction.id }}</td>
+        <td>{{ transaction.person_id }}</td>
+        <td>{{ transaction.date }}</td>
+        <td>{{ transaction.method }}</td>
+        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.accepted_by }}</td>
+        <td>{{ transaction.memo or '' }}</td>
+        <td>{{ transaction.created_at }}</td>
+        <td>{{ transaction.updated_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>

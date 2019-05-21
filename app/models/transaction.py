@@ -29,9 +29,9 @@ class Transaction(Base):
         self.method = method
         self.amount = amount
         self.accepted_by = accepted_by
+        self.memo = memo
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
-        self.memo = memo
 
     @hybrid_property
     def year(self):
