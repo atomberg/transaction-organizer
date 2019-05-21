@@ -58,7 +58,7 @@
         <td>{{ person.email }}</td>
         <td>{{ person.total | currency_format }}</td>
         <td>
-          <a href="{{ url_for('persons.get', person_id=person.id) }}" class="btn btn-success btn-sm">
+          <a href="{{ url_for('persons.get', person_id=person.id) }}" class="btn btn-info btn-sm">
             View <i class="fa fa-chevron-right"></i>
           </a>
           {% if person.notes %}
