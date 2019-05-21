@@ -1,3 +1,6 @@
+import csv
+import io
+
 from models.db_session import Session, Base
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
@@ -60,13 +63,27 @@ class Person(Base):
         return Session.query(Person).get(id)
 
     def __str__(self):
-        return (f"#{self.id:d} {self.last_name}, {self.first_name} | {self.phone} | {self.email}")
+        return f"#{self.id:d} {self.full_name} | {self.phone} | {self.email}"
 
 
 def get_person_names():
     return [(r.id, r.full_name) for r in Session.query(Person).filter(Person.deleted_at.is_(None)).all()]
 
 
-def get_persons(lim=None):
+def get_persons(lim=None, reverse=False):
     q = Session.query(Person).filter(Person.deleted_at.is_(None))
-    return q.order_by(Person.updated_at.desc()).limit(lim).all()
+    rows = q.order_by(Person.updated_at.desc()).limit(lim).all()
+    if reverse:
+        return rows[::-1]
+    return rows
+
+
+def get_as_csv():
+    with io.StringIO() as buffer:
+        fieldnames = ['id', 'first_name', 'last_name', 'phone', 'email', 'address', 'notes', 'created_at', 'updated_at']
+        writer = csv.DictWriter(buffer, fieldnames=fieldnames, extrasaction='ignore')
+
+        writer.writeheader()
+        for person in get_persons(reverse=True):
+            writer.writerow(person.__dict__)
+        return buffer.getvalue()

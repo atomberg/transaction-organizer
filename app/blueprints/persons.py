@@ -1,7 +1,7 @@
 from datetime import datetime
-from flask import Blueprint, request, render_template
+from flask import Blueprint, Response, request, render_template
 from models.db_session import Session
-from models.person import Person, get_persons
+from models.person import Person, get_persons, get_as_csv
 
 bp = Blueprint('persons', __name__, url_prefix='/persons')
 
@@ -81,3 +81,9 @@ def delete(person_id):
     Session.add(p)
     Session.commit()
     return get_all()
+
+
+@bp.route('/data.csv', methods=['GET'])
+def get_data():
+    """Get all of persons data."""
+    return Response(get_as_csv(), mimetype='mime/text')

@@ -1,3 +1,6 @@
+import csv
+import io
+
 from models.db_session import Session, Base
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, DateTime, func as sqlfunc
@@ -82,3 +85,14 @@ def get_transactions(lim=None, reverse=False, begin=None, end=None):
     if reverse:
         return rows[::-1]
     return rows
+
+
+def get_as_csv():
+    with io.StringIO() as buffer:
+        fieldnames = ['id', 'person_id', 'date', 'method', 'amount', 'accepted_by', 'memo', 'created_at', 'updated_at']
+        writer = csv.DictWriter(buffer, fieldnames=fieldnames, extrasaction='ignore')
+
+        writer.writeheader()
+        for t in get_transactions(reverse=True):
+            writer.writerow(t.__dict__)
+        return buffer.getvalue()
