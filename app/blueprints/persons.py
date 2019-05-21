@@ -84,6 +84,12 @@ def delete(person_id):
 
 
 @bp.route('/data.csv', methods=['GET'])
-def get_data():
+def get_data_csv():
     """Get all of persons data."""
     return Response(get_as_csv(), mimetype='mime/text')
+
+
+@bp.route('/data', methods=['GET'])
+def get_data():
+    """Get all of persons data."""
+    return render_template('person_data.html.j2', persons=get_persons())

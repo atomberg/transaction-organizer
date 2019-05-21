@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+
+<body>
+  <table id="data_table">
+    <thead>
+      <tr>
+        <th>Last name</th>
+        <th>First name</th>
+        <th>Phone number</th>
+        <th>Email</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for person in persons %}
+      <tr>
+        <td>{{ person.last_name }}</td>
+        <td>{{ person.first_name }}</td>
+        <td>{{ person.phone }}</td>
+        <td>{{ person.email }}</td>
+        <td>{{ person.total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
