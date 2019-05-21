@@ -16,12 +16,6 @@
     });
   });
 </script>
-
-<script>
-  $("#input-nav").removeClass("active");
-  $("#view-nav").addClass("active");
-  $("#pivot-nav").removeClass("active");
-</script>
 {% endblock %}
 
 {% block taskbar %}
@@ -44,31 +38,7 @@
 </div>
 
 <div class="row">
-  <div class="col-lg-2 text-left">
-    <p class="lead">
-      <div class="dropdown show">
-        <a class="btn btn-success btn-sm dropdown-toggle" href="#" role="button" id="dropdownMonth"
-          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{ month }}
-        </a>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <a class="dropdown-item" href="?month=January">January</a>
-          <a class="dropdown-item" href="?month=February">February</a>
-          <a class="dropdown-item" href="?month=March">March</a>
-          <a class="dropdown-item" href="?month=April">April</a>
-          <a class="dropdown-item" href="?month=May">May</a>
-          <a class="dropdown-item" href="?month=June">June</a>
-          <a class="dropdown-item" href="?month=July">July</a>
-          <a class="dropdown-item" href="?month=August">August</a>
-          <a class="dropdown-item" href="?month=September">September</a>
-          <a class="dropdown-item" href="?month=October">October</a>
-          <a class="dropdown-item" href="?month=November">November</a>
-          <a class="dropdown-item" href="?month=December">December</a>
-        </div>
-      </div>
-    </p>
-  </div>
-  <div class="col-lg-8">
+  <div class="col-lg-12">
     <p class="lead">
       <form id="filter" class="form-inline justify-content-center">
         <input name="begin" form="filter" class="form-control-sm mr-sm-1" type="date" , value="{{ begin }}">
@@ -92,6 +62,7 @@
         <th>Date</th>
         <th>Method</th>
         <th>Amount</th>
+        <th>Accepted by</th>
         <th>Memo</th>
         <th>Actions</th>
       </tr>
@@ -103,6 +74,7 @@
         <td>{{ transaction.date }}</td>
         <td>{{ transaction.method }}</td>
         <td>{{ transaction.amount | currency_format }}</td>
+        <td>{{ transaction.accepted_by }}</td>
         <td>{{ transaction.memo or '' }}</td>
         <td>
           <a href="{{ url_for('transactions.get', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">

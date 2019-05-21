@@ -3,7 +3,10 @@
 
 {% block scripts %}
 <script type="text/javascript">
-
+    $("#people-nav").removeClass("active");
+    $("#transactions-nav").removeClass("active");
+    $("#add-person-nav").removeClass("active");
+    $("#add-transaction-nav").removeClass("active");
 </script>
 {% endblock %}
 
@@ -17,53 +20,65 @@
 <!-- /.row -->
 
 <div class="row">
-    <table id="table_id" class="table">
-        <tbody>
-            <form id="edit" method="POST"
-                action="{{ url_for('transactions.update', transaction_id=transaction['id']) }}">
-                <tr>
-                    <th>Person</th>
-                    <td><select name="person_id" form="edit" class="form-control" value="{{ transaction['person'] }}">
-                            <option value="{{ transaction['person_id'] }}">{{ transaction['person'] }}</option>
-                        </select>
-                    </td>
-                    <td rowspan="4"><textarea name="memo" form="edit" class="form-control" rows="8"
-                            {% if not transaction['memo'] %} placeholder="You can add a memo here"
-                            {% endif %}>{{ transaction['memo'] }}</textarea></td>
-                </tr>
-                <tr>
-                    <th>Date</th>
-                    <td><input name="day" form="edit" class="form-control" type="date"
-                            value="{{ transaction['date'] }}"></td>
-                </tr>
-                <tr>
-                    <th>Method</th>
-                    <td><input name="method" form="edit" class="suppliers form-control" type="text"
-                            value="{{ transaction['method'] }}"></td>
-                </tr>
-                <tr>
-                    <th>Amount</th>
-                    <td><input name="amount" form="edit" class="form-control" type="text"
-                            value="{{ transaction['amount'] }}"></td>
-                </tr>
-                <tr>
-                    <th>Accepted by</th>
-                    <td><input name="accepted_by" form="edit" class="categories form-control" type="text"
-                            value="{{ transaction['accepted_by'] }}"></td>
-                </tr>
-            </form>
-            <tr>
-                <th>Actions</th>
-                <td>
-                    <input type="submit" form="edit" value="Save changes" class="btn btn-success">
-                    <form style="display: inline;" method="POST"
-                        action="{{ url_for('transactions.delete', transaction_id=transaction['id']) }}">
-                        <input type="submit" class="btn btn-danger" value="Delete transaction">
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <table id="table_id" class="table">
+    <tbody>
+      <form id="edit" method="POST" action="{{ url_for('transactions.update', transaction_id=transaction['id']) }}">
+        <tr>
+          <th>Person</th>
+          <td>
+            <select name="person_id" form="edit" class="form-control" value="{{ transaction['person'] }}">
+              <option value="{{ transaction['person_id'] }}">{{ transaction['person'] }}</option>
+            </select>
+          </td>
+          <td rowspan="4">
+            <textarea name="memo" form="edit" class="form-control" rows="8"
+              {% if transaction['memo'] %} placeholder="You can add a memo here"
+                >{{ transaction['memo'] }}</textarea>
+              {% else %}
+                placeholder="You can add a memo here"></textarea>
+              {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Date</th>
+          <td>
+            <input name="day" form="edit" class="form-control" type="date"value="{{ transaction['date'] }}">
+          </td>
+        </tr>
+        <tr>
+          <th>Method</th>
+          <td>
+            <input name="method" form="edit" class="suppliers form-control" type="text"
+              value="{{ transaction['method'] }}">
+          </td>
+        </tr>
+        <tr>
+          <th>Amount</th>
+          <td>
+            <input name="amount" form="edit" class="form-control" type="text"
+              value="{{ transaction['amount'] }}">
+          </td>
+        </tr>
+        <tr>
+          <th>Accepted by</th>
+          <td>
+            <input name="accepted_by" form="edit" class="categories form-control" type="text"
+              value="{{ transaction['accepted_by'] }}">
+          </td>
+        </tr>
+      </form>
+      <tr>
+          <th>Actions</th>
+          <td>
+              <input type="submit" form="edit" value="Save changes" class="btn btn-success">
+              <form style="display: inline;" method="POST"
+                  action="{{ url_for('transactions.delete', transaction_id=transaction['id']) }}">
+                  <input type="submit" class="btn btn-danger" value="Delete transaction">
+              </form>
+          </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <div class="row">
