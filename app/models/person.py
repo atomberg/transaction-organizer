@@ -1,8 +1,5 @@
-import csv
-import io
-
-from models.db_session import Session, Base
 from datetime import datetime
+from models.db_session import Session, Base
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -76,14 +73,3 @@ def get_persons(lim=None, reverse=False):
     if reverse:
         return rows[::-1]
     return rows
-
-
-def get_as_csv():
-    with io.StringIO() as buffer:
-        fieldnames = ['id', 'first_name', 'last_name', 'phone', 'email', 'address', 'notes', 'created_at', 'updated_at']
-        writer = csv.DictWriter(buffer, fieldnames=fieldnames, extrasaction='ignore')
-
-        writer.writeheader()
-        for person in get_persons(reverse=True):
-            writer.writerow(person.__dict__)
-        return buffer.getvalue()

@@ -5,21 +5,29 @@
   <table id="data_table">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Last name</th>
         <th>First name</th>
         <th>Phone number</th>
         <th>Email</th>
-        <th>Total</th>
+        <th>Address</th>
+        <th>Notes</th>
+        <th>Created at</th>
+        <th>Updated at</th>
       </tr>
     </thead>
     <tbody>
       {% for person in persons %}
       <tr>
+        <td>{{ person.id }}</td>
         <td>{{ person.last_name }}</td>
         <td>{{ person.first_name }}</td>
         <td>{{ person.phone }}</td>
         <td>{{ person.email }}</td>
-        <td>{{ person.total }}</td>
+        <td>{{ person.address }}</td>
+        <td>{{ person.notes or '' }}</td>
+        <td>{{ person.created_at }}</td>
+        <td>{{ person.updated_at }}</td>
       </tr>
       {% endfor %}
     </tbody>
