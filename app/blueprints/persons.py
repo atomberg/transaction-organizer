@@ -3,7 +3,6 @@ from flask import Blueprint, request, render_template
 from models.db_session import Session
 from models.person import Person, get_persons
 
-
 bp = Blueprint('persons', __name__, url_prefix='/persons')
 
 

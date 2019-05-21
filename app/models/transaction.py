@@ -31,14 +31,6 @@ class Transaction(Base):
         self.memo = memo
 
     @hybrid_property
-    def month(self):
-        return self.date.strftime('%m')
-
-    @month.expression
-    def month(self):
-        return sqlfunc.extract('month', self.date)
-
-    @hybrid_property
     def year(self):
         return self.date.strftime('%Y')
 
@@ -60,12 +52,9 @@ class Transaction(Base):
             'memo': self.memo or ''
         }
 
-    def to_table_row(self):
-        return self.id, self.person.full_name, self.date, self.method, self.amount, self.accepted_by, bool(self.memo)
-
     @classmethod
-    def get_by_id(cls, id):
-        return Session.query(Transaction).get(id)
+    def get_by_id(cls, transaction_id):
+        return Session.query(Transaction).get(transaction_id)
 
     def __str__(self):
         return (
@@ -81,17 +70,14 @@ def get_accepted_bys():
     return [r.accepted_by for r in Session.query(Transaction.accepted_by).distinct().all()]
 
 
-def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
+def get_transactions(lim=None, reverse=False, begin=None, end=None):
     q = Session.query(Transaction).filter(Transaction.deleted_at.is_(None))
-    if month:
-        q = q.filter(Transaction.month == month).filter(Transaction.year == datetime.now().year)
-    else:
-        if begin and end:
-            q = q.filter(Transaction.date.between(begin, end))
-        elif begin:
-            q = q.filter(Transaction.date >= begin)
-        elif end:
-            q = q.filter(Transaction.date <= end)
+    if begin and end:
+        q = q.filter(Transaction.date.between(begin, end))
+    elif begin:
+        q = q.filter(Transaction.date >= begin)
+    elif end:
+        q = q.filter(Transaction.date <= end)
     rows = q.order_by(Transaction.updated_at.desc()).limit(lim).all()
     if reverse:
         return rows[::-1]

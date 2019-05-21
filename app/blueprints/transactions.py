@@ -4,16 +4,22 @@ from models.db_session import Session
 from models.transaction import Transaction, get_transactions, get_accepted_bys
 from models.person import get_person_names
 
-
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
 
 @bp.route('/', methods=['GET'])
 def get_all():
     """Display all transactions in a table."""
+    begin = request.values.get('begin')
+    end = request.values.get('end')
     return render_template(
         'transaction_table.html.j2',
-        transactions=get_transactions(None, False)
+        begin=begin,
+        end=end,
+        transactions=get_transactions(
+            begin=datetime.strptime(begin, '%Y-%m-%d').date() if begin else None,
+            end=datetime.strptime(end, '%Y-%m-%d').date() if end else None
+        )
     )
 
 
@@ -26,7 +32,7 @@ def get_latest():
         today=date.today().strftime('%Y-%m-%d'),
         persons=get_person_names(),
         accepted_bys=get_accepted_bys(),
-        table_rows=get_transactions(limit, True)
+        transactions=get_transactions(lim=limit, reverse=False)
     )
 
 
