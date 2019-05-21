@@ -32,7 +32,7 @@ def get_latest():
         today=date.today().strftime('%Y-%m-%d'),
         persons=get_person_names(),
         accepted_bys=get_accepted_bys(),
-        transactions=get_transactions(lim=limit, reverse=False)
+        transactions=get_transactions(lim=limit, reverse=True)
     )
 
 
@@ -45,7 +45,7 @@ def add():
         method=request.values['method'],
         amount=float(request.values['amount']),
         accepted_by=request.values['accepted_by'],
-        # memo=request.values['memo']
+        memo=request.values['memo']
     ))
     Session.commit()
     return get_latest()
