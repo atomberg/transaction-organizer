@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}Pivot table{% endblock %}
 
 {% block scripts %}
@@ -47,8 +47,9 @@
   <nav style="margin-bottom: 20px;">
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
       {% for obj in data %}
-      <a class="nav-item nav-link {% if obj['active'] %}active{% endif %}" id="nav-{{ obj['year'] }}-tab" data-toggle="tab" href="#nav-{{ obj['year'] }}"
-        role="tab" aria-controls="nav-home" aria-selected="true">{{ obj['year'] }}</a>
+      <a class="nav-item nav-link {% if obj['active'] %}active{% endif %}" id="nav-{{ obj['year'] }}-tab"
+        data-toggle="tab" href="#nav-{{ obj['year'] }}" role="tab" aria-controls="nav-home"
+        aria-selected="true">{{ obj['year'] }}</a>
       {% endfor %}
     </div>
   </nav>
@@ -56,7 +57,8 @@
     {% for obj in data %}
     <div id="nav-{{ obj['year'] }}" role="tabpanel" class="tab-pane fade {% if obj['active'] %}show active{% endif %}"
       aria-labelledby="nav-{{ obj['year'] }}-tab">
-      <table id="pivot{{ obj['year'] }}" class="table table-bordered table-hover table small" cellspacing="0" width="100%">
+      <table id="pivot{{ obj['year'] }}" class="table table-bordered table-hover table small" cellspacing="0"
+        width="100%">
         <thead class="table-info">
           <tr>
             {% for c in obj['table_rows'][0] %}
