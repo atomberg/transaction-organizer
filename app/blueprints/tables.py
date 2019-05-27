@@ -34,7 +34,7 @@ def get_table():
     begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
     end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
     return render_template(
-        'table.html',
+        'table.html.j2',
         begin=begin, end=end, month=request.values.get('month', 'Filter by month'),
         table_rows=get_transactions(begin=begin, end=end, month=month))
 
@@ -53,7 +53,7 @@ def download_table():
 def get_pivot():
     years = get_years()
     return render_template(
-        'pivot.html',
+        'pivot.html.j2',
         data=[{
             'year': year,
             'table_rows': make_pivot_table(year),

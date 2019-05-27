@@ -11,7 +11,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 def get_latest_transactions():
     """Get 3 latest transactions."""
     return render_template(
-        'input.html',
+        'input.html.j2',
         today=date.today().strftime('%Y-%m-%d'),
         suppliers=get_suppliers(),
         categories=get_categories(),
@@ -38,7 +38,7 @@ def input_transaction():
 def get_transaction(transaction_id):
     """Get a transation by id."""
     return render_template(
-        'edit.html',
+        'edit.html.j2',
         suppliers=get_suppliers(),
         categories=get_categories(),
         transaction=Transaction.get_by_id(transaction_id).to_dict()
