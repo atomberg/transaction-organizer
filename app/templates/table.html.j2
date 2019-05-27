@@ -15,12 +15,6 @@
     });
   });
 </script>
-
-<script>
-  $("#input-nav").removeClass("active");
-  $("#view-nav").addClass("active");
-  $("#pivot-nav").removeClass("active");
-</script>
 {% endblock %}
 
 {% block taskbar %}
@@ -95,16 +89,17 @@
       </tr>
     </thead>
     <tbody>
-      {% for row in table_rows %}
+      {% for transaction in transactions %}
       <tr>
-        {% for cell in row[1:-1] %}
-        <td>{{ cell }}</td>
-        {% endfor %}
+        <td>{{ transaction.date }}</td>
+        <td>{{ transaction.supplier }}</td>
+        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.category }}</td>
         <td>
-          <a href="{{ url_for('transactions.get_transaction', transaction_id=row[0]) }}" class="btn btn-success btn-sm">
+          <a href="{{ url_for('transactions.get_transaction', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">
             <i class="fa fa-pencil"></i> Edit
           </a>
-          {% if row[-1] %}
+          {% if transaction.notes %}
           <i class="fa fa-tag" style="color:mediumvioletred"></i>
           {% endif %}
         </td>

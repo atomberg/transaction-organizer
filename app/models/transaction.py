@@ -90,10 +90,10 @@ def get_transactions(lim=None, reverse=False, begin=None, end=None, month=None):
             q = q.filter(Transaction.date >= begin)
         elif end:
             q = q.filter(Transaction.date <= end)
-    q = q.order_by(Transaction.updated_at.desc()).limit(lim).all()
+    rows = q.order_by(Transaction.updated_at.desc()).limit(lim).all()
     if reverse:
-        q = q[::-1]
-    return [t.to_table_row() for t in q]
+        return rows[::-1]
+    return rows
 
 
 def get_years():

@@ -25,7 +25,6 @@
     <p class="lead">Why not add a new transaction now?</p>
   </div>
 </div>
-<!-- /.row -->
 
 <div class="row">
   <table id="last_transactions_table" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -39,16 +38,17 @@
       </tr>
     </thead>
     <tbody>
-      {% for row in table_rows %}
+      {% for transaction in transactions %}
       <tr>
-        {% for cell in row[1:-1] %}
-        <td>{{ cell }}</td>
-        {% endfor %}
+        <td>{{ transaction.date }}</td>
+        <td>{{ transaction.supplier }}</td>
+        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.category }}</td>
         <td>
-          <a href="{{ url_for('transactions.get_transaction', transaction_id=row[0]) }}" class="btn btn-info">
+          <a href="{{ url_for('transactions.get_transaction', transaction_id=transaction.id) }}" class="btn btn-info">
             View <i class="fa fa-chevron-right"></i>
           </a>
-          {% if row[-1] %}
+          {% if transaction.notes %}
           <i class="fa fa-tag" style="color:mediumvioletred"></i>
           {% endif %}
         </td>
@@ -79,7 +79,6 @@
               <option value="{{ category }}"></option>
               {% endfor %}
             </datalist>
-
           </td>
           <td>
             <button type="submit" form="add" class="btn btn-success">
@@ -90,9 +89,5 @@
       </form>
     </tbody>
   </table>
-</div>
-
-<div class="row">
-
 </div>
 {% endblock %}

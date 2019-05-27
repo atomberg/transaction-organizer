@@ -15,7 +15,7 @@ def get_latest_transactions():
         today=date.today().strftime('%Y-%m-%d'),
         suppliers=get_suppliers(),
         categories=get_categories(),
-        table_rows=get_transactions(3, True)
+        transactions=get_transactions(3, True)
     )
 
 
@@ -65,8 +65,14 @@ def update_transaction(transaction_id):
 @bp.route('/<int:transaction_id>', methods=['DELETE'])
 @bp.route('/<int:transaction_id>/delete', methods=['POST'])
 def delete_transaction(transaction_id):
-    """."""
+    """Delete transactio by id."""
     t = Transaction.get_by_id(transaction_id)
     Session.delete(t)
     Session.commit()
     return get_latest_transactions()
+
+
+@bp.route('/data', methods=['GET'])
+def get_data():
+    """Get all of transactions data."""
+    return render_template('data.html.j2', transactions=get_transactions())

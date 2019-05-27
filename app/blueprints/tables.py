@@ -36,7 +36,7 @@ def get_table():
     return render_template(
         'table.html.j2',
         begin=begin, end=end, month=request.values.get('month', 'Filter by month'),
-        table_rows=get_transactions(begin=begin, end=end, month=month))
+        transactions=get_transactions(begin=begin, end=end, month=month))
 
 
 @bp.route('/download', methods=['GET'])
