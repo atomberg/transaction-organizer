@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+
+<body>
+  <table id="data_table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Supplier</th>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Notes</th>
+        <th>Created at</th>
+        <th>Updated at</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transaction in transactions %}
+      <tr>
+        <td>{{ transaction.id }}</td>
+        <td>{{ transaction.date }}</td>
+        <td>{{ transaction.supplier }}</td>
+        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.category }}</td>
+        <td>{{ transaction.notes or '' }}</td>
+        <td>{{ transaction.created_at }}</td>
+        <td>{{ transaction.updated_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
