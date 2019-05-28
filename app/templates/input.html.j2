@@ -45,7 +45,7 @@
         <td>{{ transaction.amount | currency_format }}</td>
         <td>{{ transaction.category }}</td>
         <td>
-          <a href="{{ url_for('transactions.get_transaction', transaction_id=transaction.id) }}" class="btn btn-info">
+          <a href="{{ url_for('transactions.get', transaction_id=transaction.id) }}" class="btn btn-info">
             View <i class="fa fa-chevron-right"></i>
           </a>
           {% if transaction.notes %}
@@ -54,7 +54,7 @@
         </td>
       </tr>
       {% endfor %}
-      <form id="add" method="post" action="{{ url_for('transactions.input_transaction') }}">
+      <form id="add" method="post" action="{{ url_for('transactions.add') }}">
         <tr>
           <td>
             <input name="day" form="add" class="form-control" type="date" value="{{ today }}">

@@ -13,7 +13,7 @@ def currency_format(value):
 
 
 @bp.route('/', methods=['GET'])
-def get_latest_transactions():
+def get_latest():
     """Get 3 latest transactions."""
     return render_template(
         'input.html.j2',
@@ -26,7 +26,7 @@ def get_latest_transactions():
 
 @bp.route('/input', methods=['POST'])
 @bp.route('/', methods=['POST'])
-def input_transaction():
+def add():
     """Input transaction."""
     print(request.values)
     t = Transaction(
@@ -36,11 +36,11 @@ def input_transaction():
         request.values['category'])
     Session.add(t)
     Session.commit()
-    return get_latest_transactions()
+    return get_latest()
 
 
 @bp.route('/<int:transaction_id>', methods=['GET'])
-def get_transaction(transaction_id):
+def get(transaction_id):
     """Get a transation by id."""
     return render_template(
         'edit.html.j2',
@@ -51,7 +51,7 @@ def get_transaction(transaction_id):
 
 
 @bp.route('/<int:transaction_id>', methods=['POST'])
-def update_transaction(transaction_id):
+def update(transaction_id):
     """Update transaction by id."""
     t = Transaction.get_by_id(transaction_id)
     t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
@@ -64,17 +64,17 @@ def update_transaction(transaction_id):
     Session.add(t)
     Session.commit()
 
-    return get_transaction(transaction_id)
+    return get(transaction_id)
 
 
 @bp.route('/<int:transaction_id>', methods=['DELETE'])
 @bp.route('/<int:transaction_id>/delete', methods=['POST'])
-def delete_transaction(transaction_id):
+def delete(transaction_id):
     """Delete transactio by id."""
     t = Transaction.get_by_id(transaction_id)
     Session.delete(t)
     Session.commit()
-    return get_latest_transactions()
+    return get_latest()
 
 
 @bp.route('/data', methods=['GET'])
