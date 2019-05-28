@@ -42,7 +42,7 @@
       <tr>
         <td>{{ transaction.date }}</td>
         <td>{{ transaction.supplier }}</td>
-        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.amount | currency_format }}</td>
         <td>{{ transaction.category }}</td>
         <td>
           <a href="{{ url_for('transactions.get_transaction', transaction_id=transaction.id) }}" class="btn btn-info">

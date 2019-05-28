@@ -21,7 +21,7 @@
         <td>{{ transaction.id }}</td>
         <td>{{ transaction.date }}</td>
         <td>{{ transaction.supplier }}</td>
-        <td>{{ transaction.amount }}</td>
+        <td>{{ transaction.amount | currency_format }}</td>
         <td>{{ transaction.category }}</td>
         <td>{{ transaction.notes or '' }}</td>
         <td>{{ transaction.created_at }}</td>

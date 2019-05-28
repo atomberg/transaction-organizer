@@ -17,9 +17,9 @@ class Transaction(Base):
     supplier = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
     category = Column(String)
+    notes = Column(String)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
-    notes = Column(String)
 
     def __init__(self, date, supplier, amount, category=None, notes=None):
         """Create a new transaction."""
@@ -36,35 +36,20 @@ class Transaction(Base):
         return self.date.strftime('%m')
 
     @month.expression
-    def month(cls):
-        return sqlfunc.extract('month', cls.date)
+    def month(self):
+        return sqlfunc.extract('month', self.date)
 
     @hybrid_property
     def year(self):
         return self.date.strftime('%Y')
 
     @year.expression
-    def year(cls):
-        return sqlfunc.extract('year', cls.date)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'date': self.date.strftime('%Y-%m-%d'),
-            'supplier': self.supplier,
-            'amount': '%.2f' % self.amount,
-            'category': self.category,
-            'last_modified': self.updated_at.strftime('%c'),
-            'created_at': self.created_at.strftime('%c'),
-            'notes': self.notes or ''
-        }
-
-    def to_table_row(self):
-        return (self.id, self.date, self.supplier, self.amount, self.category, bool(self.notes))
+    def year(self):
+        return sqlfunc.extract('year', self.date)
 
     @classmethod
     def get_by_id(cls, id):
-        return Session.query(Transaction).get(id)
+        return Session.query(cls).get(id)
 
     def __str__(self):
         return ' | '.join(

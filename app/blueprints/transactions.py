@@ -7,6 +7,11 @@ from models.transaction import Transaction, get_categories, get_suppliers, get_t
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
 
+@bp.app_template_filter()
+def currency_format(value):
+    return f'{value:.2f}'
+
+
 @bp.route('/', methods=['GET'])
 def get_latest_transactions():
     """Get 3 latest transactions."""
@@ -41,7 +46,7 @@ def get_transaction(transaction_id):
         'edit.html.j2',
         suppliers=get_suppliers(),
         categories=get_categories(),
-        transaction=Transaction.get_by_id(transaction_id).to_dict()
+        transaction=Transaction.get_by_id(transaction_id)
     )
 
 
