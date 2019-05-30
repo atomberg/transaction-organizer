@@ -1,0 +1,78 @@
+{% extends "base.html.j2" %}
+{% block title %}Export{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $("#input-nav").removeClass("active");
+    $("#view-nav").removeClass("active");
+    $("#pivot-nav").removeClass("active");
+    $("#export-nav").addClass("active");
+
+    new ClipboardJS('.btn-clipboard');
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <h1>Import your transactions</h1>
+    <p class="lead">Make all of the transactions available directly in Excel</p>
+  </div>
+</div>
+
+<div class="mb-4">
+  <h2>Step 1</h2>
+  <p class="lead">
+    Open a new Excel spreadsheet and navigate to the <strong>Data</strong> tab.
+    Next click on the <strong>From Web</strong> button.
+  </p>
+  <img class="img-fluid" src="/static/step1.jpg">
+</div>
+
+<div class="mb-4">
+  <h2>Step 2</h2>
+    <p class="lead">
+      After a pop-up window opens, enter one of the URLs below into the search field, and click <strong>Go</strong>.
+      <dl class="row">
+        <dt class="col-3">Transactions table URL:</dt>
+        <dd class="col-9">
+          {{ url_for('transactions.get_data', _external=True)}}
+          <button class="btn btn-sm btn-success btn-clipboard ml-2"
+            data-clipboard-text="{{ url_for('transactions.get_data', _external=True)}}">
+            <i class="fa fa-files-o" aria-hidden="true"></i> Copy
+          </button>
+        </dd>
+        <dt class="col-3">Pivot table URL:</dt>
+        <dd class="col-6">
+          {{ url_for('transactions.get_data', _external=True)}}
+          <button class="btn btn-sm btn-success btn-clipboard ml-2"
+            data-clipboard-text="{{ url_for('transactions.get_data', _external=True)}}">
+            <i class="fa fa-files-o" aria-hidden="true"></i> Copy
+          </button>
+        </dd>
+      </dl>
+    </p>
+
+    <p class="lead" >
+      Once the page loads, click the <strong>arrow icon</strong> in the upper left corner.
+      This will turn it into a <strong>green checkmark</strong>.
+      Now click the <strong>Import</strong> button at the bottom right of the window.
+      
+    </p>
+    <img class="img-fluid" src="/static/step2.jpg">    
+</div>
+
+<div class="mb-4">
+  <h2>Step 3</h2>
+  <p class="lead">
+    In the Import Data window, select the worksheet where you would ike to import the data, and click 
+    <strong>OK</strong>.
+  </p>
+  <img class="img-fluid" src="/static/step3.jpg">
+
+</div>
+
+{% endblock %}

@@ -1,5 +1,3 @@
-import flask_excel
-
 from datetime import datetime
 from flask import Blueprint
 from models.transaction import get_transactions, pivot_transactions, get_years
@@ -39,16 +37,6 @@ def get_table():
         transactions=get_transactions(begin=begin, end=end, month=month))
 
 
-@bp.route('/download', methods=['GET'])
-def download_table():
-    month = month_to_num_dict.get(request.values.get('month', '').lower())
-    begin = datetime.strptime(request.values['begin'], '%Y-%m-%d').date() if request.values.get('begin') else None
-    end = datetime.strptime(request.values['end'], '%Y-%m-%d').date() if request.values.get('end') else None
-    data = get_transactions(begin=begin, end=end, month=month)
-
-    return download_data(data, request.values.get('format'))
-
-
 @bp.route('/pivot', methods=['GET'])
 def get_pivot():
     years = get_years()
@@ -62,23 +50,9 @@ def get_pivot():
     )
 
 
-@bp.route('pivot/download', methods=['GET'])
-def download_pivot():
-    data = make_pivot_table()
-    print(data)
-    return download_data(data, request.values.get('format'))
-
-
-def download_data(data, download_format):
-    if download_format == 'xlsx':
-        output = flask_excel.make_response_from_array(data, 'xlsx')
-        output.headers["Content-Disposition"] = "attachment; filename=pivot.xlsx"
-        # output.headers["Content-type"] = "text/csv"
-    else:
-        output = flask_excel.make_response_from_array(data, 'csv')
-        output.headers["Content-Disposition"] = "attachment; filename=pivot.csv"
-        output.headers["Content-type"] = "text/csv"
-    return output
+@bp.route('/export', methods=['GET'])
+def export():
+    return render_template('export.html.j2')
 
 
 def make_pivot_table(year, vertical=True):

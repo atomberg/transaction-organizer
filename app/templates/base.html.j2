@@ -50,6 +50,9 @@
         <li class="nav-item">
           <a class="nav-link" id="pivot-nav" href="{{ url_for('tables.get_pivot') }}">Pivot</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" id="export-nav" href="{{ url_for('tables.export') }}">Export</a>
+        </li>
       </ul>
       {% block taskbar %}{% endblock %}
     </div>

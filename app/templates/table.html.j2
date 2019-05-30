@@ -7,6 +7,7 @@
     $("#input-nav").removeClass("active");
     $("#view-nav").addClass("active");
     $("#pivot-nav").removeClass("active");
+    $("#export-nav").removeClass("active");
 
     $("#table_id").DataTable({
       "stateSave": true,
@@ -15,17 +16,6 @@
     });
   });
 </script>
-{% endblock %}
-
-{% block taskbar %}
-<a class="btn btn-success btn-sm mx-sm-1"
-  href="{{ url_for('tables.download_table', format='csv', begin=begin, end=end)}}">
-  <i class="fa fa-cloud-download"></i> CSV
-</a>
-<a class="btn btn-success btn-sm mx-sm-1"
-  href="{{ url_for('tables.download_table', format='xlsx', begin=begin, end=end)}}">
-  <i class="fa fa-cloud-download"></i> XLSX
-</a>
 {% endblock %}
 
 {% block content %}

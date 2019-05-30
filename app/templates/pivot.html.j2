@@ -8,6 +8,7 @@
     $("#input-nav").removeClass("active");
     $("#view-nav").removeClass("active");
     $("#pivot-nav").addClass("active");
+    $("#export-nav").removeClass("active");
 
     {% for obj in data %}
     $("#pivot{{ obj['year'] }}").DataTable({
@@ -23,15 +24,6 @@
     });
   });
 </script>
-{% endblock %}
-
-{% block taskbar %}
-<a class="btn btn-success btn-sm mx-sm-1" href="{{ url_for('tables.download_pivot', format='csv') }}">
-  <i class="fa fa-cloud-download"></i> CSV
-</a>
-<a class="btn btn-success btn-sm mx-sm-1" href="{{ url_for('tables.download_pivot', format='xlsx') }}">
-  <i class="fa fa-cloud-download"></i> XLSX
-</a>
 {% endblock %}
 
 {% block content %}

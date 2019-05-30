@@ -8,6 +8,7 @@
     $("#input-nav").addClass("active");
     $("#view-nav").removeClass("active");
     $("#pivot-nav").removeClass("active");
+    $("#export-nav").removeClass("active");
 
     $("#supplier-input-id").focusout(function () {
       $.get("{{ url_for('autocomplete.category_guess', q='') }}" + $("#supplier-input-id").val(), function (data) {
