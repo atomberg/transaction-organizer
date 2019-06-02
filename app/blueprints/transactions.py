@@ -99,3 +99,9 @@ def delete(transaction_id):
 def get_data():
     """Get all of transactions data."""
     return render_template('transaction_data.html.j2', transactions=get_transactions())
+
+
+@bp.route('/export', methods=['GET'])
+def show_export_info():
+    """Show the export info."""
+    return render_template('export.html.j2')
