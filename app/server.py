@@ -8,11 +8,6 @@ backend.register_blueprint(persons_bp)
 backend.register_blueprint(transactions_bp)
 
 
-@backend.template_filter()
-def currency_format(value):
-    return f'{value:.2f}'
-
-
 if __name__ == "__main__":
     backend.run(host='localhost', port=5555, debug=True)
     # http_server = WSGIServer(('localhost', 5555), backend)

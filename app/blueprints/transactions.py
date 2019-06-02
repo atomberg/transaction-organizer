@@ -1,10 +1,15 @@
 from datetime import date, datetime
-from flask import Blueprint, Response, request, render_template
+from flask import Blueprint, request, render_template
 from models.db_session import Session
-from models.transaction import Transaction, get_transactions, get_accepted_bys, get_as_csv
+from models.transaction import Transaction, get_transactions, get_accepted_bys
 from models.person import get_person_names
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
+
+
+@bp.add_app_template_filter
+def currency_format(value):
+    return f'{value:.2f}'
 
 
 @bp.route('/', methods=['GET'])
