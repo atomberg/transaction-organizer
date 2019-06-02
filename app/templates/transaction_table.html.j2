@@ -20,14 +20,13 @@
 {% endblock %}
 
 {% block taskbar %}
-{# <a class="btn btn-success btn-sm mx-sm-1"
-  href="{{ url_for('tables.download_table', format='csv', begin=begin, end=end)}}">
-  <i class="fa fa-cloud-download"></i> CSV
-</a>
-<a class="btn btn-success btn-sm mx-sm-1"
-  href="{{ url_for('tables.download_table', format='xlsx', begin=begin, end=end)}}">
-  <i class="fa fa-cloud-download"></i> XLSX
-</a> #}
+<div class="navbar-collapse collapse">
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+      <a class="nav-link" id="export-nav" href="{{ url_for('transactions.get_latest') }}">Export</a>
+    </li>
+  </ul>
+</div>
 {% endblock %}
 
 {% block content %}
