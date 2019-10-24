@@ -21,7 +21,7 @@ class Transaction(Base):
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
-    def __init__(self, date, supplier, amount, category=None, notes=None):
+    def __init__(self, date, supplier, amount, category=None, notes=''):
         """Create a new transaction."""
         self.date = date
         self.supplier = supplier
