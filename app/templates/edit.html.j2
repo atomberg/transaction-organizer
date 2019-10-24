@@ -25,7 +25,13 @@
         <tr>
           <th>Supplier</th>
           <td><input name="supplier" form="edit" class="suppliers form-control" type="text"
-                  value="{{ transaction.supplier }}"></td>
+                  value="{{ transaction.supplier }}" placeholder="Supplier" list="suppliers">
+              <datalist id="suppliers">
+                {% for supplier in suppliers %}
+                <option value="{{ supplier }}"></option>
+                {% endfor %}
+              </datalist> 
+          </td>
         </tr>
         <tr>
           <th>Amount</th>
@@ -35,7 +41,13 @@
         <tr>
           <th>Category</th>
           <td><input name="category" form="edit" class="categories form-control" type="text"
-                  value="{{ transaction.category }}"></td>
+                  value="{{ transaction.category }}" placeholder="Category" list="categories">
+              <datalist id="categories">
+                {% for category in categories %}
+                <option value="{{ category }}"></option>
+                {% endfor %}
+              </datalist>
+          </td>
         </tr>
       </form>
       <tr>
