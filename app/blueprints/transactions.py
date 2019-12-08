@@ -84,7 +84,7 @@ def update(transaction_id):
 
 
 @bp.route('/<int:transaction_id>', methods=['DELETE'])
-@bp.route('/<int:transaction_id>/delete', methods=['POST'])
+@bp.route('/<int:transaction_id>/delete', methods=['GET'])
 def delete(transaction_id):
     """Delete a transaction by id."""
     t = Transaction.get_by_id(transaction_id)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, flash
 from models.db_session import Session
 from models.person import Person, get_persons
 
@@ -74,10 +74,13 @@ def update(person_id):
 def delete(person_id):
     """Delete a person by id."""
     p = Person.get_by_id(person_id)
-    p.deleted_at = datetime.now()
-    Session.add(p)
-    Session.commit()
-    return get_all()
+    if len(p.transactions) > 0:
+        flash('Cannot delete a person with transactions. Please delete those first.')
+        return edit(person_id)
+    else:
+        Session.delete(p)
+        Session.commit()
+        return get_all()
 
 
 @bp.route('/data', methods=['GET'])

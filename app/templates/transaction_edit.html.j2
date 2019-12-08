@@ -72,10 +72,8 @@
           <th>Actions</th>
           <td>
               <input type="submit" form="edit" value="Save changes" class="btn btn-success">
-              <form style="display: inline;" method="POST"
-                  action="{{ url_for('transactions.delete', transaction_id=transaction['id']) }}">
-                  <input type="submit" class="btn btn-danger" value="Delete transaction">
-              </form>
+              <a href="{{ url_for('transactions.delete', transaction_id=transaction['id']) }}" class="btn btn-danger">
+              Delete transaction <i class="fa fa-remove"></i></a>
           </td>
       </tr>
     </tbody>
