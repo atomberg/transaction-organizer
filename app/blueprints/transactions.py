@@ -28,7 +28,6 @@ def get_latest():
 @bp.route('/', methods=['POST'])
 def add():
     """Input transaction."""
-    print(request.values)
     t = Transaction(
         datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
         request.values['supplier'],
