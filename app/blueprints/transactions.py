@@ -88,8 +88,7 @@ def update(transaction_id):
 def delete(transaction_id):
     """Delete a transaction by id."""
     t = Transaction.get_by_id(transaction_id)
-    t.deleted_at = datetime.now()
-    Session.add(t)
+    Session.delete(t)
     Session.commit()
 
     return get_latest()
