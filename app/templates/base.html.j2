@@ -57,6 +57,10 @@
           <a class="nav-link" id="add-transaction-nav" href="{{ url_for('transactions.get_latest') }}">
             Add transaction</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" id="parse-reports-nav" href="{{ url_for('reports.upload') }}">
+            Parse reports</a>
+        </li>
       </ul>
       {% block taskbar %}{% endblock %}
     </div>
@@ -65,6 +69,18 @@
   <main role="main" class="container">
     <!-- Page Content -->
     <div class="container">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-danger col-lg-12" role="alert">
+              <strong>Error:</strong> {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
       {% block content %} {% endblock %}
     </div>
 
@@ -88,6 +104,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.10/js/bootstrap-select.min.js"
     integrity="sha256-FXzZGmaRFZngOjUKy3lWZJq/MflaMpffBbu3lPT0izE=" 
     crossorigin="anonymous"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $(".alert").alert();
+    });
+  </script>
   
   {% block scripts %}{% endblock %}
 </body>
