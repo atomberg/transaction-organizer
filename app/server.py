@@ -3,6 +3,7 @@ from flask import Flask
 from gevent.pywsgi import WSGIServer
 
 backend = Flask(__name__)
+backend.config.from_pyfile('config.py')
 
 backend.register_blueprint(persons_bp)
 backend.register_blueprint(transactions_bp)
