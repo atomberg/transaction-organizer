@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, request, render_template, flash
+from flask import Blueprint, request, render_template, flash, current_app as app
 from models.db_session import Session
 from models.person import Person, get_persons
 
@@ -87,3 +87,20 @@ def delete(person_id):
 def get_data():
     """Get all of persons data."""
     return render_template('person_data.html.j2', persons=get_persons())
+
+
+@bp.route('/<int:person_id>/receipt', methods=['GET'])
+def receipt(person_id):
+    """Get a person's tax receipt by id."""
+    p = Person.get_by_id(person_id)
+    return render_template(
+        'tax_receipt.html.j2',
+        org=app.config.get('ORG'),
+        treasurer=app.config.get('TREASURER'),
+        tax_year=2019,
+        receipt_number=p.id,
+        receipt_date=datetime.now().strftime("%B %e, %Y"),
+        name=p.full_name,
+        address=p.address,
+        amount=p.total
+    )
