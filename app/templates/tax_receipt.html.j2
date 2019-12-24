@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=800, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      max-width: 800px;
+    }
+
+    @page {
+      size: Letter;
+      /* Change from the default size of A4 */
+      margin: 1.5cm;
+      /* Set margin on each page */
+    }
+
+    @media print {
+      .body {
+        max-width: 925;
+      }
+    }
+  </style>
+
+  <title>{{ name }}</title>
+</head>
+
+<body>
+
+  <main role="main" class="container px-3">
+
+    <div id="header-1" class="container">
+      <div class="row">
+        <div class="col-8"> {{ org }} </div>
+        <div class="col-4 text-right">
+          <p></p>
+          <p>Receipt # {{ receipt_number }} <br> {{ receipt_date }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="title-1" class="text-center py-5">
+      <div class="container">
+        <h4>Official Donation Receipt For Income Tax Purposes</h4>
+        <p><em>Copy 1 &mdash; Income Tax Return</em></p>
+        <!-- <p>Copy 2 &mdash; For Your Records</p> -->
+      </div>
+    </div>
+
+    <div id="receipt-1" class="container">
+      <div class="row">
+        <div class="col-1"></div>
+        <div class="col-7">
+          <address style="text-indent: -5.8em; padding-left: 5.8em;">
+            Donated by: {{ name }}<br> {{ address }}
+          </address>
+        </div>
+        <div class="col-4">
+          <p>For the Tax Year: {{ tax_year }}</p>
+          <p><strong>Eligible Amount: {{ amount }}</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="signature-1" class="container py-3">
+      <div class="form-group row">
+        <div class="col-1"></div>
+        <label for="sign" class="col-4 col-form-label">Authorized Signature:</label>
+        <div class="col-4 py-2">
+          <input type="password" class="form-control" id="sign"
+            style="border: none;border-bottom: 1px solid; border-radius: unset;">
+          <p class="text-center"> {{ treasurer }}, Treasurer</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="footer-1" class="text-center">
+      <p>
+        For information on all registered charities in Canada under the Income Tax Act please contact
+        Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
+      </p>
+    </div>
+
+    <div class="py-3">
+      <hr>
+    </div>
+
+    <div id="header-2" class="container">
+      <div class="row">
+        <div class="col-8"> {{ org }} </div>
+        <div class="col-4 text-right">
+          <p></p>
+          <p>Receipt # {{ receipt_number }} <br> {{ receipt_date }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="title-2" class="text-center py-5">
+      <div class="container">
+        <h4>Official Donation Receipt For Income Tax Purposes</h4>
+        <p><em>Copy 1 &mdash; Income Tax Return</em></p>
+        <!-- <p>Copy 2 &mdash; For Your Records</p> -->
+      </div>
+    </div>
+
+    <div id="receipt-2" class="container">
+      <div class="row">
+        <div class="col-1"></div>
+        <div class="col-7">
+          <address style="text-indent: -5.8em; padding-left: 5.8em;">
+            Donated by: {{ name }}<br> {{ address }}
+          </address>
+        </div>
+        <div class="col-4">
+          <p>For the Tax Year: {{ tax_year }}</p>
+          <p><strong>Eligible Amount: {{ amount }}</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="signature-2" class="container py-3">
+      <div class="form-group row">
+        <div class="col-1"></div>
+        <label for="sign" class="col-4 col-form-label">Authorized Signature:</label>
+        <div class="col-4 py-2">
+          <input type="password" class="form-control" id="sign"
+            style="border: none;border-bottom: 1px solid; border-radius: unset;">
+          <p class="text-center"> {{ treasurer }}, Treasurer</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="footer-2" class="text-center">
+      <p>
+        For information on all registered charities in Canada under the Income Tax Act please contact
+        Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
+      </p>
+    </div>
+
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
