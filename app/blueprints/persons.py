@@ -38,7 +38,8 @@ def get(person_id):
     """Get a person by id."""
     return render_template(
         'person_get.html.j2',
-        person=Person.get_by_id(person_id).to_dict()
+        person=Person.get_by_id(person_id).to_dict(),
+        tax_year=app.config.get('TAX_YEAR')
     )
 
 
@@ -89,18 +90,18 @@ def get_data():
     return render_template('person_data.html.j2', persons=get_persons())
 
 
-@bp.route('/<int:person_id>/receipt', methods=['GET'])
-def receipt(person_id):
+@bp.route('/<int:person_id>/receipt/<int:year>', methods=['GET'])
+def receipt(person_id, year):
     """Get a person's tax receipt by id."""
     p = Person.get_by_id(person_id)
     return render_template(
         'tax_receipt.html.j2',
         org=app.config.get('ORG'),
         treasurer=app.config.get('TREASURER'),
-        tax_year=2019,
+        tax_year=year,
         receipt_number=p.id,
         receipt_date=datetime.now().strftime("%B %e, %Y"),
         name=p.full_name,
         address=p.address,
-        amount=p.total
+        amount=sum([t.amount for t in p.transactions if t.date.year == year])
     )
