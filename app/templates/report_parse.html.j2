@@ -2,6 +2,21 @@
 {% block title %}Parse Poynt Reports{% endblock %}
 
 {% block scripts %}
+<script type="text/javascript">
+    $("#transactions_table").DataTable({
+      "stateSave": true,
+      "lengthMenu": [10, 20, 50],
+      "order": [],
+      "infoCallback": function( settings, start, end, max, total, pre ) {
+        var api = this.api();
+        var totalAmount = api.column( 2, { page: 'current' } ).data().reduce( 
+          function (a, b) { return a + parseFloat(b); }, 0.0 
+        );
+        return 'Showing ' + start + ' to ' + end + ' of ' + total + ' entries ' + 
+          '(total amount of $' + totalAmount.toFixed(2) + ')';
+      }
+    });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +28,7 @@
 </div>
 
 <div>
-  <table id="table_id" class="table table-striped table-bordered" cellspacing="0" style="width:100%">
+  <table id="transactions_table" class="table table-striped table-bordered" cellspacing="0" style="width:100%">
     <thead>
       <tr>
         <th>Item</th>
