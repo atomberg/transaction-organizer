@@ -52,7 +52,6 @@
       <div class="container">
         <h4>Official Donation Receipt For Income Tax Purposes</h4>
         <p><em>Copy 1 &mdash; Income Tax Return</em></p>
-        <!-- <p>Copy 2 &mdash; For Your Records</p> -->
       </div>
     </div>
 
@@ -66,7 +65,7 @@
         </div>
         <div class="col-4">
           <p>For the Tax Year: {{ tax_year }}</p>
-          <p><strong>Eligible Amount: {{ amount }}</strong></p>
+          <p><strong>Eligible Amount: {{ amount | currency_format }}</strong></p>
         </div>
       </div>
     </div>
@@ -107,8 +106,7 @@
     <div id="title-2" class="text-center py-5">
       <div class="container">
         <h4>Official Donation Receipt For Income Tax Purposes</h4>
-        <p><em>Copy 1 &mdash; Income Tax Return</em></p>
-        <!-- <p>Copy 2 &mdash; For Your Records</p> -->
+        <p><em>Copy 2 &mdash; For Your Records</em></p>
       </div>
     </div>
 
@@ -122,7 +120,7 @@
         </div>
         <div class="col-4">
           <p>For the Tax Year: {{ tax_year }}</p>
-          <p><strong>Eligible Amount: {{ amount }}</strong></p>
+          <p><strong>Eligible Amount: {{ amount | currency_format }}</strong></p>
         </div>
       </div>
     </div>
