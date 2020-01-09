@@ -6,6 +6,11 @@ from models.person import Person, get_persons
 bp = Blueprint('persons', __name__, url_prefix='/persons')
 
 
+@bp.add_app_template_filter
+def display_newlines(value):
+    return value.replace('\n', '<br>')
+
+
 @bp.route('/', methods=['GET'])
 def get_all():
     """Display all persons in a table."""
