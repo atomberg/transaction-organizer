@@ -2,19 +2,15 @@ import pandas as pd
 
 
 def parse_report(transactions_path, items_path):
-    cash_purchases = pd.read_excel(
-        transactions_path,
-        sheet_name='Cash Purchases',
-        usecols=['ID/Note']
-    )
+    cash_purchases = pd.read_excel(transactions_path, sheet_name='Cash Purchases', usecols=['ID/Note'])
     cash_purchases['ID/Note'] = cash_purchases['ID/Note'].map(lambda s: f'#{s}')
     cash_purchases = set(cash_purchases['ID/Note'].tolist())
 
-    card_purchases = set(pd.read_excel(
-        transactions_path,
-        sheet_name='Card Purchases',
-        usecols=['ID/Note']
-    )['ID/Note'].tolist())
+    card_purchases = set(
+        pd.read_excel(transactions_path, sheet_name='Card Purchases', usecols=['ID/Note'])[
+            'ID/Note'
+        ].tolist()
+    )
 
     both = cash_purchases.intersection(card_purchases)
     if both:

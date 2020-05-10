@@ -44,17 +44,14 @@ def get(person_id):
     return render_template(
         'person_get.html.j2',
         person=Person.get_by_id(person_id).to_dict(),
-        tax_year=app.config.get('TAX_YEAR')
+        tax_year=app.config.get('TAX_YEAR'),
     )
 
 
 @bp.route('/<int:person_id>/edit', methods=['GET'])
 def edit(person_id):
     """Edit a person by id."""
-    return render_template(
-        'person_edit.html.j2',
-        person=Person.get_by_id(person_id).to_dict()
-    )
+    return render_template('person_edit.html.j2', person=Person.get_by_id(person_id).to_dict())
 
 
 @bp.route('/<int:person_id>', methods=['POST'])
@@ -108,5 +105,5 @@ def receipt(person_id, year):
         receipt_date=datetime.now().strftime("%B %e, %Y"),
         name=p.full_name,
         address=p.address,
-        amount=sum([t.amount for t in p.transactions if t.date.year == year])
+        amount=sum([t.amount for t in p.transactions if t.date.year == year]),
     )

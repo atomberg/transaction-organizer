@@ -23,8 +23,8 @@ def get_all():
         end=end,
         transactions=get_transactions(
             begin=datetime.strptime(begin, '%Y-%m-%d').date() if begin else None,
-            end=datetime.strptime(end, '%Y-%m-%d').date() if end else None
-        )
+            end=datetime.strptime(end, '%Y-%m-%d').date() if end else None,
+        ),
     )
 
 
@@ -37,21 +37,23 @@ def get_latest():
         today=date.today().strftime('%Y-%m-%d'),
         persons=get_person_names(),
         accepted_bys=get_accepted_bys(),
-        transactions=get_transactions(lim=limit, reverse=True)
+        transactions=get_transactions(lim=limit, reverse=True),
     )
 
 
 @bp.route('/', methods=['POST'])
 def add():
     """Add a new transaction."""
-    Session.add(Transaction(
-        person_id=request.values['person_id'],
-        date=datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
-        method=request.values['method'],
-        amount=float(request.values['amount']),
-        accepted_by=request.values['accepted_by'],
-        memo=request.values['memo']
-    ))
+    Session.add(
+        Transaction(
+            person_id=request.values['person_id'],
+            date=datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
+            method=request.values['method'],
+            amount=float(request.values['amount']),
+            accepted_by=request.values['accepted_by'],
+            memo=request.values['memo'],
+        )
+    )
     Session.commit()
     return get_latest()
 
@@ -60,8 +62,7 @@ def add():
 def get(transaction_id):
     """Get a transation by id."""
     return render_template(
-        'transaction_edit.html.j2',
-        transaction=Transaction.get_by_id(transaction_id).to_dict()
+        'transaction_edit.html.j2', transaction=Transaction.get_by_id(transaction_id).to_dict()
     )
 
 

@@ -12,9 +12,7 @@ def currency_format(value):
 @bp.route('/', methods=['GET'])
 def upload():
     """Prompt the user to upload reports."""
-    return render_template(
-        'report_upload.html.j2'
-    )
+    return render_template('report_upload.html.j2')
 
 
 @bp.route('/', methods=['POST'])
@@ -25,7 +23,4 @@ def parse():
         return upload()
 
     report = parse_report(request.files['transactions'], request.files['items'])
-    return render_template(
-        'report_parse.html.j2',
-        report=report
-    )
+    return render_template('report_parse.html.j2', report=report)
