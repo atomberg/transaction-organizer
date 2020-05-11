@@ -3,7 +3,7 @@ import io
 
 from models.db_session import Session, Base
 from datetime import datetime
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, DateTime, func as sqlfunc
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, DateTime, Boolean, func as sqlfunc
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
@@ -17,6 +17,7 @@ class Transaction(Base):
     method = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
     accepted_by = Column(String, nullable=False)
+    receipt = Column(Boolean)
     memo = Column(String)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
@@ -53,6 +54,7 @@ class Transaction(Base):
             'last_modified': self.updated_at.strftime('%c'),
             'created_at': self.created_at.strftime('%c'),
             'memo': self.memo or '',
+            'receipt': self.receipt,
         }
 
     @classmethod

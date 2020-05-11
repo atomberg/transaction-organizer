@@ -85,8 +85,11 @@
         <td>{{ transaction.memo or '' }}</td>
         <td>
           <a href="{{ url_for('transactions.get', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">
-            <i class="fa fa-pencil"></i> Edit
+            <i class="fa fa-pencil"></i> 
           </a>
+          {% if transaction.receipt %}
+            <i class="fa fa-check" style="color:green"></i>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}

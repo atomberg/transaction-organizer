@@ -66,6 +66,26 @@
             <input name="accepted_by" form="edit" class="categories form-control" type="text"
               value="{{ transaction['accepted_by'] }}">
           </td>
+          
+        </tr>
+        <tr>
+          <th>Tax receipt status</th>
+          <td>
+            <div class="form-check">
+              <input class="form-check-input" form="edit" type="radio" name="receipt_issued" 
+                id="receipt_issued_true" value="True" {% if transaction['receipt'] %} checked {% endif %}>
+              <label class="form-check-label" for="receipt_issued_true">
+                Receipt issued
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" form="edit" type="radio" name="receipt_issued"
+                id="receipt_issued_false" value="False" {% if not transaction.get('receipt') %} checked {% endif %}>
+              <label class="form-check-label" for="receipt_issued_false">
+                No receipt issued yet
+              </label>
+            </div>
+          </td>
         </tr>
       </form>
       <tr>
@@ -73,7 +93,11 @@
           <td>
               <input type="submit" form="edit" value="Save changes" class="btn btn-success">
               <a href="{{ url_for('transactions.delete', transaction_id=transaction['id']) }}" class="btn btn-danger">
-              Delete transaction <i class="fa fa-remove"></i></a>
+                Delete transaction <i class="fa fa-remove"></i>
+              </a>
+              <a href="{{ url_for('transactions.receipt', transaction_id=transaction['id']) }}" class="btn btn-info">
+                Tax receipt <i class="fa fa-file-text-o"></i>
+              </a>
           </td>
       </tr>
     </tbody>

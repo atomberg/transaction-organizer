@@ -1,8 +1,8 @@
 from datetime import date, datetime
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, current_app as app
 from models.db_session import Session
 from models.transaction import Transaction, get_transactions, get_accepted_bys
-from models.person import get_person_names
+from models.person import Person, get_person_names
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
@@ -77,6 +77,7 @@ def update(transaction_id):
     t.accepted_by = request.values['accepted_by']
     t.memo = request.values['memo']
     t.updated_at = datetime.now()
+    t.receipt = request.values['receipt_issued'] == 'True'
 
     Session.add(t)
     Session.commit()
@@ -105,3 +106,21 @@ def get_data():
 def show_export_info():
     """Show the export info."""
     return render_template('export.html.j2')
+
+
+@bp.route('/<int:transaction_id>/receipt')
+def receipt(transaction_id):
+    """Generate a tax receipt for a single transaction."""
+    t = Transaction.get_by_id(transaction_id)
+    p = Person.get_by_id(t.person_id)
+    return render_template(
+        'tax_receipt.html.j2',
+        org=app.config.get('ORG'),
+        treasurer=app.config.get('TREASURER'),
+        tax_year=t.year,
+        receipt_number=f"{p.id}-{t.id}",
+        receipt_date=datetime.now().strftime("%B %e, %Y"),
+        name=p.full_name,
+        address=p.address,
+        amount=t.amount,
+    )
