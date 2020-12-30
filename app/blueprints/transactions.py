@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from flask import Blueprint, request, render_template, current_app as app
+
 from models.db_session import Session
 from models.transaction import Transaction, get_transactions, get_accepted_bys
 from models.person import Person, get_person_names
@@ -61,6 +62,7 @@ def add():
 @bp.route('/<int:transaction_id>', methods=['GET'])
 def get(transaction_id):
     """Get a transation by id."""
+    print(Transaction.get_by_id(transaction_id).to_dict())
     return render_template(
         'transaction_edit.html.j2', transaction=Transaction.get_by_id(transaction_id).to_dict()
     )
