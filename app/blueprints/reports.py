@@ -1,4 +1,7 @@
-from flask import Blueprint, request, render_template, flash
+import io
+
+from flask import Blueprint, flash, render_template, request
+
 from models.parse_reports import parse_report
 
 bp = Blueprint('reports', __name__, url_prefix='/reports')
@@ -22,5 +25,7 @@ def parse():
         flash('Please upload both reports required!')
         return upload()
 
-    report = parse_report(request.files['transactions'], request.files['items'])
+    transactions_file = io.BytesIO(request.files['transactions'].read())
+    items_file = io.BytesIO(request.files['items'].read())
+    report = parse_report(transactions_file, items_file)
     return render_template('report_parse.html.j2', report=report)
