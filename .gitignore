@@ -72,3 +72,5 @@ instance/
 # Editor configs
 .vscode/*
 .idea/*
+
+.python-version
