@@ -1,7 +1,7 @@
 import csv
 import io
 
-from models.db_session import Session, Base
+from app.models.db_session import Session, Base
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, DateTime, Boolean, func as sqlfunc
 from sqlalchemy.ext.hybrid import hybrid_property

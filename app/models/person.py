@@ -1,5 +1,5 @@
 from datetime import datetime
-from models.db_session import Session, Base
+from app.models.db_session import Session, Base
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property

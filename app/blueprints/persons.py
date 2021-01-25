@@ -4,8 +4,8 @@ from flask import Blueprint, current_app as app, flash, render_template, request
 
 from flask_weasyprint import HTML, render_pdf
 
-from models.db_session import Session
-from models.person import Person, get_persons
+from app.models.db_session import Session
+from app.models.person import Person, get_persons
 
 bp = Blueprint('persons', __name__, url_prefix='/persons')
 

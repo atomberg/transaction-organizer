@@ -1,9 +1,9 @@
 from datetime import date, datetime
 from flask import Blueprint, request, render_template, current_app as app
 
-from models.db_session import Session
-from models.transaction import Transaction, get_transactions, get_accepted_bys
-from models.person import Person, get_person_names
+from app.models.db_session import Session
+from app.models.transaction import Transaction, get_transactions, get_accepted_bys
+from app.models.person import Person, get_person_names
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 

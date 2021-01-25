@@ -2,7 +2,7 @@ import io
 
 from flask import Blueprint, flash, render_template, request
 
-from models.parse_reports import parse_report
+from app.models.parse_reports import parse_report
 
 bp = Blueprint('reports', __name__, url_prefix='/reports')
 
