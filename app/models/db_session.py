@@ -11,8 +11,8 @@ backup_path.mkdir(exist_ok=True, parents=True)
 
 backup_path /= (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).strftime("%Y_%B.bak")
 if not backup_path.exists():
-    shutil.copyfile('donations.db', backup_path)
+    shutil.copyfile('app/donations.db', backup_path)
 
-engine = create_engine('sqlite:///donations.db')
+engine = create_engine('sqlite:///app/donations.db')
 Session = scoped_session(sessionmaker(bind=engine))
 Base = declarative_base()
