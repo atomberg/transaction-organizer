@@ -1,11 +1,11 @@
 from datetime import datetime
-from app.models.db_session import Session, Base
+from app import db
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
-class Person(Base):
+class Person(db.Model):
     """Model of a person from the persons table in database."""
 
     __tablename__ = 'persons'
@@ -57,18 +57,19 @@ class Person(Base):
 
     @classmethod
     def get_by_id(cls, id):
-        return Session.query(Person).get(id)
+        return cls.query.get(id)
 
     def __str__(self):
+        """Human readable representation."""
         return f"#{self.id:d} {self.full_name} | {self.phone} | {self.email}"
 
 
 def get_person_names():
-    return [(r.id, r.full_name) for r in Session.query(Person).filter(Person.deleted_at.is_(None)).all()]
+    return [(r.id, r.full_name) for r in Person.query.filter(Person.deleted_at.is_(None)).all()]
 
 
 def get_persons(lim=None, reverse=False):
-    q = Session.query(Person).filter(Person.deleted_at.is_(None))
+    q = Person.query.filter(Person.deleted_at.is_(None))
     rows = q.order_by(Person.updated_at.desc()).limit(lim).all()
     if reverse:
         return rows[::-1]

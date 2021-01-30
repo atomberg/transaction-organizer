@@ -1,13 +1,13 @@
 import csv
 import io
 
-from app.models.db_session import Session, Base
+from app import db
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, DateTime, Boolean, func as sqlfunc
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
-class Transaction(Base):
+class Transaction(db.Model):
     """Model of a transaction from the transactions table in database."""
 
     __tablename__ = 'transactions'
@@ -59,9 +59,10 @@ class Transaction(Base):
 
     @classmethod
     def get_by_id(cls, transaction_id):
-        return Session.query(Transaction).get(transaction_id)
+        return cls.query.get(transaction_id)
 
     def __str__(self):
+        """Human readable representation."""
         return (
             f"#{self.id:d} | {self.date.strftime('%d %b %Y')} | "
             f"{self.method} | {self.amount:.2f} | {self.accepted_by}"
@@ -69,15 +70,15 @@ class Transaction(Base):
 
 
 def get_methods():
-    return [r.method for r in Session.query(Transaction.method).distinct().all()]
+    return [r.method for r in Transaction.query.with_entities(Transaction.method).distinct().all()]
 
 
 def get_accepted_bys():
-    return [r.accepted_by for r in Session.query(Transaction.accepted_by).distinct().all()]
+    return [r.accepted_by for r in Transaction.query.with_entities(Transaction.accepted_by).distinct().all()]
 
 
 def get_transactions(lim=None, reverse=False, begin=None, end=None):
-    q = Session.query(Transaction).filter(Transaction.deleted_at.is_(None))
+    q = Transaction.query.filter(Transaction.deleted_at.is_(None))
     if begin and end:
         q = q.filter(Transaction.date.between(begin, end))
     elif begin:
