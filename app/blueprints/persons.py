@@ -4,7 +4,7 @@ from flask import Blueprint, current_app as app, flash, render_template, request
 
 from flask_weasyprint import HTML, render_pdf
 
-from app.models.db_session import Session
+from app import db
 from app.models.person import Person, get_persons
 
 bp = Blueprint('persons', __name__, url_prefix='/persons')
@@ -37,8 +37,8 @@ def add():
         email=request.values['email'],
         address=request.values['address'],
     )
-    Session.add(p)
-    Session.commit()
+    db.session.add(p)
+    db.session.commit()
     return get_all()
 
 
@@ -70,8 +70,8 @@ def update(person_id):
     p.notes = request.values['notes']
     p.updated_at = datetime.now()
 
-    Session.add(p)
-    Session.commit()
+    db.session.add(p)
+    db.session.commit()
 
     return get(person_id)
 
@@ -85,8 +85,8 @@ def delete(person_id):
         flash('Cannot delete a person with transactions. Please delete those first.')
         return edit(person_id)
     else:
-        Session.delete(p)
-        Session.commit()
+        db.session.delete(p)
+        db.session.commit()
         return get_all()
 
 

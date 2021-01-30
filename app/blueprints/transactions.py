@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from flask import Blueprint, request, render_template, current_app as app
 
-from app.models.db_session import Session
+from app import db
 from app.models.transaction import Transaction, get_transactions, get_accepted_bys
 from app.models.person import Person, get_person_names
 
@@ -45,7 +45,7 @@ def get_latest():
 @bp.route('/', methods=['POST'])
 def add():
     """Add a new transaction."""
-    Session.add(
+    db.session.add(
         Transaction(
             person_id=request.values['person_id'],
             date=datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
@@ -55,7 +55,7 @@ def add():
             memo=request.values['memo'],
         )
     )
-    Session.commit()
+    db.session.commit()
     return get_latest()
 
 
@@ -81,8 +81,8 @@ def update(transaction_id):
     t.updated_at = datetime.now()
     t.receipt = request.values['receipt_issued'] == 'True'
 
-    Session.add(t)
-    Session.commit()
+    db.session.add(t)
+    db.session.commit()
 
     return get(transaction_id)
 
@@ -92,8 +92,8 @@ def update(transaction_id):
 def delete(transaction_id):
     """Delete a transaction by id."""
     t = Transaction.get_by_id(transaction_id)
-    Session.delete(t)
-    Session.commit()
+    db.session.delete(t)
+    db.session.commit()
 
     return get_latest()
 
