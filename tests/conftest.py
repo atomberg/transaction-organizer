@@ -11,15 +11,13 @@ from pathlib import Path
 
 @pytest.fixture(scope='module')
 def test_client():
-    backend = create_app()
+    backend = create_app(Path(__file__).parent / 'data' / 'test_config.py')
     backend.secret_key = 'test key'
     backend.config['SQLALCHEMY_DATABASE_PATH'] = Path(__file__).parent / 'data' / 'test.db'
     backend.config[
         'SQLALCHEMY_DATABASE_URI'
     ] = f"sqlite:///{backend.config['SQLALCHEMY_DATABASE_PATH'].absolute()}"
     backend.config['TESTING'] = True
-
-    breakpoint()
 
     with backend.test_client() as client:
         yield client

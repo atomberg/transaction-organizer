@@ -15,8 +15,8 @@ def create_app(config_filename='config.py'):
     backup_path = app.config['SQLALCHEMY_DATABASE_BACKUP_PATH']
     backup_path.mkdir(exist_ok=True, parents=True)
     backup_path /= (datetime.date.today().replace(day=1) - datetime.timedelta(days=1)).strftime("%Y_%B.bak")
-    if not backup_path.exists():
-        shutil.copyfile(app.cofig['SQLALCHEMY_DATABASE_PATH'], backup_path)
+    if app.config['SQLALCHEMY_DATABASE_PATH'].exists() and not backup_path.exists():
+        shutil.copyfile(app.config['SQLALCHEMY_DATABASE_PATH'], backup_path)
 
     db.init_app(app)
 
