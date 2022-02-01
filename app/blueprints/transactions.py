@@ -70,6 +70,6 @@ async def delete(request: Request, transaction_id: int, db: Session = Depends(ge
 
 
 @router.get('/data', response_class=HTMLResponse)
-async def get_data(request: Request, db: Session = Depends(get_db)):
+async def transaction_data_view(request: Request, db: Session = Depends(get_db)):
     """Get all of transactions data."""
     return fill_data_template(request, db)

@@ -51,7 +51,7 @@ def get_transactions_by_month(
     """Get all transations in a specific month of the current year."""
     q = db.query(Transaction)
     q = q.filter(Transaction.month == month)
-    q = q.filter(Transaction.year == date.now().year)
+    q = q.filter(Transaction.year == datetime.now().year)
     return q.order_by(Transaction.updated_at.desc()).offset(skip).limit(limit).all()
 
 
