@@ -4,12 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from .crud import (
-    get_transactions,
-    get_transaction_by_id,
-    get_categories,
-    get_suppliers,
-)
+from .crud import get_transactions, get_transaction_by_id, get_categories, get_suppliers
 
 
 def currency_format(value):

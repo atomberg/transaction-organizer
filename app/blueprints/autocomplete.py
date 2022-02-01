@@ -1,25 +1,24 @@
-from flask import Blueprint, request, jsonify
-from models.transaction import guess_category, get_categories, get_suppliers
+from fastapi import APIRouter, Depends
+from ..dependencies import get_db
+from sqlalchemy.orm import Session
+
+from ..crud import get_categories, get_suppliers, guess_category
+
+router = APIRouter()
 
 
-bp = Blueprint('autocomplete', __name__, url_prefix='/autocomplete')
+@router.get('/supplier')
+def supplier(q: str = '', db: Session = Depends(get_db)):
+    items = [s for s in get_suppliers(db) if q in s]
+    return items
 
 
-@bp.route('/supplier', methods=['GET'])
-def supplier():
-    q = request.values.get('q')
-    items = [s for s in get_suppliers() if q in s]
-    return jsonify(items)
+@router.get('/category')
+def category(q: str = '', db: Session = Depends(get_db)):
+    items = [s for s in get_categories(db) if q in s]
+    return items
 
 
-@bp.route('/category', methods=['GET'])
-def category():
-    q = request.values.get('q')
-    items = [s for s in get_categories() if q in s]
-    return jsonify(items)
-
-
-@bp.route('/category/guess', methods=['GET'])
-def category_guess():
-    q = request.values.get('q')
-    return jsonify(dict(category=guess_category(q)))
+@router.get('/category/guess')
+def category_guess(q: str = '', db: Session = Depends(get_db)):
+    return dict(category=guess_category(db, q))

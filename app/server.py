@@ -1,6 +1,7 @@
 import uvicorn
 import logging
-from .blueprints.transactions import router as transactions_router
+from .blueprints import transactions
+from .blueprints import autocomplete
 from fastapi import FastAPI, Depends, status, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
@@ -9,7 +10,8 @@ from .dependencies import get_db
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.include_router(transactions_router, prefix='/transactions', dependencies=[Depends(get_db)])
+app.include_router(transactions.router, prefix='/transactions', dependencies=[Depends(get_db)])
+app.include_router(autocomplete.router, prefix='/autocomplete', dependencies=[Depends(get_db)])
 
 
 @app.get('/')
