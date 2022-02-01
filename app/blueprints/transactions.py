@@ -1,82 +1,75 @@
-from datetime import date, datetime
-from flask import Blueprint, request, render_template
-from models.db_session import Session
-from models.transaction import Transaction, get_categories, get_suppliers, get_transactions
+from datetime import date
+from typing import Optional
+
+from ..schemas import TransactionCreate, TransactionUpdate
+from fastapi import APIRouter, Request, Depends, Form
+from fastapi.responses import HTMLResponse
+from ..dependencies import get_db
+from sqlalchemy.orm import Session
+
+from ..crud import update_transaction, remove_transaction, create_transaction
+from ..templates import fill_input_template, fill_edit_template, fill_data_template
+
+router = APIRouter()
 
 
-bp = Blueprint('transactions', __name__, url_prefix='/transactions')
-
-
-@bp.app_template_filter()
-def currency_format(value):
-    return f'{value:.2f}'
-
-
-@bp.route('/', methods=['GET'])
-def get_latest():
+@router.get('/', response_class=HTMLResponse)
+async def input_new_transaction_view(request: Request, db: Session = Depends(get_db)):
     """Get 3 latest transactions."""
-    return render_template(
-        'input.html.j2',
-        today=date.today().strftime('%Y-%m-%d'),
-        suppliers=get_suppliers(),
-        categories=get_categories(),
-        transactions=get_transactions(3, True)
-    )
+    return fill_input_template(request, db)
 
 
-@bp.route('/input', methods=['POST'])
-@bp.route('/', methods=['POST'])
-def add():
+@router.post('/input', response_class=HTMLResponse)
+@router.post('/', response_class=HTMLResponse)
+async def create_transaction_view(
+    request: Request,
+    day: str = Form('day'),
+    supplier: str = Form('supplier'),
+    amount: float = Form('amount'),
+    category: str = Form('category'),
+    db: Session = Depends(get_db),
+):
     """Input transaction."""
-    t = Transaction(
-        datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
-        request.values['supplier'],
-        float(request.values['amount']),
-        request.values['category'])
-    Session.add(t)
-    Session.commit()
-    return get_latest()
+    day = date.today()
+    transaction = TransactionCreate(date=day, supplier=supplier, amount=amount, category=category)
+    create_transaction(db, transaction)
+    return fill_input_template(request, db)
 
 
-@bp.route('/<int:transaction_id>', methods=['GET'])
-def get(transaction_id):
+@router.get('/{transaction_id}', response_class=HTMLResponse)
+async def edit_transaction_view(request: Request, transaction_id: int, db: Session = Depends(get_db)):
     """Get a transation by id."""
-    return render_template(
-        'edit.html.j2',
-        suppliers=get_suppliers(),
-        categories=get_categories(),
-        transaction=Transaction.get_by_id(transaction_id)
-    )
+    return fill_edit_template(request, transaction_id, db)
 
 
-@bp.route('/<int:transaction_id>', methods=['POST'])
-def update(transaction_id):
+@router.post('/{transaction_id}', response_class=HTMLResponse)
+async def update_transaction_view(
+    request: Request,
+    transaction_id: int,
+    day: str = Form('day'),
+    supplier: str = Form('supplier'),
+    amount: float = Form('amount'),
+    category: str = Form('category'),
+    notes: Optional[str] = Form('notes'),
+    db: Session = Depends(get_db),
+):
     """Update transaction by id."""
-    t = Transaction.get_by_id(transaction_id)
-    t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
-    t.supplier = request.values['supplier']
-    t.amount = float(request.values['amount'])
-    t.category = request.values['category']
-    t.notes = request.values['notes']
-    t.updated_at = datetime.now()
-
-    Session.add(t)
-    Session.commit()
-
-    return get(transaction_id)
+    new_values = TransactionUpdate(
+        date=day, supplier=supplier, amount=amount, category=category, notes=notes
+    )
+    t = update_transaction(db, transaction_id, new_values)
+    return fill_edit_template(request, t.id, db)
 
 
-@bp.route('/<int:transaction_id>', methods=['DELETE'])
-@bp.route('/<int:transaction_id>/delete', methods=['POST'])
-def delete(transaction_id):
-    """Delete transactio by id."""
-    t = Transaction.get_by_id(transaction_id)
-    Session.delete(t)
-    Session.commit()
-    return get_latest()
+@router.delete('/{transaction_id}', response_class=HTMLResponse)
+@router.post('/{transaction_id}/delete', response_class=HTMLResponse)
+async def delete(request: Request, transaction_id: int, db: Session = Depends(get_db)):
+    """Delete transaction by id."""
+    remove_transaction(db, transaction_id)
+    return fill_input_template(request, db)
 
 
-@bp.route('/data', methods=['GET'])
-def get_data():
+@router.get('/data', response_class=HTMLResponse)
+async def get_data(request: Request, db: Session = Depends(get_db)):
     """Get all of transactions data."""
-    return render_template('data.html.j2', transactions=get_transactions())
+    return fill_data_template(request, db)

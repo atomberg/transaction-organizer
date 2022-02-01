@@ -1,15 +1,30 @@
-from blueprints import autocomplete_bp, tables_bp, transactions_bp
-from flask import Flask
-from gevent.pywsgi import WSGIServer
+import uvicorn
+import logging
+from .blueprints.transactions import router as transactions_router
+from fastapi import FastAPI, Depends, status, Request
+from fastapi.staticfiles import StaticFiles
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from .dependencies import get_db
 
-backend = Flask(__name__)
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.include_router(transactions_router, prefix='/transactions', dependencies=[Depends(get_db)])
 
-backend.register_blueprint(autocomplete_bp)
-backend.register_blueprint(tables_bp)
-backend.register_blueprint(transactions_bp)
+
+@app.get('/')
+async def main():
+    return {"message": "Hello Bigger Applications!"}
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+    logging.error(f"{request}: {exc_str}")
+    logging.error(f"exc.body: {exc.body}")
+    content = {'status_code': 10422, 'message': exc_str, 'data': None}
+    return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 if __name__ == "__main__":
-    # backend.run(host='localhost', port=5555, debug=True)
-    http_server = WSGIServer(('localhost', 5555), backend)
-    http_server.serve_forever()
+    uvicorn.run(app, host="0.0.0.0", port=8000)
