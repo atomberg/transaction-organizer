@@ -13,7 +13,7 @@
   <table id="table_id" class="table">
     <tbody>
       <form id="edit" method="POST"
-        action="{{ url_for('transactions.update', transaction_id=transaction.id) }}">
+        action="/transactions/{{ transaction.id }}">
         <tr>
           <th>Date</th>
           <td><input name="day" form="edit" class="form-control" type="date"
@@ -55,7 +55,7 @@
         <td>
           <input type="submit" form="edit" value="Save changes" class="btn btn-success">
           <form style="display: inline;" method="POST"
-            action="{{ url_for('transactions.delete', transaction_id=transaction.id) }}">
+            action="/transactions/{{ transaction.id }}/delete">
             <input type="submit" class="btn btn-danger" value="Delete transaction">
           </form>
         </td>

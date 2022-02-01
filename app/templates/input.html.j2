@@ -11,7 +11,7 @@
     $("#export-nav").removeClass("active");
 
     $("#supplier-input-id").focusout(function () {
-      $.get("{{ url_for('autocomplete.category_guess', q='') }}" + $("#supplier-input-id").val(), function (data) {
+      $.get("/autocomplete/category/guess?q=" + $("#supplier-input-id").val(), function (data) {
         $("#category-input-id").val(data.category);
       });
     });
@@ -46,7 +46,7 @@
         <td>{{ transaction.amount | currency_format }}</td>
         <td>{{ transaction.category }}</td>
         <td>
-          <a href="{{ url_for('transactions.get', transaction_id=transaction.id) }}" class="btn btn-info">
+          <a href="/transactions/{{ transaction.id }}" class="btn btn-info">
             View <i class="fa fa-chevron-right"></i>
           </a>
           {% if transaction.notes %}
@@ -55,7 +55,7 @@
         </td>
       </tr>
       {% endfor %}
-      <form id="add" method="post" action="{{ url_for('transactions.add') }}">
+      <form id="add" method="post" action="/transactions">
         <tr>
           <td>
             <input name="day" form="add" class="form-control" type="date" value="{{ today }}">
