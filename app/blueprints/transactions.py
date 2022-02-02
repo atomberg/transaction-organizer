@@ -63,7 +63,7 @@ async def update_transaction_view(
 
 @router.delete('/{transaction_id}', response_class=HTMLResponse)
 @router.post('/{transaction_id}/delete', response_class=HTMLResponse)
-async def delete(request: Request, transaction_id: int, db: Session = Depends(get_db)):
+async def delete_transaction_view(request: Request, transaction_id: int, db: Session = Depends(get_db)):
     """Delete transaction by id."""
     remove_transaction(db, transaction_id)
     return fill_input_template(request, db)

@@ -9,9 +9,13 @@ from .dependencies import get_db
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.include_router(transactions.router, prefix='/transactions', dependencies=[Depends(get_db)])
-app.include_router(autocomplete.router, prefix='/autocomplete', dependencies=[Depends(get_db)])
-app.include_router(tables.router, prefix='/tables', dependencies=[Depends(get_db)])
+app.include_router(
+    transactions.router, prefix='/transactions', dependencies=[Depends(get_db)], tags=['transactions']
+)
+app.include_router(
+    autocomplete.router, prefix='/autocomplete', dependencies=[Depends(get_db)], tags=['autocomplete']
+)
+app.include_router(tables.router, prefix='/tables', dependencies=[Depends(get_db)], tags=['tables'])
 
 
 @app.get('/')

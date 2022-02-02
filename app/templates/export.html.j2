@@ -39,19 +39,17 @@
       <dl class="row">
         <dt class="col-3">Transactions table URL:</dt>
         <dd class="col-9">
-          {# {{ url_for('main', _external=True)}} #}
-          /transactions/data
+          {{ url_for('transaction_data_view')}}
           <button class="btn btn-sm btn-success btn-clipboard ml-2"
-            data-clipboard-text="/transactions/data">
+            data-clipboard-text="{{ url_for('transaction_data_view')}}">
             <i class="fa fa-files-o" aria-hidden="true"></i> Copy
           </button>
         </dd>
         <dt class="col-3">Pivot table URL:</dt>
         <dd class="col-6">
-          /transactions/data
-          {# {{ url_for('transactions.get_data', _external=True)}} #}
+          {{ url_for('transaction_data_view')}}
           <button class="btn btn-sm btn-success btn-clipboard ml-2"
-            data-clipboard-text="/transactions/data">
+            data-clipboard-text="{{ url_for('transaction_data_view')}}">
             <i class="fa fa-files-o" aria-hidden="true"></i> Copy
           </button>
         </dd>

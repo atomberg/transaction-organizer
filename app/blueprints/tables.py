@@ -37,7 +37,7 @@ month_to_num_dict = {
 
 
 @router.get('/', response_class=HTMLResponse)
-def get_table(
+def table_view(
     request: Request,
     begin: Optional[date] = None,
     end: Optional[date] = None,

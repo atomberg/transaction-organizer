@@ -86,7 +86,7 @@
         <td>{{ transaction.amount | currency_format }}</td>
         <td>{{ transaction.category }}</td>
         <td>
-          <a href="/transactions/{{ transaction.id }}" class="btn btn-success btn-sm">
+          <a href="{{ url_for('edit_transaction_view', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">
             <i class="fa fa-pencil"></i> Edit
           </a>
           {% if transaction.notes %}
