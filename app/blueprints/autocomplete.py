@@ -9,16 +9,14 @@ router = APIRouter()
 
 @router.get('/supplier')
 def supplier(q: str = '', db: Session = Depends(get_db)):
-    items = [s for s in get_suppliers(db) if q in s]
-    return items
+    return [s for s in get_suppliers(db) if q in s]
 
 
 @router.get('/category')
 def category(q: str = '', db: Session = Depends(get_db)):
-    items = [s for s in get_categories(db) if q in s]
-    return items
+    return [s for s in get_categories(db) if q in s]
 
 
 @router.get('/category/guess')
 def category_guess(q: str = '', db: Session = Depends(get_db)):
-    return dict(category=guess_category(db, q))
+    return {'category': guess_category(db, q)}
