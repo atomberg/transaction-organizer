@@ -43,7 +43,7 @@
         <tr>
           <th>Date</th>
           <td>
-            <input name="day" form="edit" class="form-control" type="date"value="{{ transaction['date'] }}">
+            <input name="day" form="edit" class="form-control" type="date" value="{{ transaction['date'] }}">
           </td>
         </tr>
         <tr>
@@ -73,14 +73,14 @@
           <td>
             <div class="form-check">
               <input class="form-check-input" form="edit" type="radio" name="receipt_issued" 
-                id="receipt_issued_true" value="True" {% if transaction['receipt'] %} checked {% endif %}>
+                id="receipt_issued_true" value="True" {% if transaction.receipt %} checked {% endif %}>
               <label class="form-check-label" for="receipt_issued_true">
                 Receipt issued
               </label>
             </div>
             <div class="form-check">
               <input class="form-check-input" form="edit" type="radio" name="receipt_issued"
-                id="receipt_issued_false" value="False" {% if not transaction.get('receipt') %} checked {% endif %}>
+                id="receipt_issued_false" value="False" {% if not transaction.receipt %} checked {% endif %}>
               <label class="form-check-label" for="receipt_issued_false">
                 No receipt issued yet
               </label>

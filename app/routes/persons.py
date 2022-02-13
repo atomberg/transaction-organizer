@@ -15,25 +15,26 @@ from app.templates.persons import (
     fill_person_edit_template,
     fill_person_get_template,
     fill_person_table_template,
+    fill_year_tax_receipt_template,
 )
 
 router = APIRouter()
 
 
 @router.get('/', response_class=HTMLResponse)
-def persons_table_view(request: Request, db: Session = Depends(get_db)):
+async def persons_table_view(request: Request, db: Session = Depends(get_db)):
     """Display all persons in a table."""
     return fill_person_table_template(request, db)
 
 
 @router.get('/form', response_class=HTMLResponse)
-def add_new_person_form_view(request: Request, db: Session = Depends(get_db)):
+async def add_new_person_form_view(request: Request, db: Session = Depends(get_db)):
     """Render the form to add a new person."""
     return fill_person_add_template(request)
 
 
 @router.post('/', response_class=HTMLResponse)
-def create_person_view(
+async def create_person_view(
     request: Request,
     first_name: str = Form('first_name'),
     last_name: str = Form('last_name'),
@@ -49,22 +50,22 @@ def create_person_view(
 
 
 @router.get('/{person_id}', response_class=HTMLResponse)
-def person_summary_view(
+async def person_summary_view(
     request: Request, person_id: int, db: Session = Depends(get_db), config: Settings = Depends(get_settings)
 ):
     """Get a person by id."""
-    year = config.get('TAX_YEAR')
+    year = config.tax_year
     return fill_person_get_template(request, db, person_id, year)
 
 
 @router.get('/{person_id}/edit', response_class=HTMLResponse)
-def edit_person_view(request: Request, person_id: int, db: Session = Depends(get_db)):
+async def edit_person_view(request: Request, person_id: int, db: Session = Depends(get_db)):
     """Edit a person by id."""
     return fill_person_edit_template(request, db, person_id)
 
 
 @router.post('/{person_id}', response_class=HTMLResponse)
-def update_person_view(
+async def update_person_view(
     request: Request,
     person_id: int,
     first_name: str = Form('first_name'),
@@ -84,7 +85,7 @@ def update_person_view(
 
 @router.delete('/{person_id}', response_class=HTMLResponse)
 @router.get('/{person_id}/delete')
-def delete_person_view(request: Request, person_id: int, db: Session = Depends(get_db)):
+async def delete_person_view(request: Request, person_id: int, db: Session = Depends(get_db)):
     """Delete a person by id."""
     p = get_person_by_id(db, person_id)
     if len(p.transactions) > 0:
@@ -97,13 +98,13 @@ def delete_person_view(request: Request, person_id: int, db: Session = Depends(g
 
 
 @router.get('/data', response_class=HTMLResponse)
-def person_data_view(request: Request, db: Session = Depends(get_db)):
+async def person_data_view(request: Request, db: Session = Depends(get_db)):
     """Get all of persons data."""
     return fill_person_data_template(request, db)
 
 
 @router.get('/{person_id}/receipt/{year}', response_class=HTMLResponse)
-def person_tax_receipt_view(
+async def person_tax_receipt_view(
     request: Request,
     person_id: int,
     year: int,
@@ -111,28 +112,19 @@ def person_tax_receipt_view(
     config: Settings = Depends(get_settings),
 ):
     """Get a person's tax receipt by id."""
-    p = get_person_by_id(db, person_id)
-    return render_template(
-        'tax_receipt.html.j2',
-        org=config.get('ORG'),
-        treasurer=config.get('TREASURER'),
-        tax_year=year,
-        receipt_number=p.id,
-        receipt_date=datetime.now().strftime("%B %e, %Y"),
-        name=p.full_name,
-        address=p.address,
-        amount=sum([t.amount for t in p.transactions if t.date.year == year and not t.receipt]),
+    return fill_year_tax_receipt_template(
+        request, person_id, config.organisation_name, config.treasurer_name, year, db
     )
 
 
 @router.get('/{person_id}/receipt/{year}/pdf')
-def receipt_pdf(request: Request, person_id, year):
+async def receipt_pdf(request: Request, person_id, year):
     """Get a person's tax receipt by id in PDF form."""
     return render_pdf(request.url_for('persons.receipt', person_id=person_id, year=year))
 
 
 @router.get('/receipts/{year}')
-def all_receipts_pdf_view(request: Request, year: int, db: Session = Depends(get_db)):
+async def all_receipts_pdf_view(request: Request, year: int, db: Session = Depends(get_db)):
     """Get a person's tax receipt by id in PDF form."""
     docs = {}
     for p in get_persons(db):

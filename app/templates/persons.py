@@ -45,3 +45,21 @@ def fill_person_get_template(request: Request, db: Session, person_id: int, tax_
 def fill_person_table_template(request: Request, db: Session) -> HTMLResponse:
     template_data = dict(request=request, persons=get_persons(db), year=datetime.now().year)
     return templates.TemplateResponse('person_table.html.j2', template_data)
+
+
+def fill_year_tax_receipt_template(
+    request: Request, person_id: int, organisation_name: str, treasurer_name: str, year: int, db: Session
+) -> HTMLResponse:
+    p = get_person_by_id(db, person_id)
+    template_data = dict(
+        request=request,
+        org=organisation_name,
+        treasurer=treasurer_name,
+        tax_year=year,
+        receipt_number=p.id,
+        receipt_date=datetime.now().strftime("%B %e, %Y"),
+        name=p.full_name,
+        address=p.address,
+        amount=sum([t.amount for t in p.transactions if t.date.year == year and not t.receipt]),
+    )
+    return templates.TemplateResponse('tax_receipt.html.j2', template_data)
