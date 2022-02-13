@@ -7,6 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from app.dependencies import get_db, get_settings, Settings
 
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(
