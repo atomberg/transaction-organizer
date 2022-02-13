@@ -1,13 +1,11 @@
-import csv
-import io
-
-from app import db
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, DateTime, Boolean, func as sqlfunc
 from sqlalchemy.ext.hybrid import hybrid_property
 
+from ..database import Base
 
-class Transaction(db.Model):
+
+class Transaction(Base):
     """Model of a transaction from the transactions table in database."""
 
     __tablename__ = 'transactions'
@@ -35,78 +33,16 @@ class Transaction(db.Model):
         self.updated_at = datetime.now()
 
     @hybrid_property
-    def year(self):
+    def year(self) -> str:
         return self.date.strftime('%Y')
 
     @year.expression
-    def year(self):
+    def year(self) -> int:
         return sqlfunc.extract('year', self.date)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'person_id': self.person_id,
-            'person': self.person.full_name,
-            'date': self.date.strftime('%Y-%m-%d'),
-            'method': self.method,
-            'amount': self.amount,
-            'accepted_by': self.accepted_by,
-            'last_modified': self.updated_at.strftime('%c'),
-            'created_at': self.created_at.strftime('%c'),
-            'memo': self.memo or '',
-            'receipt': self.receipt,
-        }
-
-    @classmethod
-    def get_by_id(cls, transaction_id):
-        return cls.query.get(transaction_id)
-
-    def __str__(self):
+    def __str__(self) -> str:
         """Human readable representation."""
         return (
             f"#{self.id:d} | {self.date.strftime('%d %b %Y')} | "
             f"{self.method} | {self.amount:.2f} | {self.accepted_by}"
         )
-
-
-def get_methods():
-    return [r.method for r in Transaction.query.with_entities(Transaction.method).distinct().all()]
-
-
-def get_accepted_bys():
-    return [r.accepted_by for r in Transaction.query.with_entities(Transaction.accepted_by).distinct().all()]
-
-
-def get_transactions(lim=None, reverse=False, begin=None, end=None):
-    q = Transaction.query.filter(Transaction.deleted_at.is_(None))
-    if begin and end:
-        q = q.filter(Transaction.date.between(begin, end))
-    elif begin:
-        q = q.filter(Transaction.date >= begin)
-    elif end:
-        q = q.filter(Transaction.date <= end)
-    rows = q.order_by(Transaction.updated_at.desc()).limit(lim).all()
-    if reverse:
-        return rows[::-1]
-    return rows
-
-
-def get_as_csv():
-    with io.StringIO() as buffer:
-        fieldnames = [
-            'id',
-            'person_id',
-            'date',
-            'method',
-            'amount',
-            'accepted_by',
-            'memo',
-            'created_at',
-            'updated_at',
-        ]
-        writer = csv.DictWriter(buffer, fieldnames=fieldnames, extrasaction='ignore')
-
-        writer.writeheader()
-        for t in get_transactions(reverse=True):
-            writer.writerow(t.__dict__)
-        return buffer.getvalue()

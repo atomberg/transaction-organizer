@@ -1,11 +1,12 @@
 from datetime import datetime
-from app import db
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
+from ..database import Base
 
-class Person(db.Model):
+
+class Person(Base):
     """Model of a person from the persons table in database."""
 
     __tablename__ = 'persons'
@@ -33,11 +34,11 @@ class Person(db.Model):
         self.updated_at = datetime.now()
 
     @hybrid_property
-    def full_name(self):
+    def full_name(self) -> str:
         return f'{self.last_name}, {self.first_name}'
 
     @hybrid_property
-    def total(self):
+    def total(self) -> float:
         return sum([t.amount for t in self.transactions])
 
     def to_dict(self):
@@ -55,22 +56,6 @@ class Person(db.Model):
             'created_at': self.created_at.strftime('%c'),
         }
 
-    @classmethod
-    def get_by_id(cls, id):
-        return cls.query.get(id)
-
     def __str__(self):
         """Human readable representation."""
         return f"#{self.id:d} {self.full_name} | {self.phone} | {self.email}"
-
-
-def get_person_names():
-    return [(r.id, r.full_name) for r in Person.query.filter(Person.deleted_at.is_(None)).all()]
-
-
-def get_persons(lim=None, reverse=False):
-    q = Person.query.filter(Person.deleted_at.is_(None))
-    rows = q.order_by(Person.updated_at.desc()).limit(lim).all()
-    if reverse:
-        return rows[::-1]
-    return rows
