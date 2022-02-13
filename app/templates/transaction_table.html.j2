@@ -31,7 +31,7 @@
 <div class="navbar-collapse collapse">
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
-      <a class="nav-link" id="export-nav" href="{{ url_for('transactions.show_export_info') }}">Export</a>
+      <a class="nav-link" id="export-nav" href="{{ url_for('show_export_info') }}">Export</a>
     </li>
   </ul>
 </div>
@@ -84,7 +84,7 @@
         <td>{{ transaction.accepted_by }}</td>
         <td>{{ transaction.memo or '' }}</td>
         <td>
-          <a href="{{ url_for('transactions.get', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">
+          <a href="{{ url_for('transaction_view', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">
             <i class="fa fa-pencil"></i> 
           </a>
           {% if transaction.receipt %}

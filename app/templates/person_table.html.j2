@@ -23,10 +23,10 @@
 <div class="navbar-collapse collapse">
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
-      <a class="nav-link" id="tax-nav" href="{{ url_for('persons.all_receipts_pdf', year=year-1) }}">Tax receipts {{year - 1}}</a>
+      <a class="nav-link" id="tax-nav" href="{{ url_for('all_receipts_pdf_view', year=year-1) }}">Tax receipts {{year - 1}}</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="export-nav" href="{{ url_for('transactions.show_export_info') }}">Export</a>
+      <a class="nav-link" id="export-nav" href="{{ url_for('show_export_info') }}">Export</a>
     </li>
   </ul>
 </div>
@@ -60,7 +60,7 @@
         <td>{{ person.email }}</td>
         <td>{{ person.total | currency_format }}</td>
         <td>
-          <a href="{{ url_for('persons.get', person_id=person.id) }}" class="btn btn-info btn-sm">
+          <a href="{{ url_for('person_summary_view', person_id=person.id) }}" class="btn btn-info btn-sm">
             View <i class="fa fa-chevron-right"></i>
           </a>
           {% if person.notes %}

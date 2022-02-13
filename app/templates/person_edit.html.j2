@@ -21,7 +21,7 @@
 <!-- /.row -->
 
 <div class="row">
-  <form id="edit" method="POST" action="{{ url_for('persons.update', person_id=person['id']) }}">
+  <form id="edit" method="POST" action="{{ url_for('update_person_view', person_id=person['id']) }}">
   <table id="table_id" class="table">
     <tbody>
       <tr>
@@ -63,7 +63,7 @@
         <th>Actions</th>
         <td>
             <input type="submit" form="edit" value="Save changes" class="btn btn-success">
-            <a href="{{ url_for('persons.delete', person_id=person['id']) }}" class="btn btn-danger">
+            <a href="{{ url_for('delete_person_view', person_id=person['id']) }}" class="btn btn-danger">
             Delete person <i class="fa fa-remove"></i></a>
         </td>
         <td>

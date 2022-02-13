@@ -40,17 +40,17 @@
       <dl class="row">
         <dt class="col-3">Transactions table URL:</dt>
         <dd class="col-9">
-          {{ url_for('transactions.get_data', _external=True)}}
+          {{ url_for('transaction_data_view', _external=True)}}
           <button class="btn btn-sm btn-success btn-clipboard ml-2"
-            data-clipboard-text="{{ url_for('transactions.get_data', _external=True)}}">
+            data-clipboard-text="{{ url_for('transaction_data_view', _external=True)}}">
             <i class="fa fa-files-o" aria-hidden="true"></i> Copy
           </button>
         </dd>
         <dt class="col-3">Persons table URL:</dt>
         <dd class="col-6">
-          {{ url_for('persons.get_data', _external=True)}}
+          {{ url_for('person_data_view', _external=True)}}
           <button class="btn btn-sm btn-success btn-clipboard ml-2"
-            data-clipboard-text="{{ url_for('transactions.get_data', _external=True)}}">
+            data-clipboard-text="{{ url_for('person_data_view', _external=True)}}">
             <i class="fa fa-files-o" aria-hidden="true"></i> Copy
           </button>
         </dd>

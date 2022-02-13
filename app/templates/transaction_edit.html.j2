@@ -23,7 +23,7 @@
 <div class="row">
   <table id="table_id" class="table">
     <tbody>
-      <form id="edit" method="POST" action="{{ url_for('transactions.update', transaction_id=transaction['id']) }}">
+      <form id="edit" method="POST" action="{{ url_for('update_transaction_view', transaction_id=transaction['id']) }}">
         <tr>
           <th>Person</th>
           <td>
@@ -92,10 +92,10 @@
           <th>Actions</th>
           <td>
               <input type="submit" form="edit" value="Save changes" class="btn btn-success">
-              <a href="{{ url_for('transactions.delete', transaction_id=transaction['id']) }}" class="btn btn-danger">
+              <a href="{{ url_for('remove_transaction_view', transaction_id=transaction['id']) }}" class="btn btn-danger">
                 Delete transaction <i class="fa fa-remove"></i>
               </a>
-              <a href="{{ url_for('transactions.receipt', transaction_id=transaction['id']) }}" class="btn btn-info">
+              <a href="{{ url_for('transaction_receipt_view', transaction_id=transaction['id']) }}" class="btn btn-info">
                 Tax receipt <i class="fa fa-file-text-o"></i>
               </a>
           </td>

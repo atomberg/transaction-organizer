@@ -44,13 +44,13 @@
         <td>{{ transaction.accepted_by }}</td>
         <td>{{ transaction.memo or '' }}</td>
         <td>
-          <a href="{{ url_for('transactions.get', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">
+          <a href="{{ url_for('transaction_view', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">
             <i class="fa fa-pencil"></i> Edit
           </a>
         </td>
       </tr>
       {% endfor %}
-      <form id="add" method="post" action="{{ url_for('transactions.add') }}">
+      <form id="add" method="post" action="{{ url_for('create_transaction_view') }}">
         <tr>
           <td>
             <select class="selectpicker persons form-control" data-live-search="true" name="person_id" form="add" 

@@ -42,23 +42,23 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link" id="people-nav" href="{{ url_for('persons.get_all') }}">
+          <a class="nav-link" id="people-nav" href="{{ url_for('persons_table_view') }}">
             People</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="transactions-nav" href="{{ url_for('transactions.get_all') }}">
+          <a class="nav-link" id="transactions-nav" href="{{ url_for('transactions_table_view') }}">
             Transactions</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="add-person-nav" href="{{ url_for('persons.add_form') }}">
+          <a class="nav-link" id="add-person-nav" href="{{ url_for('add_new_person_form_view') }}">
             Add person</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="add-transaction-nav" href="{{ url_for('transactions.get_latest') }}">
+          <a class="nav-link" id="add-transaction-nav" href="{{ url_for('transactions_input_form_view') }}">
             Add transaction</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="parse-reports-nav" href="{{ url_for('reports.upload') }}">
+          {# <a class="nav-link" id="parse-reports-nav" href="{{ url_for('reports.upload') }}"> #}
             Parse reports</a>
         </li>
       </ul>
@@ -69,7 +69,8 @@
   <main role="main" class="container">
     <!-- Page Content -->
     <div class="container">
-      {% with messages = get_flashed_messages() %}
+    {# get_flashed_messages() #}
+      {% with messages = [] %}
         {% if messages %}
           {% for message in messages %}
             <div class="alert alert-danger col-lg-12" role="alert">
