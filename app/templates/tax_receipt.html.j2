@@ -12,11 +12,11 @@
 
 <body>
   <table id="grid-1">
-      <colgroup>
-        <col span="1" style="width: 37%;">
-        <col span="1" style="width: 33%;">
-        <col span="1" style="width: auto;">
-      </colgroup>
+    <colgroup>
+      <col span="1" style="width: 37%;">
+      <col span="1" style="width: 33%;">
+      <col span="1" style="width: auto;">
+    </colgroup>
     <tbody>
       <tr>
         <td colspan="2">{{ org }}</td>
@@ -43,31 +43,37 @@
       <tr>
         <td class="offset" style="vertical-align: top;">
           <label for="sign-1">Authorized Signature:</label>
-        </td>  
+        </td>
         <td colspan="2" class="signature">
-          <input type="password" id="sign-1">
+
+          <div id="signature-container">
+            <input type="password" id="sign-1">
+            <a href="#">
+              <image src="/static/sample-signature.png" alt=img>
+            </a>
+          </div>
           <p> {{ treasurer }}, Treasurer</p>
         </td>
       </tr>
+    <tfoot>
+      <td colspan="3" class="text-center">
+        <p>
+          For information on all registered charities in Canada under the Income Tax Act please contact
+          Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
+        </p>
+      </td>
       <tfoot>
-        <td colspan="3" class="text-center">
-          <p>
-            For information on all registered charities in Canada under the Income Tax Act please contact
-            Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
-          </p>
-        </td>
-      <tfoot>
-    </tbody>
+        </tbody>
   </table>
 
   <hr>
 
   <table id="grid-2">
-      <colgroup>
-        <col span="1" style="width: 37%;">
-        <col span="1" style="width: 30%;">
-        <col span="1" style="width: auto;">
-      </colgroup>
+    <colgroup>
+      <col span="1" style="width: 37%;">
+      <col span="1" style="width: 30%;">
+      <col span="1" style="width: auto;">
+    </colgroup>
     <tbody>
       <tr>
         <td colspan="2">{{ org }}</td>
@@ -94,21 +100,21 @@
       <tr>
         <td class="offset" style="vertical-align: top;">
           <label for="sign-2">Authorized Signature:</label>
-        </td>  
+        </td>
         <td colspan="2" class="text-center">
           <input type="password" id="sign-2">
           <p> {{ treasurer }}, Treasurer</p>
         </td>
       </tr>
+    <tfoot>
+      <td colspan="3" class="text-center">
+        <p>
+          For information on all registered charities in Canada under the Income Tax Act please contact
+          Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
+        </p>
+      </td>
       <tfoot>
-        <td colspan="3" class="text-center">
-          <p>
-            For information on all registered charities in Canada under the Income Tax Act please contact
-            Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
-          </p>
-        </td>
-      <tfoot>
-    </tbody>
+        </tbody>
   </table>
 </body>
 

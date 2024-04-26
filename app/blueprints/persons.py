@@ -103,7 +103,7 @@ def receipt(person_id, year):
     return render_template(
         'tax_receipt.html.j2',
         org=app.config.get('ORG'),
-        treasurer=app.config.get('TREASURER'),
+        treasurer=app.config.get('TREASURER_NAME'),
         tax_year=year,
         receipt_number=p.id,
         receipt_date=datetime.now().strftime("%B %e, %Y"),
