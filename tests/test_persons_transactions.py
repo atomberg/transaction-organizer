@@ -22,15 +22,16 @@ def create_person(first_name='Jane', last_name='Doe'):
     return person
 
 
-def create_transaction(person_id, amount=20.0):
+def create_transaction(person_id, amount=20.0, day=date(2024, 1, 1), receipt=False):
     transaction = Transaction(
         person_id=person_id,
-        date=date(2024, 1, 1),
+        date=day,
         method='Cash',
         amount=amount,
         accepted_by='Treasurer',
         memo='Membership',
     )
+    transaction.receipt = receipt
     db.session.add(transaction)
     db.session.commit()
     return transaction
@@ -173,3 +174,51 @@ def test_transaction_update_and_delete_routes(test_client, app):
 
     with app.app_context():
         assert db.session.get(Transaction, transaction_id) is None
+
+
+def test_person_receipt_route_filters_year_and_issued_receipts(test_client, app):
+    with app.app_context():
+        person = create_person(first_name='Receipt', last_name='Member')
+        person_id = person.id
+        create_transaction(person_id, amount=20.0, day=date(2024, 1, 15), receipt=False)
+        create_transaction(person_id, amount=5.0, day=date(2024, 2, 1), receipt=True)
+        create_transaction(person_id, amount=7.0, day=date(2023, 12, 31), receipt=False)
+
+    response = test_client.get(f'/persons/{person_id}/receipt/2024')
+    assert response.status_code == 200
+    assert b'For the Tax Year: 2024' in response.data
+    assert b'Eligible Amount: 20.00' in response.data
+    assert b'Member, Receipt' in response.data
+
+
+def test_transaction_receipt_route_renders_receipt_content(test_client, app):
+    with app.app_context():
+        person = create_person(first_name='Txn', last_name='Receipt')
+        person_id = person.id
+        transaction = create_transaction(person_id, amount=42.5, day=date(2024, 5, 1), receipt=False)
+        transaction_id = transaction.id
+
+    response = test_client.get(f'/transactions/{transaction_id}/receipt')
+    assert response.status_code == 200
+    assert b'For the Tax Year: 2024' in response.data
+    assert b'Eligible Amount: 42.50' in response.data
+    assert f'Receipt # {person_id}-{transaction_id}'.encode() in response.data
+
+
+def test_person_receipt_pdf_route_returns_pdf_response(test_client, app, monkeypatch):
+    with app.app_context():
+        person = create_person(first_name='Pdf', last_name='Donor')
+        person_id = person.id
+
+    called = {}
+
+    def fake_render_pdf(url):
+        called['url'] = url
+        return app.response_class(b'%PDF-test', mimetype='application/pdf')
+
+    monkeypatch.setattr('app.blueprints.persons.render_pdf', fake_render_pdf)
+
+    response = test_client.get(f'/persons/{person_id}/receipt/2024/pdf')
+    assert response.status_code == 200
+    assert response.mimetype == 'application/pdf'
+    assert called['url'].endswith(f'/persons/{person_id}/receipt/2024')
