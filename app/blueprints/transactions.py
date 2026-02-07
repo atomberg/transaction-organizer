@@ -1,9 +1,13 @@
+"""Routes for managing donations and transaction records."""
+
 from datetime import date, datetime
-from flask import Blueprint, request, render_template, current_app as app
+
+from flask import Blueprint, render_template, request
+from flask import current_app as app
 
 from app import db
-from app.models.transaction import Transaction, get_transactions, get_accepted_bys
 from app.models.person import Person, get_person_names
+from app.models.transaction import Transaction, get_accepted_bys, get_transactions
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 

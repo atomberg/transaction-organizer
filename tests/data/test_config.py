@@ -1,5 +1,6 @@
-from pathlib import Path
+"""Test-specific app configuration."""
 
+from pathlib import Path
 
 SQLALCHEMY_DATABASE_PATH = Path(__file__).parent / 'test.db'
 SQLALCHEMY_DATABASE_URI = f'sqlite:///{SQLALCHEMY_DATABASE_PATH.absolute()}'

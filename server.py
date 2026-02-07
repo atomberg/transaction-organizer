@@ -1,6 +1,8 @@
-from app import create_app
+"""Production WSGI entrypoint."""
+
 from waitress import serve
 
+from app import create_app
 
 if __name__ == "__main__":
     backend = create_app()

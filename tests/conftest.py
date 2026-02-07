@@ -1,3 +1,5 @@
+"""Shared pytest fixtures for application tests."""
+
 from pathlib import Path
 
 import pytest

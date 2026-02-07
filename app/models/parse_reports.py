@@ -1,3 +1,5 @@
+"""Report parsing utilities for external spreadsheet exports."""
+
 import pandas as pd
 
 

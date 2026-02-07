@@ -1,6 +1,7 @@
 """."""
 import datetime
 import shutil
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -21,7 +22,7 @@ def create_app(config_filename='config.py'):
     db.init_app(app)
 
     # Import and register blueprints
-    from .blueprints import transactions_bp, persons_bp, reports_bp
+    from .blueprints import persons_bp, reports_bp, transactions_bp
 
     app.register_blueprint(persons_bp)
     app.register_blueprint(transactions_bp)

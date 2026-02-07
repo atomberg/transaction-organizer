@@ -1,3 +1,5 @@
+"""Integration tests for report upload and parsing routes."""
+
 def test_upload(test_client):
     """Test the response of the upload page."""
     response = test_client.get('/reports', follow_redirects=True)

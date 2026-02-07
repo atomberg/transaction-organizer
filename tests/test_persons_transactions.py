@@ -1,3 +1,5 @@
+"""Integration tests for person and transaction routes."""
+
 from datetime import date
 
 from sqlalchemy import select

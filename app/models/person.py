@@ -1,8 +1,12 @@
+"""Person model and query helpers."""
+
 from datetime import datetime
-from app import db
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.orm import relationship
+
+from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import relationship
+
+from app import db
 
 
 class Person(db.Model):

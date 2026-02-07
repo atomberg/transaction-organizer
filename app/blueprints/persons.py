@@ -1,7 +1,9 @@
+"""Routes for managing people and receipt generation."""
+
 from datetime import datetime
 
-from flask import Blueprint, current_app as app, flash, render_template, request, url_for
-
+from flask import Blueprint, flash, render_template, request, url_for
+from flask import current_app as app
 from flask_weasyprint import HTML, render_pdf
 
 from app import db

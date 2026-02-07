@@ -1,6 +1,10 @@
 [tool.ruff]
 line-length = 109
 target-version = "py311"
+extend-exclude = [
+  'app/config-copy.py',
+  'app/config-copy-2.py'
+]
 
 [tool.ruff.lint]
 select = [
@@ -33,7 +37,13 @@ ignore = [
   "E231",
 ]
 
-
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[tool.ruff.format]
+quote-style = 'single'
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  'error',
+]

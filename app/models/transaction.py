@@ -1,10 +1,14 @@
+"""Transaction model and reporting helpers."""
+
 import csv
 import io
+from datetime import datetime
+
+from sqlalchemy import Boolean, Column, Date, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import func as sqlfunc
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from app import db
-from datetime import datetime
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, DateTime, Boolean, func as sqlfunc
-from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Transaction(db.Model):
