@@ -1,2 +1,2 @@
 start "Transaction Organizer Server" python server.py
-explorer "http://localhost:5555/transactions
+explorer "http://localhost:5555/transactions"

@@ -1,5 +1,5 @@
 from app import create_app
-from gevent.pywsgi import WSGIServer
+from waitress import serve
 
 
 if __name__ == "__main__":
@@ -7,5 +7,4 @@ if __name__ == "__main__":
     backend.secret_key = 'super secret key'
     backend.config['SESSION_TYPE'] = 'filesystem'
 
-    http_server = WSGIServer(('localhost', 5555), backend)
-    http_server.serve_forever()
+    serve(backend, host='127.0.0.1', port=5555)
