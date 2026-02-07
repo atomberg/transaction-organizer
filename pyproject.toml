@@ -1,0 +1,39 @@
+[tool.ruff]
+line-length = 109
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "W",
+  "I",
+  "B",
+  "UP",
+  "SIM",
+  "C4",
+  "D",
+]
+
+ignore = [
+  # Line length handled by formatter
+  "E501",
+
+  # --- Your historical flake8 ignores ---
+  "D203",
+  "D102",
+  "D103",
+  "D104",
+  "D105",
+  "D107",
+  "D401",
+  "D413",
+
+  "E203",
+  "E231",
+]
+
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+

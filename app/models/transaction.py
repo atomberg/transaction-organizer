@@ -59,7 +59,7 @@ class Transaction(db.Model):
 
     @classmethod
     def get_by_id(cls, transaction_id):
-        return cls.query.get(transaction_id)
+        return db.session.get(cls, transaction_id)
 
     def __str__(self):
         """Human readable representation."""

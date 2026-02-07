@@ -56,8 +56,8 @@ class Person(db.Model):
         }
 
     @classmethod
-    def get_by_id(cls, id):
-        return cls.query.get(id)
+    def get_by_id(cls, person_id):
+        return db.session.get(cls, person_id)
 
     def __str__(self):
         """Human readable representation."""
