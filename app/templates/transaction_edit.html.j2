@@ -71,20 +71,12 @@
         <tr>
           <th>Tax receipt status</th>
           <td>
-            <div class="form-check">
-              <input class="form-check-input" form="edit" type="radio" name="receipt_issued" 
-                id="receipt_issued_true" value="True" {% if transaction['receipt'] %} checked {% endif %}>
-              <label class="form-check-label" for="receipt_issued_true">
-                Receipt issued
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" form="edit" type="radio" name="receipt_issued"
-                id="receipt_issued_false" value="False" {% if not transaction.get('receipt') %} checked {% endif %}>
-              <label class="form-check-label" for="receipt_issued_false">
-                No receipt issued yet
-              </label>
-            </div>
+            {% if transaction['receipt_issued'] %}
+              <span class="label label-success">Receipt issued</span>
+            {% else %}
+              <span class="label label-default">No receipt issued yet</span>
+            {% endif %}
+            <div><small>Status is derived from issued receipt records.</small></div>
           </td>
         </tr>
       </form>

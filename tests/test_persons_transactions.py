@@ -157,7 +157,6 @@ def test_transaction_update_and_delete_routes(test_client, app):
             'amount': '40.00',
             'accepted_by': 'Assistant',
             'memo': 'Updated memo',
-            'receipt_issued': 'True',
         },
         follow_redirects=True,
     )
@@ -168,7 +167,7 @@ def test_transaction_update_and_delete_routes(test_client, app):
         updated = db.session.get(Transaction, transaction_id)
         assert updated is not None
         assert updated.method == 'Cheque'
-        assert updated.receipt is True
+        assert updated.receipt_issued is False
 
     delete_response = test_client.get(f'/transactions/{transaction_id}/delete', follow_redirects=True)
     assert delete_response.status_code == 200
@@ -203,7 +202,7 @@ def test_transaction_receipt_route_renders_receipt_content(test_client, app):
     assert response.status_code == 200
     assert b'Tax year:</strong> 2024' in response.data
     assert b'Eligible Amount: 42.50' in response.data
-    assert f'Receipt #</strong> {person_id}-{transaction_id}'.encode() in response.data
+    assert f'Receipt #</strong> {person_id}-{transaction_id}-1'.encode() in response.data
 
 
 def test_person_receipt_pdf_route_returns_pdf_response(test_client, app, monkeypatch):
@@ -286,6 +285,7 @@ def test_receipt_history_route_lists_issued_receipts(test_client, app, monkeypat
     assert b'Receipt history for Donor, History' in response.data
     assert b'annual_person' in response.data
     assert b'Download PDF' in response.data
+    assert b'Active' in response.data
 
 
 def test_person_receipt_routes_return_404_when_person_missing(test_client):
@@ -319,3 +319,100 @@ def test_receipt_template_uses_configurable_signature_url(test_client, app):
     response = test_client.get(f'/persons/{person_id}/receipt/2024')
     assert response.status_code == 200
     assert b'/static/custom-signature.png' in response.data
+
+
+def test_sequential_receipt_numbers_for_annual_reissues(test_client, app, monkeypatch):
+    with app.app_context():
+        person = create_person(first_name='Seq', last_name='Annual')
+        person_id = person.id
+        create_transaction(person_id, amount=10.0, day=date(2024, 1, 1), receipt=False)
+
+    monkeypatch.setattr(
+        'app.blueprints.persons.render_pdf',
+        lambda _url: app.response_class(b'%PDF-test', mimetype='application/pdf'),
+    )
+
+    first_response = test_client.get(f'/persons/{person_id}/receipt/2024/pdf')
+    assert first_response.status_code == 200
+
+    with app.app_context():
+        first_receipt = db.session.execute(
+            select(TaxReceipt).where(TaxReceipt.person_id == person_id)
+        ).scalar_one()
+        first_receipt_id = first_receipt.id
+
+    second_response = test_client.post(f'/persons/receipts/{first_receipt_id}/reissue', follow_redirects=True)
+    assert second_response.status_code == 200
+
+    with app.app_context():
+        rows = db.session.execute(
+            select(TaxReceipt)
+            .where(TaxReceipt.person_id == person_id)
+            .order_by(TaxReceipt.id.asc())
+        ).scalars().all()
+        assert [row.receipt_number for row in rows] == [f'{person_id}-Y2024-1', f'{person_id}-Y2024-2']
+        assert rows[0].voided_at is not None
+        assert rows[1].voided_at is None
+
+
+def test_void_receipt_route_clears_derived_status(test_client, app, monkeypatch):
+    with app.app_context():
+        person = create_person(first_name='Void', last_name='Case')
+        person_id = person.id
+        transaction = create_transaction(person.id, amount=22.0, day=date(2024, 3, 1), receipt=False)
+        transaction_id = transaction.id
+
+    monkeypatch.setattr(
+        'app.blueprints.persons.render_pdf',
+        lambda _url: app.response_class(b'%PDF-test', mimetype='application/pdf'),
+    )
+    test_client.get(f'/persons/{person_id}/receipt/2024/pdf')
+
+    with app.app_context():
+        receipt = db.session.execute(select(TaxReceipt)).scalar_one()
+        receipt_id = receipt.id
+        tx_before = db.session.get(Transaction, transaction_id)
+        assert tx_before.receipt_issued is True
+
+    response = test_client.post(f'/persons/receipts/{receipt_id}/void', follow_redirects=True)
+    assert response.status_code == 200
+    assert b'was voided' in response.data
+
+    with app.app_context():
+        receipt = db.session.get(TaxReceipt, receipt_id)
+        assert receipt.voided_at is not None
+        tx_after = db.session.get(Transaction, transaction_id)
+        assert tx_after.receipt_issued is False
+
+
+def test_reissue_single_transaction_receipt_creates_new_active_version(
+    test_client, app, monkeypatch
+):
+    with app.app_context():
+        person = create_person(first_name='Reissue', last_name='Single')
+        person_id = person.id
+        transaction = create_transaction(person.id, amount=18.0, day=date(2024, 4, 5), receipt=False)
+        transaction_id = transaction.id
+
+    monkeypatch.setattr(
+        'app.blueprints.transactions.render_pdf',
+        lambda _url: app.response_class(b'%PDF-test', mimetype='application/pdf'),
+    )
+    test_client.get(f'/transactions/{transaction_id}/receipt/pdf')
+
+    with app.app_context():
+        first = db.session.execute(select(TaxReceipt)).scalar_one()
+        first_id = first.id
+
+    response = test_client.post(f'/persons/receipts/{first_id}/reissue', follow_redirects=True)
+    assert response.status_code == 200
+
+    with app.app_context():
+        rows = db.session.execute(
+            select(TaxReceipt).order_by(TaxReceipt.id.asc())
+        ).scalars().all()
+        assert len(rows) == 2
+        assert rows[0].receipt_number == f'{person_id}-{transaction_id}-1'
+        assert rows[1].receipt_number == f'{person_id}-{transaction_id}-2'
+        assert rows[0].voided_at is not None
+        assert rows[1].voided_at is None

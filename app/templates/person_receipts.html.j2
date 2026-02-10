@@ -28,6 +28,7 @@
           <th>Type</th>
           <th>Tax year</th>
           <th>Issued at</th>
+          <th>Status</th>
           <th>Amount</th>
           <th>Actions</th>
         </tr>
@@ -39,6 +40,13 @@
           <td>{{ receipt.receipt_type }}</td>
           <td>{{ receipt.tax_year }}</td>
           <td>{{ receipt.issued_at }}</td>
+          <td>
+            {% if receipt.voided_at %}
+              <span class="label label-warning">Voided</span>
+            {% else %}
+              <span class="label label-success">Active</span>
+            {% endif %}
+          </td>
           <td>{{ receipt.total_amount | currency_format }}</td>
           <td>
             <a href="{{ url_for('persons.receipt_by_id', receipt_id=receipt.id) }}" class="btn btn-info btn-sm">
@@ -47,11 +55,19 @@
             <a href="{{ url_for('persons.receipt_pdf_by_id', receipt_id=receipt.id) }}" class="btn btn-primary btn-sm">
               Download PDF
             </a>
+            {% if not receipt.voided_at %}
+            <form method="post" action="{{ url_for('persons.void_receipt_route', receipt_id=receipt.id) }}" style="display:inline;">
+              <button type="submit" class="btn btn-warning btn-sm">Void</button>
+            </form>
+            <form method="post" action="{{ url_for('persons.reissue_receipt_route', receipt_id=receipt.id) }}" style="display:inline;">
+              <button type="submit" class="btn btn-default btn-sm">Reissue</button>
+            </form>
+            {% endif %}
           </td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="6" class="text-center">No receipts found for this filter.</td>
+          <td colspan="7" class="text-center">No receipts found for this filter.</td>
         </tr>
         {% endfor %}
       </tbody>
