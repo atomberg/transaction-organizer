@@ -12,7 +12,11 @@ from app.models.person import Person, get_persons
 from app.models.tax_receipt import (
     TaxReceipt,
     get_receipts_for_person,
+    is_receipt_eligible,
     issue_annual_person_receipt,
+    next_annual_person_receipt_number,
+    reissue_receipt,
+    void_receipt,
 )
 
 bp = Blueprint('persons', __name__, url_prefix='/persons')
@@ -153,11 +157,11 @@ def receipt(person_id, year):
         org=_org_value(),
         treasurer=_treasurer_value(),
         tax_year=year,
-        receipt_number=p.id,
+        receipt_number=next_annual_person_receipt_number(p.id, year),
         receipt_date=datetime.now().strftime("%B %e, %Y"),
         name=p.full_name,
         address=p.address,
-        amount=sum([t.amount for t in p.transactions if t.date.year == year and not t.receipt]),
+        amount=sum([t.amount for t in p.transactions if t.date.year == year and is_receipt_eligible(t)]),
         signature_url=_signature_url(),
     )
 
@@ -217,12 +221,45 @@ def receipt_history(person_id):
     )
 
 
+@bp.route('/receipts/<int:receipt_id>/void', methods=['POST'])
+def void_receipt_route(receipt_id):
+    """Void an issued receipt."""
+    receipt_record = TaxReceipt.get_by_id(receipt_id)
+    if receipt_record is None:
+        return ('Receipt not found', 404)
+    void_receipt(receipt_record)
+    flash(f'Receipt {receipt_record.receipt_number} was voided.')
+    return redirect(url_for('persons.receipt_history', person_id=receipt_record.person_id))
+
+
+@bp.route('/receipts/<int:receipt_id>/reissue', methods=['POST'])
+def reissue_receipt_route(receipt_id):
+    """Reissue a receipt by voiding old version and creating a new one."""
+    receipt_record = TaxReceipt.get_by_id(receipt_id)
+    if receipt_record is None:
+        return ('Receipt not found', 404)
+    try:
+        replacement = reissue_receipt(
+            receipt_record,
+            org=_org_value(),
+            treasurer=_treasurer_value(),
+        )
+    except ValueError as exc:
+        flash(str(exc))
+        return redirect(url_for('persons.receipt_history', person_id=receipt_record.person_id))
+
+    flash(
+        f'Receipt reissued: {receipt_record.receipt_number} -> {replacement.receipt_number}'
+    )
+    return redirect(url_for('persons.receipt_pdf_by_id', receipt_id=replacement.id))
+
+
 @bp.route('/receipts/<int:year>/', methods=['GET'])
 def all_receipts_pdf(year):
     """Get a person's tax receipt by id in PDF form."""
     docs = {}
     for p in get_persons():
-        if sum([t.amount for t in p.transactions if t.date.year == year and not t.receipt]) > 0:
+        if sum([t.amount for t in p.transactions if t.date.year == year and is_receipt_eligible(t)]) > 0:
             docs[p.full_name] = HTML(url_for('persons.receipt', person_id=p.id, year=year)).render()
 
     if len(docs) == 0:

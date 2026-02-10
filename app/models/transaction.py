@@ -46,6 +46,14 @@ class Transaction(db.Model):
     def year(self):
         return sqlfunc.extract('year', self.date)
 
+    @property
+    def receipt_issued(self):
+        """Derived receipt status from receipt items, with legacy fallback."""
+        for item in self.tax_receipt_items:
+            if item.tax_receipt is not None and item.tax_receipt.voided_at is None:
+                return True
+        return bool(self.receipt)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -59,6 +67,7 @@ class Transaction(db.Model):
             'created_at': self.created_at.strftime('%c'),
             'memo': self.memo or '',
             'receipt': self.receipt,
+            'receipt_issued': self.receipt_issued,
         }
 
     @classmethod

@@ -9,7 +9,10 @@ from flask_weasyprint import render_pdf
 
 from app import db
 from app.models.person import Person, get_person_names
-from app.models.tax_receipt import issue_single_transaction_receipt
+from app.models.tax_receipt import (
+    issue_single_transaction_receipt,
+    next_single_transaction_receipt_number,
+)
 from app.models.transaction import Transaction, get_accepted_bys, get_transactions
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
@@ -110,7 +113,6 @@ def update(transaction_id):
     t.accepted_by = request.values['accepted_by']
     t.memo = request.values['memo']
     t.updated_at = datetime.now()
-    t.receipt = request.values['receipt_issued'] == 'True'
 
     db.session.add(t)
     db.session.commit()
@@ -157,7 +159,7 @@ def receipt(transaction_id):
         org=_org_value(),
         treasurer=_treasurer_value(),
         tax_year=t.year,
-        receipt_number=f"{p.id}-{t.id}",
+        receipt_number=next_single_transaction_receipt_number(t),
         receipt_date=datetime.now().strftime("%B %e, %Y"),
         name=p.full_name,
         address=p.address,
