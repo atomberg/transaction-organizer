@@ -21,6 +21,15 @@ def create_app(config_filename='config.py'):
 
     db.init_app(app)
 
+    # Ensure schema exists for fresh/empty SQLite files.
+    with app.app_context():
+        from app.models.person import Person
+        from app.models.tax_receipt import TaxReceipt, TaxReceiptItem
+        from app.models.transaction import Transaction
+
+        _ = (Person, Transaction, TaxReceipt, TaxReceiptItem)
+        db.create_all()
+
     # Import and register blueprints
     from .blueprints import persons_bp, reports_bp, transactions_bp
 
