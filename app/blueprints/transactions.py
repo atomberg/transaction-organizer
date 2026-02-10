@@ -1,12 +1,15 @@
 """Routes for managing donations and transaction records."""
 
 from datetime import date, datetime
+from pathlib import Path
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, url_for
 from flask import current_app as app
+from flask_weasyprint import render_pdf
 
 from app import db
 from app.models.person import Person, get_person_names
+from app.models.tax_receipt import issue_single_transaction_receipt
 from app.models.transaction import Transaction, get_accepted_bys, get_transactions
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
@@ -15,6 +18,26 @@ bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 @bp.add_app_template_filter
 def currency_format(value):
     return f'{value:.2f}'
+
+
+def _org_value():
+    return app.config.get('ORG') or app.config.get('ORGANISATION_NAME') or 'Unknown organisation'
+
+
+def _treasurer_value():
+    return app.config.get('TREASURER_NAME') or app.config.get('TREASURER') or 'Unknown treasurer'
+
+
+def _signature_url():
+    if app.config.get('SIGNATURE_IMAGE_URL'):
+        return app.config['SIGNATURE_IMAGE_URL']
+
+    static_dir = Path(app.root_path) / 'static'
+    if (static_dir / 'signature.png').exists():
+        return '/static/signature.png'
+    if (static_dir / 'signature.jpg').exists():
+        return '/static/signature.jpg'
+    return '/static/sample-signature.png'
 
 
 @bp.route('/', methods=['GET'])
@@ -66,8 +89,11 @@ def add():
 @bp.route('/<int:transaction_id>', methods=['GET'])
 def get(transaction_id):
     """Get a transation by id."""
+    transaction = Transaction.get_by_id(transaction_id)
+    if transaction is None:
+        return ('Transaction not found', 404)
     return render_template(
-        'transaction_edit.html.j2', transaction=Transaction.get_by_id(transaction_id).to_dict()
+        'transaction_edit.html.j2', transaction=transaction.to_dict()
     )
 
 
@@ -75,6 +101,8 @@ def get(transaction_id):
 def update(transaction_id):
     """Update a transaction by id."""
     t = Transaction.get_by_id(transaction_id)
+    if t is None:
+        return ('Transaction not found', 404)
     t.person_id = request.values['person_id']
     t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
     t.method = request.values['method']
@@ -95,6 +123,8 @@ def update(transaction_id):
 def delete(transaction_id):
     """Delete a transaction by id."""
     t = Transaction.get_by_id(transaction_id)
+    if t is None:
+        return ('Transaction not found', 404)
     db.session.delete(t)
     db.session.commit()
 
@@ -117,15 +147,34 @@ def show_export_info():
 def receipt(transaction_id):
     """Generate a tax receipt for a single transaction."""
     t = Transaction.get_by_id(transaction_id)
+    if t is None:
+        return ('Transaction not found', 404)
     p = Person.get_by_id(t.person_id)
+    if p is None:
+        return ('Person not found', 404)
     return render_template(
         'tax_receipt.html.j2',
-        org=app.config.get('ORG'),
-        treasurer=app.config.get('TREASURER'),
+        org=_org_value(),
+        treasurer=_treasurer_value(),
         tax_year=t.year,
         receipt_number=f"{p.id}-{t.id}",
         receipt_date=datetime.now().strftime("%B %e, %Y"),
         name=p.full_name,
         address=p.address,
         amount=t.amount,
+        signature_url=_signature_url(),
     )
+
+
+@bp.route('/<int:transaction_id>/receipt/pdf', methods=['GET'])
+def receipt_pdf(transaction_id):
+    """Generate a PDF for a single transaction and mark it receipted."""
+    transaction = Transaction.get_by_id(transaction_id)
+    if transaction is None:
+        return ('Transaction not found', 404)
+    receipt_record = issue_single_transaction_receipt(
+        transaction,
+        _org_value(),
+        _treasurer_value(),
+    )
+    return render_pdf(url_for('persons.receipt_by_id', receipt_id=receipt_record.id))

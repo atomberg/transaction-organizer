@@ -6,6 +6,7 @@ import pytest
 
 from app import create_app, db
 from app.models.person import Person
+from app.models.tax_receipt import TaxReceipt, TaxReceiptItem
 from app.models.transaction import Transaction
 
 
@@ -39,6 +40,8 @@ def test_client(app):
 @pytest.fixture(autouse=True)
 def clean_database(app):
     with app.app_context():
+        db.session.query(TaxReceiptItem).delete()
+        db.session.query(TaxReceipt).delete()
         db.session.query(Transaction).delete()
         db.session.query(Person).delete()
         db.session.commit()

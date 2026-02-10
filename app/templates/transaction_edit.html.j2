@@ -98,6 +98,9 @@
               <a href="{{ url_for('transactions.receipt', transaction_id=transaction['id']) }}" class="btn btn-info">
                 Tax receipt <i class="fa fa-file-text-o"></i>
               </a>
+              <a href="{{ url_for('transactions.receipt_pdf', transaction_id=transaction['id']) }}" class="btn btn-primary">
+                Issue/PDF <i class="fa fa-download"></i>
+              </a>
           </td>
       </tr>
     </tbody>

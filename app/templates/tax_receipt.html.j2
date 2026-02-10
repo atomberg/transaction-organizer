@@ -1,121 +1,76 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-  <!-- Required meta tags -->
   <meta charset="utf-8">
-  <meta name="viewport" content="width=800, initial-scale=1, shrink-to-fit=no">
-  <link rel="stylesheet" href="/static/tax_receipt.css">
-
-  <title>{{ name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ receipt_number }}</title>
+  <style>
+    @page { size: Letter; margin: 0.5in; }
+    body { font-family: "Segoe UI", Arial, sans-serif; color: #111; margin: 0; }
+    .receipt-copy { border: 1px solid #333; padding: 14px; margin-bottom: 18px; }
+    .header { display: flex; justify-content: space-between; gap: 16px; }
+    .org { max-width: 65%; }
+    .number { text-align: right; min-width: 200px; }
+    .title { text-align: center; margin: 14px 0 12px; }
+    .title h2 { margin: 0 0 6px; font-size: 20px; }
+    .title p { margin: 0; font-style: italic; }
+    .content { display: flex; justify-content: space-between; gap: 16px; margin: 12px 0; }
+    .donor, .meta { width: 48%; }
+    .meta p, .donor p { margin: 6px 0; }
+    .amount { font-weight: 700; font-size: 20px; margin-top: 10px; }
+    .signature { margin-top: 18px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .signature .label { color: #444; }
+    .signature .name { font-weight: 600; }
+    .footer { margin-top: 14px; font-size: 12px; color: #444; }
+    hr { border: 0; border-top: 1px dashed #888; margin: 20px 0; }
+  </style>
 </head>
-
 <body>
-  <table id="grid-1">
-    <colgroup>
-      <col span="1" style="width: 37%;">
-      <col span="1" style="width: 33%;">
-      <col span="1" style="width: auto;">
-    </colgroup>
-    <tbody>
-      <tr>
-        <td colspan="2">{{ org }}</td>
-        <td class="receipt">
-          <p>Receipt # {{ receipt_number }} <br> {{ receipt_date }}
-        </td>
-      <tr>
-        <td colspan="3" class="text-center">
-          <h4>Official Donation Receipt For Income Tax Purposes</h4>
-          <p><em>Copy 1 &mdash; Income Tax Return</em></p>
-        </td>
-      <tr>
-      <tr>
-        <td colspan="2" class="offset">
-          <address>
-            Donated by: {{ name }}<br> {{ address | display_newlines }}
-          </address>
-        </td>
-        <td>
-          <p>For the Tax Year: {{ tax_year }}</p>
-          <p><strong>Eligible Amount: {{ amount | currency_format }}</strong></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="offset" style="vertical-align: top;">
-          <label for="sign-1">Authorized Signature:</label>
-        </td>
-        <td colspan="2" class="signature">
+  {% for copy_name in ['Copy 1 - Income Tax Return', 'Copy 2 - For Your Records'] %}
+  <section class="receipt-copy">
+    <div class="header">
+      <div class="org">{{ org }}</div>
+      <div class="number">
+        <div><strong>Receipt #</strong> {{ receipt_number }}</div>
+        <div>{{ receipt_date }}</div>
+      </div>
+    </div>
 
-          <div id="signature-container">
-            <input type="password" id="sign-1">
-            <a href="#">
-              <image src="/static/sample-signature.png" alt=img>
-            </a>
-          </div>
-          <p> {{ treasurer }}, Treasurer</p>
-        </td>
-      </tr>
-    <tfoot>
-      <td colspan="3" class="text-center">
-        <p>
-          For information on all registered charities in Canada under the Income Tax Act please contact
-          Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
-        </p>
-      </td>
-      <tfoot>
-        </tbody>
-  </table>
+    <div class="title">
+      <h2>Official Donation Receipt For Income Tax Purposes</h2>
+      <p>{{ copy_name }}</p>
+    </div>
 
+    <div class="content">
+      <div class="donor">
+        <p><strong>Donated by:</strong> {{ name }}</p>
+        <p>{{ address | display_newlines }}</p>
+      </div>
+      <div class="meta">
+        <p><strong>Tax year:</strong> {{ tax_year }}</p>
+        <p class="amount">Eligible Amount: {{ amount | currency_format }}</p>
+      </div>
+    </div>
+
+    <div class="signature">
+      <div>
+        <div class="label">Authorized Signature</div>
+        {% if signature_url %}
+        <img src="{{ signature_url }}" alt="Signature" style="max-height: 64px; margin-top: 8px;">
+        {% endif %}
+      </div>
+      <div class="name">{{ treasurer }}, Treasurer</div>
+    </div>
+
+    <div class="footer">
+      For information on registered charities in Canada, contact CRA:
+      <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>
+    </div>
+  </section>
+
+  {% if not loop.last %}
   <hr>
-
-  <table id="grid-2">
-    <colgroup>
-      <col span="1" style="width: 37%;">
-      <col span="1" style="width: 30%;">
-      <col span="1" style="width: auto;">
-    </colgroup>
-    <tbody>
-      <tr>
-        <td colspan="2">{{ org }}</td>
-        <td class="receipt">
-          <p>Receipt # {{ receipt_number }} <br> {{ receipt_date }}
-        </td>
-      <tr>
-        <td colspan="3" class="text-center">
-          <h4>Official Donation Receipt For Income Tax Purposes</h4>
-          <p><em>Copy 2 &mdash; For Your Records</em></p>
-        </td>
-      <tr>
-      <tr>
-        <td colspan="2" class="offset">
-          <address>
-            Donated by: {{ name }}<br> {{ address | display_newlines }}
-          </address>
-        </td>
-        <td>
-          <p>For the Tax Year: {{ tax_year }}</p>
-          <p><strong>Eligible Amount: {{ amount | currency_format }}</strong></p>
-        </td>
-      </tr>
-      <tr>
-        <td class="offset" style="vertical-align: top;">
-          <label for="sign-2">Authorized Signature:</label>
-        </td>
-        <td colspan="2" class="text-center">
-          <input type="password" id="sign-2">
-          <p> {{ treasurer }}, Treasurer</p>
-        </td>
-      </tr>
-    <tfoot>
-      <td colspan="3" class="text-center">
-        <p>
-          For information on all registered charities in Canada under the Income Tax Act please contact
-          Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
-        </p>
-      </td>
-      <tfoot>
-        </tbody>
-  </table>
+  {% endif %}
+  {% endfor %}
 </body>
-
 </html>
