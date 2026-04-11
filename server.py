@@ -11,4 +11,4 @@ if __name__ == "__main__":
     backend.secret_key = os.environ.get('SECRET_KEY', backend.config.get('SECRET_KEY', 'dev-secret-key'))
     backend.config['SESSION_TYPE'] = 'filesystem'
 
-    serve(backend, host='127.0.0.1', port=5555)
+    serve(backend, host='0.0.0.0', port=5555)
