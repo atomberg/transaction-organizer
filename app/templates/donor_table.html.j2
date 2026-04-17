@@ -15,6 +15,22 @@
     });
   });
 </script>
+<style>
+  #table_id th,
+  #table_id td {
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  #table_id th.actions-col,
+  #table_id td.actions-col {
+    min-width: 190px;
+  }
+
+  #table_id td.actions-col .btn {
+    white-space: nowrap;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -41,21 +57,19 @@
       <tr>
         <th>Last name</th>
         <th>First name</th>
-        <th>Email</th>
         <th>Phone</th>
         <th>Donations {{ tax_year }}</th>
-        <th>Actions</th>
+        <th class="actions-col">Actions</th>
       </tr>
     </thead>
     <tbody>
       {% for donor in donors %}
       <tr>
-        <td>{{ donor.last_name }}</td>
-        <td>{{ donor.first_name }}</td>
-        <td>{{ donor.email }}</td>
+        <td title="{{ donor.last_name }}">{{ donor.last_name }}</td>
+        <td title="{{ donor.first_name }}">{{ donor.first_name }}</td>
         <td>{{ donor.phone | phone_format }}</td>
         <td>{{ donor.donation_total | currency_format }}</td>
-        <td>
+        <td class="actions-col">
           <a href="{{ url_for('donor_family.donor_get', donor_id=donor.person_id) }}" class="btn btn-info btn-sm">
             View <i class="fa fa-chevron-right"></i>
           </a>
@@ -66,7 +80,7 @@
       </tr>
       {% else %}
       <tr>
-        <td colspan="6" class="text-center">No donors yet. Use the <strong>Add donor</strong> menu button to create the first donor.</td>
+        <td colspan="5" class="text-center">No donors yet. Use the <strong>Add donor</strong> menu button to create the first donor.</td>
       </tr>
       {% endfor %}
     </tbody>

@@ -1,9 +1,9 @@
 """Routes for managing donations and transaction records."""
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
-from flask import Blueprint, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for
 from flask import current_app as app
 from flask_weasyprint import render_pdf
 
@@ -48,6 +48,9 @@ def get_all():
     """Display all transactions in a table."""
     begin = request.values.get('begin')
     end = request.values.get('end')
+    if begin is None and end is None:
+        default_begin = (date.today() - timedelta(days=365)).strftime('%Y-%m-%d')
+        return redirect(url_for('transactions.get_all', begin=default_begin, end=''))
     return render_template(
         'transaction_table.html.j2',
         begin=begin,
