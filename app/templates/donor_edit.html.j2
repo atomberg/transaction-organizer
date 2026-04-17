@@ -1,0 +1,70 @@
+{% extends "base.html.j2" %}
+{% block title %}Donor card{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    $("#donors-nav").addClass("active");
+    $("#add-donor-nav").removeClass("active");
+    $("#people-nav").removeClass("active");
+    $("#transactions-nav").removeClass("active");
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <h1>{{ donor['full_name'] }}</h1>
+    <p class="lead">Would you like to edit me or add some notes?</p>
+  </div>
+</div>
+
+<div class="row">
+  <form id="edit" method="POST" action="{{ url_for('donor_family.donor_update', donor_id=donor['id']) }}">
+  <table id="table_id" class="table">
+    <tbody>
+      <tr>
+        <th>Last name</th>
+        <td>
+          <input name="last_name" form="edit" class="form-control" type="text" value="{{ donor['last_name'] }}">
+        </td>
+      </tr>
+      <tr>
+        <th>First name</th>
+        <td><input name="first_name" form="edit" class="form-control" type="text" value="{{ donor['first_name'] }}"></td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td><input name="email" form="edit" class="suppliers form-control" type="text" value="{{ donor['email'] }}"></td>
+      </tr>
+      <tr>
+        <th>Phone number</th>
+        <td><input name="phone" form="edit" class="form-control" type="text" value="{{ donor['phone'] }}"></td>
+      </tr>
+      <tr>
+        <th>Actions</th>
+        <td>
+            <input type="submit" form="edit" value="Save changes" class="btn btn-success">
+            <button
+              type="submit"
+              form="edit"
+              formaction="{{ url_for('donor_family.remove_donor', donor_id=donor['id']) }}"
+              class="btn btn-danger"
+            >
+              Remove <i class="fa fa-times"></i>
+            </button>
+            <a href="{{ url_for('donor_family.donor_get', donor_id=donor['id']) }}" class="btn btn-secondary">Back</a>
+        </td>
+        <td>
+          <div class="row">
+            <i>Last modified {{ donor['last_modified'] }}</i>
+          </div>
+          <div class="row">
+            <i>Created on {{ donor['created_at'] }}</i>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </form>
+</div>
+{% endblock %}

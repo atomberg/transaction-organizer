@@ -22,7 +22,7 @@
         <td>{{ person.id }}</td>
         <td>{{ person.last_name }}</td>
         <td>{{ person.first_name }}</td>
-        <td>{{ person.phone }}</td>
+        <td>{{ person.phone | phone_format }}</td>
         <td>{{ person.email }}</td>
         <td>{{ person.address }}</td>
         <td>{{ person.notes or '' }}</td>

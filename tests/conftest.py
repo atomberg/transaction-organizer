@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from app import create_app, db
+from app.models.family import Family, FamilyMember
 from app.models.person import Person
 from app.models.tax_receipt import TaxReceipt, TaxReceiptItem
 from app.models.transaction import Transaction
@@ -43,6 +44,8 @@ def clean_database(app):
         db.session.query(TaxReceiptItem).delete()
         db.session.query(TaxReceipt).delete()
         db.session.query(Transaction).delete()
+        db.session.query(FamilyMember).delete()
+        db.session.query(Family).delete()
         db.session.query(Person).delete()
         db.session.commit()
     yield

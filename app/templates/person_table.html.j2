@@ -35,7 +35,8 @@
 {% block content %}
 <div class="row">
   <div class="col-lg-12 text-center">
-    <h1>All people</h1>
+    <h1>All people (compatibility view)</h1>
+    <p class="text-muted">Donor workflow lives under the Donors tab.</p>
   </div>
 </div>
 
@@ -56,7 +57,7 @@
       <tr>
         <td>{{ person.last_name }}</td>
         <td>{{ person.first_name }}</td>
-        <td>{{ person.phone }}</td>
+        <td>{{ person.phone | phone_format }}</td>
         <td>{{ person.email }}</td>
         <td>{{ person.total | currency_format }}</td>
         <td>

@@ -42,8 +42,16 @@
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
+          <a class="nav-link" id="donors-nav" href="{{ url_for('donor_family.donors') }}">
+            Donors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="add-donor-nav" href="{{ url_for('donor_family.donor_add_form') }}">
+            Add donor</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" id="people-nav" href="{{ url_for('persons.get_all') }}">
-            People</a>
+            People (compatibility)</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" id="transactions-nav" href="{{ url_for('transactions.get_all') }}">

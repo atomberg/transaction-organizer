@@ -1,0 +1,65 @@
+{% extends "base.html.j2" %}
+{% block title %}Add donor{% endblock %}
+
+{% block scripts %}
+<script>
+  $(document).ready(function () {
+    $("#add-donor-nav").addClass("active");
+    $("#donors-nav").removeClass("active");
+    $("#people-nav").removeClass("active");
+    $("#transactions-nav").removeClass("active");
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <h1>Add donor</h1>
+    <p class="lead">Creating a donor automatically creates a family of one.</p>
+  </div>
+</div>
+
+<div class="row">
+  <form id="add" method="post" action="{{ url_for('donor_family.donor_create') }}">
+    <table id="table_id" class="table">
+      <tbody>
+        <tr>
+          <th>Last name</th>
+          <td>
+            <input name="last_name" form="add" class="form-control" type="text" placeholder="Last name" required>
+          </td>
+          <th>First name</th>
+          <td>
+            <input name="first_name" form="add" class="form-control" type="text" placeholder="First name" required>
+          </td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td>
+            <input name="email" form="add" class="suppliers form-control" type="text" placeholder="Email">
+          </td>
+          <th>Phone number</th>
+          <td><input name="phone" form="add" class="form-control" type="text" placeholder="Phone number"></td>
+        </tr>
+        <tr>
+          <th>Address</th>
+          <td colspan="3">
+            <textarea name="address" form="add" class="categories form-control"
+              rows="3" placeholder="{{ '123 Street\nCity, Province\nPostal Code' }}"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+            <input type="submit" form="add" value="Create" class="btn btn-success">
+            <a class="btn btn-secondary ml-2" href="{{ url_for('donor_family.donors') }}">Back</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
+{% endblock %}

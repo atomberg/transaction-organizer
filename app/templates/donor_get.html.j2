@@ -1,0 +1,122 @@
+{% extends "base.html.j2" %}
+{% block title %}Donor Family{% endblock %}
+
+{% block scripts %}
+<script>
+  $(document).ready(function () {
+    $("#donors-nav").addClass("active");
+    $("#add-donor-nav").removeClass("active");
+    $("#people-nav").removeClass("active");
+    $("#transactions-nav").removeClass("active");
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12 text-center">
+    <h1>{{ donor['full_name'] }}</h1>
+    <p class="lead">Family #{{ family['id'] }} (shared address, max 2 members)</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <h3>Family members</h3>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Person</th>
+          <th>Primary</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for membership in family['members'] %}
+        <tr>
+          <td>{{ membership.full_name }}</td>
+          <td>{% if membership.is_primary %}Yes{% else %}No{% endif %}</td>
+          <td>{{ membership.email }}</td>
+          <td>{{ membership.phone | phone_format }}</td>
+          <td>
+            <a href="{{ url_for('donor_family.donor_edit', donor_id=membership.person_id) }}" class="btn btn-success btn-sm">
+              Edit <i class="fa fa-chevron-right"></i>
+            </a>
+            <form method="post" action="{{ url_for('donor_family.remove_donor_member', donor_id=donor['id'], person_id=membership.person_id) }}" style="display:inline;">
+              <button class="btn btn-danger btn-sm" type="submit">
+                Remove <i class="fa fa-times"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <h3>Family details</h3>
+    <form method="post" action="{{ url_for('donor_family.donor_update_family_address', donor_id=donor['id']) }}">
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>Address</th>
+            <td><textarea class="form-control" name="address" rows="2">{{ family['address'] }}</textarea></td>
+          </tr>
+          <tr>
+            <th>Notes</th>
+            <td><textarea class="form-control" name="notes" rows="3">{{ family['notes'] }}</textarea></td>
+          </tr>
+          <tr>
+            <th></th>
+            <td>
+              <div class="d-flex justify-content-between align-items-start">
+                <button class="btn btn-success" type="submit">
+                  Save family details <i class="fa fa-check"></i>
+                </button>
+                <div class="text-right">
+                  <i>Last modified {{ family['last_modified'] }}</i><br>
+                  <i>Created on {{ family['created_at'] }}</i>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <h3>Actions</h3>
+    <table class="table">
+      <tbody>
+        <tr>
+          <th>Membership</th>
+          <td>
+            {% if family['member_count'] < 2 %}
+            <a class="btn btn-success" href="{{ url_for('donor_family.add_spouse_form', donor_id=donor['id']) }}">Add donor</a>
+            {% else %}
+            <button class="btn btn-secondary" type="button" disabled>Add donor (family full)</button>
+            {% endif %}
+            <a class="btn btn-secondary" href="{{ url_for('donor_family.donors') }}">Back</a>
+          </td>
+        </tr>
+        <tr>
+          <th>Receipts</th>
+          <td>
+            <a class="btn btn-info" href="{{ url_for('persons.receipt', person_id=donor['id'], year=tax_year) }}">Preview {{ tax_year }}</a>
+            <a class="btn btn-success" href="{{ url_for('persons.receipt_pdf', person_id=donor['id'], year=tax_year) }}">Issue/PDF {{ tax_year }}</a>
+            <a class="btn btn-info" href="{{ url_for('donor_family.donor_receipt_history', donor_id=donor['id']) }}">Receipt history</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
