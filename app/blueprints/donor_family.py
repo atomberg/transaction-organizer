@@ -483,7 +483,7 @@ def add_spouse(donor_id):
     db.session.add(FamilyMember(family_id=family.id, person_id=spouse.id))
     db.session.commit()
 
-    flash('Spouse added to family.')
+    flash('Spouse added to family.', 'success')
     return redirect(url_for('donor_family.donor_get', donor_id=spouse.id))
 
 

@@ -65,7 +65,7 @@
         <tbody>
           <tr>
             <th>Address</th>
-            <td><textarea class="form-control" name="address" rows="2">{{ family['address'] }}</textarea></td>
+            <td><textarea class="form-control" name="address" rows="3">{{ family['address'] }}</textarea></td>
           </tr>
           <tr>
             <th>Notes</th>
@@ -97,6 +97,14 @@
     <table class="table">
       <tbody>
         <tr>
+          <th>Receipts</th>
+          <td>
+            <a class="btn btn-info" href="{{ url_for('donor_family.donor_receipt_preview', donor_id=donor['id'], year=tax_year) }}">Preview {{ tax_year }}</a>
+            <a class="btn btn-success" href="{{ url_for('donor_family.donor_receipt_pdf', donor_id=donor['id'], year=tax_year) }}">Issue/PDF {{ tax_year }}</a>
+            <a class="btn btn-info" href="{{ url_for('donor_family.donor_receipt_history', donor_id=donor['id']) }}">Receipt history</a>
+          </td>
+        </tr>
+        <tr>
           <th>Membership</th>
           <td>
             {% if family['member_count'] < 2 %}
@@ -105,14 +113,6 @@
             <button class="btn btn-secondary" type="button" disabled>Add donor (family full)</button>
             {% endif %}
             <a class="btn btn-secondary" href="{{ url_for('donor_family.donors') }}">Back</a>
-          </td>
-        </tr>
-        <tr>
-          <th>Receipts</th>
-          <td>
-            <a class="btn btn-info" href="{{ url_for('donor_family.donor_receipt_preview', donor_id=donor['id'], year=tax_year) }}">Preview {{ tax_year }}</a>
-            <a class="btn btn-success" href="{{ url_for('donor_family.donor_receipt_pdf', donor_id=donor['id'], year=tax_year) }}">Issue/PDF {{ tax_year }}</a>
-            <a class="btn btn-info" href="{{ url_for('donor_family.donor_receipt_history', donor_id=donor['id']) }}">Receipt history</a>
           </td>
         </tr>
       </tbody>
