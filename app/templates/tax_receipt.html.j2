@@ -1,76 +1,110 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+  <!-- Required meta tags -->
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ receipt_number }}</title>
-  <style>
-    @page { size: Letter; margin: 0.5in; }
-    body { font-family: "Segoe UI", Arial, sans-serif; color: #111; margin: 0; }
-    .receipt-copy { border: 1px solid #333; padding: 14px; margin-bottom: 18px; }
-    .header { display: flex; justify-content: space-between; gap: 16px; }
-    .org { max-width: 65%; }
-    .number { text-align: right; min-width: 200px; }
-    .title { text-align: center; margin: 14px 0 12px; }
-    .title h2 { margin: 0 0 6px; font-size: 20px; }
-    .title p { margin: 0; font-style: italic; }
-    .content { display: flex; justify-content: space-between; gap: 16px; margin: 12px 0; }
-    .donor, .meta { width: 48%; }
-    .meta p, .donor p { margin: 6px 0; }
-    .amount { font-weight: 700; font-size: 20px; margin-top: 10px; }
-    .signature { margin-top: 18px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .signature .label { color: #444; }
-    .signature .name { font-weight: 600; }
-    .footer { margin-top: 14px; font-size: 12px; color: #444; }
-    hr { border: 0; border-top: 1px dashed #888; margin: 20px 0; }
-  </style>
+  <meta name="viewport" content="width=800, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="/static/tax_receipt.css">
+
+  <title>{{ name }}</title>
 </head>
+
 <body>
-  {% for copy_name in ['Copy 1 - Income Tax Return', 'Copy 2 - For Your Records'] %}
-  <section class="receipt-copy">
-    <div class="header">
-      <div class="org">{{ org }}</div>
-      <div class="number">
-        <div><strong>Receipt #</strong> {{ receipt_number }}</div>
-        <div>{{ receipt_date }}</div>
-      </div>
-    </div>
-
-    <div class="title">
-      <h2>Official Donation Receipt For Income Tax Purposes</h2>
-      <p>{{ copy_name }}</p>
-    </div>
-
-    <div class="content">
-      <div class="donor">
-        <p><strong>Donated by:</strong> {{ name }}</p>
-        <p>{{ address | display_newlines }}</p>
-      </div>
-      <div class="meta">
-        <p><strong>Tax year:</strong> {{ tax_year }}</p>
-        <p class="amount">Eligible Amount: {{ amount | currency_format }}</p>
-      </div>
-    </div>
-
-    <div class="signature">
-      <div>
-        <div class="label">Authorized Signature</div>
-        {% if signature_url %}
-        <img src="{{ signature_url }}" alt="Signature" style="max-height: 64px; margin-top: 8px;">
-        {% endif %}
-      </div>
-      <div class="name">{{ treasurer }}, Treasurer</div>
-    </div>
-
-    <div class="footer">
-      For information on registered charities in Canada, contact CRA:
-      <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>
-    </div>
-  </section>
+  {% for copy_name in ['Copy 1 &mdash; Income Tax Return', 'Copy 2 &mdash; For Your Records'] %}
+  <table id="grid-{{ loop.index }}">
+    <colgroup>
+      <col span="1" style="width: 37%;">
+      <col span="1" style="width: 33%;">
+      <col span="1" style="width: auto;">
+    </colgroup>
+    <tbody>
+      <tr>
+        <td colspan="2">{{ org }}</td>
+        <td class="receipt">
+          <p>Receipt # {{ receipt_number }} <br> {{ receipt_date }}</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" class="text-center">
+          <h4>Official Donation Receipt For Income Tax Purposes</h4>
+          <p><em>{{ copy_name | safe }}</em></p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="offset">
+          <address>
+            Donated by: {{ name }}<br> {{ address | display_newlines }}
+          </address>
+        </td>
+        <td>
+          <p>For the Tax Year: {{ tax_year }}</p>
+          <p><strong>Eligible Amount: {{ amount | currency_format }}</strong></p>
+        </td>
+      </tr>
+      <tr>
+        <td class="offset" style="vertical-align: top;">
+          <label>Authorized Signature:</label>
+        </td>
+        <td colspan="2" class="signature">
+          <div id="signature-container">
+            <img src="{{ signature_url or '/static/sample-signature.png' }}" alt="Signature">
+          </div>
+          <p>{{ treasurer }}, Treasurer</p>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" class="text-center">
+          <p>
+            For information on all registered charities in Canada under the Income Tax Act please contact
+            Canada Revenue Agency <a href="https://canada.ca/charities-giving">canada.ca/charities-giving</a>.
+          </p>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
 
   {% if not loop.last %}
   <hr>
   {% endif %}
   {% endfor %}
+  <style>
+    #grid-1 td.signature img,
+    #grid-2 td.signature img {
+      width: 160px !important;
+      height: 80px !important;
+    }
+    #grid-2 td.signature img {
+      top: -44px !important;
+    }
+    #grid-2 #signature-container {
+      min-height: 30px;
+    }
+    #grid-2 td.signature {
+      text-align: center;
+    }
+    #grid-2 td.signature p {
+      margin-top: 0.2rem;
+    }
+    #grid-1 td.signature img,
+    #grid-2 td.signature img {
+      display: block;
+    }
+    #grid-1 td.signature #signature-container,
+    #grid-2 td.signature #signature-container {
+      position: relative;
+    }
+    #grid-1 td.signature p,
+    #grid-2 td.signature p {
+      position: relative;
+      z-index: 2;
+    }
+    #grid-1 td.signature img,
+    #grid-2 td.signature img {
+      z-index: 1;
+    }
+  </style>
 </body>
 </html>

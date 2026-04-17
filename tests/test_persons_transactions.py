@@ -126,9 +126,9 @@ def test_transaction_receipt_route_renders_receipt_content(test_client, app):
 
     response = test_client.get(f'/transactions/{transaction_id}/receipt')
     assert response.status_code == 200
-    assert b'Tax year:</strong> 2024' in response.data
+    assert b'For the Tax Year: 2024' in response.data
     assert b'Eligible Amount: 42.50' in response.data
-    assert f'Receipt #</strong> {person_id}-{transaction_id}-1'.encode() in response.data
+    assert f'Receipt # {person_id}-{transaction_id}-1'.encode() in response.data
 
 
 def test_transaction_receipt_pdf_marks_transaction_as_receipted(test_client, app, monkeypatch):
