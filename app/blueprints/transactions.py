@@ -74,7 +74,9 @@ def get_latest():
 @bp.route('/', methods=['POST'])
 def add():
     """Add a new transaction."""
-    donor_id = request.values.get('donor_id') or request.values.get('person_id')
+    donor_id = request.values.get('donor_id')
+    if not donor_id:
+        return ('donor_id is required', 400)
     db.session.add(
         Transaction(
             person_id=donor_id,
@@ -105,7 +107,10 @@ def update(transaction_id):
     t = Transaction.get_by_id(transaction_id)
     if t is None:
         return ('Transaction not found', 404)
-    t.person_id = request.values.get('donor_id') or request.values.get('person_id')
+    donor_id = request.values.get('donor_id')
+    if not donor_id:
+        return ('donor_id is required', 400)
+    t.person_id = donor_id
     t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
     t.method = request.values['method']
     t.amount = float(request.values['amount'])

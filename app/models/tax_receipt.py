@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Iterable
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint, and_, or_
 from sqlalchemy.orm import backref, relationship
 
 from app import db
@@ -18,6 +18,7 @@ class TaxReceipt(db.Model):
     id = Column(Integer, primary_key=True)
     receipt_number = Column(String, nullable=False, unique=True)
     receipt_type = Column(String, nullable=False)
+    donor_id = Column(Integer, ForeignKey('persons.id'))
     person_id = Column(Integer, ForeignKey('persons.id'), nullable=False)
     tax_year = Column(Integer, nullable=False)
     issued_at = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -138,7 +139,12 @@ def _active_receipt_for_transaction(transaction_id):
 
 def get_receipts_for_person(person_id, tax_year=None, include_voided=True):
     """Fetch issued receipts for one person, optionally filtered by year."""
-    query = TaxReceipt.query.filter_by(person_id=person_id)
+    query = TaxReceipt.query.filter(
+        or_(
+            TaxReceipt.donor_id == person_id,
+            and_(TaxReceipt.donor_id.is_(None), TaxReceipt.person_id == person_id),
+        )
+    )
     if not include_voided:
         query = query.filter(TaxReceipt.voided_at.is_(None))
     if tax_year is not None:
@@ -151,7 +157,12 @@ def get_receipts_for_person_ids(person_ids: Iterable[int], tax_year=None, includ
     ids = [person_id for person_id in set(person_ids) if person_id is not None]
     if not ids:
         return []
-    query = TaxReceipt.query.filter(TaxReceipt.person_id.in_(ids))
+    query = TaxReceipt.query.filter(
+        or_(
+            TaxReceipt.donor_id.in_(ids),
+            and_(TaxReceipt.donor_id.is_(None), TaxReceipt.person_id.in_(ids)),
+        )
+    )
     if not include_voided:
         query = query.filter(TaxReceipt.voided_at.is_(None))
     if tax_year is not None:
@@ -172,6 +183,7 @@ def issue_single_transaction_receipt(transaction, org, treasurer):
     receipt = TaxReceipt(
         receipt_number=next_single_transaction_receipt_number(transaction),
         receipt_type='single_transaction',
+        donor_id=person.id,
         person_id=person.id,
         tax_year=transaction.date.year,
         name_snapshot=person.full_name,
@@ -221,6 +233,7 @@ def issue_annual_person_receipt(person, tax_year, org, treasurer):
     receipt = TaxReceipt(
         receipt_number=next_annual_person_receipt_number(person.id, tax_year),
         receipt_type='annual_person',
+        donor_id=person.id,
         person_id=person.id,
         tax_year=tax_year,
         name_snapshot=person.full_name,
@@ -289,6 +302,7 @@ def issue_annual_donor_receipt(
     receipt = TaxReceipt(
         receipt_number=next_annual_person_receipt_number(recipient_person.id, tax_year),
         receipt_type='annual_donor',
+        donor_id=recipient_person.id,
         person_id=recipient_person.id,
         tax_year=tax_year,
         name_snapshot=recipient_name or recipient_person.full_name,
@@ -347,6 +361,7 @@ def reissue_receipt(receipt, org=None, treasurer=None):
     replacement = TaxReceipt(
         receipt_number=_next_receipt_number(_base_prefix_from_receipt_number(receipt.receipt_number)),
         receipt_type=receipt.receipt_type,
+        donor_id=receipt.donor_id,
         person_id=receipt.person_id,
         tax_year=receipt.tax_year,
         name_snapshot=receipt.name_snapshot,

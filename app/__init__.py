@@ -19,6 +19,12 @@ def _format_phone(value):
     return as_text
 
 
+def _display_newlines(value):
+    if value is None:
+        return ''
+    return str(value).replace('\n', '<br>')
+
+
 def create_app(config_filename='config.py'):
     app = Flask(__name__)
     app.config.from_pyfile(config_filename)
@@ -29,6 +35,7 @@ def create_app(config_filename='config.py'):
     )
     app.secret_key = app.config['SECRET_KEY']
     app.add_template_filter(_format_phone, 'phone_format')
+    app.add_template_filter(_display_newlines, 'display_newlines')
 
     # Backup the database file
     backup_path = app.config['SQLALCHEMY_DATABASE_BACKUP_PATH']
@@ -50,10 +57,9 @@ def create_app(config_filename='config.py'):
         db.create_all()
 
     # Import and register blueprints
-    from .blueprints import donor_family_bp, persons_bp, reports_bp, transactions_bp
+    from .blueprints import donor_family_bp, reports_bp, transactions_bp
 
     app.register_blueprint(donor_family_bp)
-    app.register_blueprint(persons_bp)
     app.register_blueprint(transactions_bp)
     app.register_blueprint(reports_bp)
     return app

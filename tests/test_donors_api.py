@@ -322,6 +322,7 @@ def test_donor_receipt_issue_uses_primary_recipient_and_family_contributors(test
             select(TaxReceipt).where(TaxReceipt.receipt_type == 'annual_donor')
         ).scalar_one()
         assert receipt.person_id == primary_id
+        assert receipt.donor_id == primary_id
         assert receipt.total_amount == 40.0
 
         item_tx_ids = {

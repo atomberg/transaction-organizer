@@ -164,13 +164,8 @@ def test_donor_edit_page_exists_and_is_link_target(test_client, app):
     assert b'Save changes' in edit_page.data
 
 
-def test_person_list_kept_for_compatibility(test_client, app):
-    with app.app_context():
-        _create_person(first_name='Compat', last_name='Person')
-
-    response = test_client.get('/persons/')
-    assert response.status_code == 200
-    assert b'All people (compatibility view)' in response.data
+def test_person_routes_are_not_active(test_client):
+    assert test_client.get('/persons/').status_code == 404
 
 
 def test_donor_list_has_split_name_and_current_year_donations_column(test_client, app):
