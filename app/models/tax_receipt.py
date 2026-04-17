@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Iterable
 
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
@@ -145,6 +146,19 @@ def get_receipts_for_person(person_id, tax_year=None, include_voided=True):
     return query.order_by(TaxReceipt.issued_at.desc()).all()
 
 
+def get_receipts_for_person_ids(person_ids: Iterable[int], tax_year=None, include_voided=True):
+    """Fetch issued receipts for multiple people, optionally filtered by year."""
+    ids = [person_id for person_id in set(person_ids) if person_id is not None]
+    if not ids:
+        return []
+    query = TaxReceipt.query.filter(TaxReceipt.person_id.in_(ids))
+    if not include_voided:
+        query = query.filter(TaxReceipt.voided_at.is_(None))
+    if tax_year is not None:
+        query = query.filter(TaxReceipt.tax_year == tax_year)
+    return query.order_by(TaxReceipt.issued_at.desc()).all()
+
+
 def issue_single_transaction_receipt(transaction, org, treasurer):
     """Issue or reuse a receipt for a single transaction."""
     org = org or 'Unknown organisation'
@@ -214,6 +228,74 @@ def issue_annual_person_receipt(person, tax_year, org, treasurer):
         org_snapshot=org,
         treasurer_snapshot=treasurer,
         total_amount=sum(t.amount for t in eligible),
+    )
+    db.session.add(receipt)
+    db.session.flush()
+
+    for transaction in eligible:
+        db.session.add(
+            TaxReceiptItem(
+                tax_receipt_id=receipt.id,
+                transaction_id=transaction.id,
+                amount=transaction.amount,
+            )
+        )
+    db.session.flush()
+    for transaction in eligible:
+        sync_legacy_receipt_flag(transaction)
+
+    db.session.commit()
+    return receipt
+
+
+def issue_annual_donor_receipt(
+    recipient_person,
+    contributor_people,
+    tax_year,
+    org,
+    treasurer,
+    recipient_name=None,
+    recipient_address=None,
+):
+    """Issue or reuse an annual donor-family receipt for one tax year."""
+    org = org or 'Unknown organisation'
+    treasurer = treasurer or 'Unknown treasurer'
+
+    existing = (
+        TaxReceipt.query.filter_by(
+            person_id=recipient_person.id,
+            tax_year=tax_year,
+            receipt_type='annual_donor',
+        )
+        .filter(TaxReceipt.voided_at.is_(None))
+        .order_by(TaxReceipt.issued_at.desc())
+        .first()
+    )
+    if existing is not None:
+        return existing
+
+    eligible = []
+    for contributor in contributor_people:
+        eligible.extend(
+            [
+                transaction
+                for transaction in contributor.transactions
+                if transaction.date.year == tax_year and is_receipt_eligible(transaction)
+            ]
+        )
+    if not eligible:
+        raise ValueError('No eligible transactions found for this donor family and tax year.')
+
+    receipt = TaxReceipt(
+        receipt_number=next_annual_person_receipt_number(recipient_person.id, tax_year),
+        receipt_type='annual_donor',
+        person_id=recipient_person.id,
+        tax_year=tax_year,
+        name_snapshot=recipient_name or recipient_person.full_name,
+        address_snapshot=recipient_address or recipient_person.address,
+        org_snapshot=org,
+        treasurer_snapshot=treasurer,
+        total_amount=sum(transaction.amount for transaction in eligible),
     )
     db.session.add(receipt)
     db.session.flush()

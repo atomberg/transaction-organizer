@@ -7,6 +7,7 @@ from sqlalchemy import select
 from app import db
 from app.models.family import Family, FamilyMember
 from app.models.person import Person
+from app.models.tax_receipt import TaxReceipt, TaxReceiptItem
 from app.models.transaction import Transaction
 
 
@@ -248,3 +249,124 @@ def test_donor_receipts_endpoint_renders(test_client, app):
     response = test_client.get(f'/donors/{donor_id}/receipts')
     assert response.status_code == 200
     assert b'Receipt history for donor recipient' in response.data
+
+
+def test_donor_receipt_preview_aggregates_family_transactions(test_client, app):
+    with app.app_context():
+        primary = _create_person(first_name='Primary', last_name='Receipt', address='5 Shared St')
+        family = _create_family_for_person(primary)
+        spouse = _create_person(first_name='Spouse', last_name='Receipt', address='5 Shared St')
+        db.session.add(FamilyMember(family_id=family.id, person_id=spouse.id))
+        db.session.commit()
+
+        db.session.add(
+            Transaction(
+                person_id=primary.id,
+                date=date(2026, 1, 3),
+                method='Cash',
+                amount=15.0,
+                accepted_by='Treasurer',
+            )
+        )
+        db.session.add(
+            Transaction(
+                person_id=spouse.id,
+                date=date(2026, 2, 10),
+                method='Cash',
+                amount=25.0,
+                accepted_by='Treasurer',
+            )
+        )
+        db.session.commit()
+        spouse_id = spouse.id
+
+    response = test_client.get(f'/donors/{spouse_id}/receipt/2026')
+    assert response.status_code == 200
+    assert b'Eligible Amount: 40.00' in response.data
+
+
+def test_donor_receipt_issue_uses_primary_recipient_and_family_contributors(test_client, app, monkeypatch):
+    with app.app_context():
+        primary = _create_person(first_name='Primary', last_name='Owner', address='8 Canonical St')
+        family = _create_family_for_person(primary)
+        spouse = _create_person(first_name='Spouse', last_name='Owner', address='8 Canonical St')
+        db.session.add(FamilyMember(family_id=family.id, person_id=spouse.id))
+        db.session.commit()
+
+        tx_primary = Transaction(
+            person_id=primary.id,
+            date=date(2026, 3, 4),
+            method='Cash',
+            amount=11.0,
+            accepted_by='Treasurer',
+        )
+        tx_spouse = Transaction(
+            person_id=spouse.id,
+            date=date(2026, 4, 5),
+            method='Cash',
+            amount=29.0,
+            accepted_by='Treasurer',
+        )
+        db.session.add_all([tx_primary, tx_spouse])
+        db.session.commit()
+        spouse_id = spouse.id
+        primary_id = primary.id
+        tx_primary_id = tx_primary.id
+        tx_spouse_id = tx_spouse.id
+
+    monkeypatch.setattr(
+        'app.blueprints.donor_family.render_pdf',
+        lambda _url: app.response_class(b'%PDF-test', mimetype='application/pdf'),
+    )
+    response = test_client.get(f'/donors/{spouse_id}/receipt/2026/pdf')
+    assert response.status_code == 200
+    assert response.mimetype == 'application/pdf'
+
+    with app.app_context():
+        receipt = db.session.execute(
+            select(TaxReceipt).where(TaxReceipt.receipt_type == 'annual_donor')
+        ).scalar_one()
+        assert receipt.person_id == primary_id
+        assert receipt.total_amount == 40.0
+
+        item_tx_ids = {
+            item.transaction_id
+            for item in db.session.execute(select(TaxReceiptItem)).scalars().all()
+        }
+        assert tx_primary_id in item_tx_ids
+        assert tx_spouse_id in item_tx_ids
+
+
+def test_donor_receipt_history_is_shared_for_any_family_member_view(test_client, app, monkeypatch):
+    with app.app_context():
+        primary = _create_person(first_name='Primary', last_name='SharedHistory', address='1 Hist St')
+        family = _create_family_for_person(primary)
+        spouse = _create_person(first_name='Spouse', last_name='SharedHistory', address='1 Hist St')
+        db.session.add(FamilyMember(family_id=family.id, person_id=spouse.id))
+        db.session.commit()
+
+        db.session.add(
+            Transaction(
+                person_id=spouse.id,
+                date=date(2026, 6, 1),
+                method='Cash',
+                amount=50.0,
+                accepted_by='Treasurer',
+            )
+        )
+        db.session.commit()
+        spouse_id = spouse.id
+        primary_id = primary.id
+
+    monkeypatch.setattr(
+        'app.blueprints.donor_family.render_pdf',
+        lambda _url: app.response_class(b'%PDF-test', mimetype='application/pdf'),
+    )
+    test_client.get(f'/donors/{primary_id}/receipt/2026/pdf')
+
+    primary_history = test_client.get(f'/donors/{primary_id}/receipts')
+    spouse_history = test_client.get(f'/donors/{spouse_id}/receipts')
+    assert primary_history.status_code == 200
+    assert spouse_history.status_code == 200
+    assert b'annual_donor' in primary_history.data
+    assert b'annual_donor' in spouse_history.data

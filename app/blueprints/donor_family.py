@@ -5,14 +5,21 @@ family-of-max-two workflow for donor management.
 """
 
 from datetime import datetime
+from pathlib import Path
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask import current_app as app
+from flask_weasyprint import render_pdf
 
 from app import db
 from app.models.family import Family, FamilyMember
 from app.models.person import Person, get_persons
-from app.models.tax_receipt import get_receipts_for_person
+from app.models.tax_receipt import (
+    get_receipts_for_person_ids,
+    is_receipt_eligible,
+    issue_annual_donor_receipt,
+    next_annual_person_receipt_number,
+)
 
 bp = Blueprint('donor_family', __name__)
 
@@ -136,6 +143,55 @@ def _family_view_model(family):
         'last_modified': family.updated_at.strftime('%c'),
         'created_at': family.created_at.strftime('%c'),
     }
+
+
+def _org_value():
+    return app.config.get('ORG') or app.config.get('ORGANISATION_NAME') or 'Unknown organisation'
+
+
+def _treasurer_value():
+    return app.config.get('TREASURER_NAME') or app.config.get('TREASURER') or 'Unknown treasurer'
+
+
+def _signature_url():
+    if app.config.get('SIGNATURE_IMAGE_URL'):
+        return app.config['SIGNATURE_IMAGE_URL']
+
+    static_dir = Path(app.root_path) / 'static'
+    if (static_dir / 'signature.png').exists():
+        return '/static/signature.png'
+    if (static_dir / 'signature.jpg').exists():
+        return '/static/signature.jpg'
+    return '/static/sample-signature.png'
+
+
+def _family_people(family):
+    people = []
+    for member in _active_family_members(family.id):
+        person = Person.get_by_id(member.person_id)
+        if person is not None:
+            people.append(person)
+    return people
+
+
+def _recipient_for_family(family):
+    people = _family_people(family)
+    if not people:
+        return None, []
+    return people[0], people
+
+
+def _eligible_family_transactions(people, year):
+    eligible = []
+    for person in people:
+        eligible.extend(
+            [
+                transaction
+                for transaction in person.transactions
+                if transaction.date.year == year and is_receipt_eligible(transaction)
+            ]
+        )
+    return eligible
 
 
 @bp.route('/')
@@ -422,9 +478,11 @@ def donor_receipt_history(donor_id):
     if person is None:
         return ('Donor not found', 404)
 
+    family = _ensure_family_for_person(person)
+    people = _family_people(family)
     selected_year = request.values.get('year')
     tax_year = int(selected_year) if selected_year else None
-    receipts = get_receipts_for_person(person.id, tax_year=tax_year)
+    receipts = get_receipts_for_person_ids([member.id for member in people], tax_year=tax_year)
 
     return render_template(
         'donor_receipts.html.j2',
@@ -437,3 +495,57 @@ def donor_receipt_history(donor_id):
         receipts=receipts,
         selected_year=selected_year or '',
     )
+
+
+@bp.route('/donors/<int:donor_id>/receipt/<int:year>', methods=['GET'])
+def donor_receipt_preview(donor_id, year):
+    person = Person.get_by_id(donor_id)
+    if person is None:
+        return ('Donor not found', 404)
+
+    family = _ensure_family_for_person(person)
+    recipient, people = _recipient_for_family(family)
+    if recipient is None:
+        return ('Family not found', 404)
+
+    eligible = _eligible_family_transactions(people, year)
+    return render_template(
+        'tax_receipt.html.j2',
+        org=_org_value(),
+        treasurer=_treasurer_value(),
+        tax_year=year,
+        receipt_number=next_annual_person_receipt_number(recipient.id, year),
+        receipt_date=datetime.now().strftime('%B %e, %Y'),
+        name=recipient.full_name,
+        address=family.address or recipient.address,
+        amount=sum(transaction.amount for transaction in eligible),
+        signature_url=_signature_url(),
+    )
+
+
+@bp.route('/donors/<int:donor_id>/receipt/<int:year>/pdf', methods=['GET'])
+def donor_receipt_pdf(donor_id, year):
+    person = Person.get_by_id(donor_id)
+    if person is None:
+        return ('Donor not found', 404)
+
+    family = _ensure_family_for_person(person)
+    recipient, people = _recipient_for_family(family)
+    if recipient is None:
+        return ('Family not found', 404)
+
+    try:
+        receipt_record = issue_annual_donor_receipt(
+            recipient_person=recipient,
+            contributor_people=people,
+            tax_year=year,
+            org=_org_value(),
+            treasurer=_treasurer_value(),
+            recipient_name=recipient.full_name,
+            recipient_address=family.address or recipient.address,
+        )
+    except ValueError as exc:
+        flash(str(exc))
+        return redirect(url_for('donor_family.donor_get', donor_id=donor_id, year=year))
+
+    return render_pdf(url_for('persons.receipt_by_id', receipt_id=receipt_record.id))
