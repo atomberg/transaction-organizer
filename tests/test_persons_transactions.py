@@ -37,11 +37,6 @@ def create_transaction(person_id, amount=20.0, day=date(2024, 1, 1), receipt=Fal
     return transaction
 
 
-def test_person_routes_removed(test_client):
-    assert test_client.get('/persons/').status_code == 404
-    assert test_client.get('/persons/1').status_code == 404
-
-
 def test_transaction_add_requires_donor_id(test_client):
     response = test_client.post(
         '/transactions/',

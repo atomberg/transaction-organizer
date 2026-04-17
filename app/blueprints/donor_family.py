@@ -1,8 +1,4 @@
-"""Donor-first UI routes.
-
-This pass keeps legacy person workflow for compatibility while introducing a
-family-of-max-two workflow for donor management.
-"""
+"""Donor-first UI routes for family-of-max-two donor management."""
 
 from datetime import datetime
 from pathlib import Path
@@ -375,7 +371,7 @@ def remove_donor(donor_id):
     if status == 'missing':
         return ('Donor not found', 404)
     if status == 'has_transactions':
-        flash('Cannot remove donor with transactions. Use person compatibility workflow if needed.')
+        flash('Cannot remove donor with transactions.')
         return redirect(url_for('donor_family.donor_get', donor_id=donor_id))
     flash('Donor removed.')
     return redirect(url_for('donor_family.donors'))
@@ -394,7 +390,7 @@ def remove_donor_member(donor_id, person_id):
     if status == 'missing':
         return ('Donor not found', 404)
     if status == 'has_transactions':
-        flash('Cannot remove donor with transactions. Use person compatibility workflow if needed.')
+        flash('Cannot remove donor with transactions.')
         return redirect(url_for('donor_family.donor_get', donor_id=donor_id))
 
     flash('Donor removed.')
@@ -505,7 +501,6 @@ def donor_receipt_history(donor_id):
             'id': person.id,
             'display_name': person.full_name,
             'mailing_address': person.address or '',
-            'legacy_person_id': person.id,
         },
         receipts=receipts,
         selected_year=selected_year or '',

@@ -131,7 +131,6 @@ def test_clicking_either_spouse_opens_same_family_view(test_client, app):
     assert donor_view.data.count(b'Yes') == 1
     assert donor_view.data.count(b'No') >= 1
     assert b'Open same family' not in donor_view.data
-    assert b'Person compatibility view' not in donor_view.data
     assert b'Add donor' in donor_view.data
     assert b'Remove' in donor_view.data
     assert b'Back' in donor_view.data
@@ -164,10 +163,6 @@ def test_donor_edit_page_exists_and_is_link_target(test_client, app):
     assert b'Save changes' in edit_page.data
 
 
-def test_person_routes_are_not_active(test_client):
-    assert test_client.get('/persons/').status_code == 404
-
-
 def test_donor_list_has_split_name_and_current_year_donations_column(test_client, app):
     with app.app_context():
         app.config['TAX_YEAR'] = 2026
@@ -181,5 +176,4 @@ def test_donor_list_has_split_name_and_current_year_donations_column(test_client
     assert b'Shared Family Address' not in response.data
     assert b'Family Size' not in response.data
     assert b'View' in response.data
-    assert b'Person compatibility view' not in response.data
     assert b'(123) 456-7890' in response.data

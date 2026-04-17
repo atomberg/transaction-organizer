@@ -105,8 +105,8 @@ def is_receipt_eligible(transaction):
     return _active_receipt_item(transaction) is None and not bool(transaction.receipt)
 
 
-def sync_legacy_receipt_flag(transaction):
-    """Keep legacy transaction.receipt mirror in sync for compatibility."""
+def sync_receipt_flag(transaction):
+    """Sync transaction.receipt from active receipt records."""
     has_active = (
         db.session.query(TaxReceipt.id)
         .join(TaxReceiptItem)
@@ -135,21 +135,6 @@ def _active_receipt_for_transaction(transaction_id):
         .order_by(TaxReceipt.issued_at.desc())
         .first()
     )
-
-
-def get_receipts_for_person(person_id, tax_year=None, include_voided=True):
-    """Fetch issued receipts for one person, optionally filtered by year."""
-    query = TaxReceipt.query.filter(
-        or_(
-            TaxReceipt.donor_id == person_id,
-            and_(TaxReceipt.donor_id.is_(None), TaxReceipt.person_id == person_id),
-        )
-    )
-    if not include_voided:
-        query = query.filter(TaxReceipt.voided_at.is_(None))
-    if tax_year is not None:
-        query = query.filter(TaxReceipt.tax_year == tax_year)
-    return query.order_by(TaxReceipt.issued_at.desc()).all()
 
 
 def get_receipts_for_person_ids(person_ids: Iterable[int], tax_year=None, include_voided=True):
@@ -203,60 +188,7 @@ def issue_single_transaction_receipt(transaction, org, treasurer):
         )
     )
     db.session.flush()
-    sync_legacy_receipt_flag(transaction)
-    db.session.commit()
-    return receipt
-
-
-def issue_annual_person_receipt(person, tax_year, org, treasurer):
-    """Issue or reuse an annual receipt for one person and year."""
-    org = org or 'Unknown organisation'
-    treasurer = treasurer or 'Unknown treasurer'
-
-    existing = (
-        TaxReceipt.query.filter_by(
-            person_id=person.id,
-            tax_year=tax_year,
-            receipt_type='annual_person',
-        )
-        .filter(TaxReceipt.voided_at.is_(None))
-        .order_by(TaxReceipt.issued_at.desc())
-        .first()
-    )
-    if existing is not None:
-        return existing
-
-    eligible = [t for t in person.transactions if t.date.year == tax_year and is_receipt_eligible(t)]
-    if not eligible:
-        raise ValueError('No eligible transactions found for this person and tax year.')
-
-    receipt = TaxReceipt(
-        receipt_number=next_annual_person_receipt_number(person.id, tax_year),
-        receipt_type='annual_person',
-        donor_id=person.id,
-        person_id=person.id,
-        tax_year=tax_year,
-        name_snapshot=person.full_name,
-        address_snapshot=person.address,
-        org_snapshot=org,
-        treasurer_snapshot=treasurer,
-        total_amount=sum(t.amount for t in eligible),
-    )
-    db.session.add(receipt)
-    db.session.flush()
-
-    for transaction in eligible:
-        db.session.add(
-            TaxReceiptItem(
-                tax_receipt_id=receipt.id,
-                transaction_id=transaction.id,
-                amount=transaction.amount,
-            )
-        )
-    db.session.flush()
-    for transaction in eligible:
-        sync_legacy_receipt_flag(transaction)
-
+    sync_receipt_flag(transaction)
     db.session.commit()
     return receipt
 
@@ -324,14 +256,14 @@ def issue_annual_donor_receipt(
         )
     db.session.flush()
     for transaction in eligible:
-        sync_legacy_receipt_flag(transaction)
+        sync_receipt_flag(transaction)
 
     db.session.commit()
     return receipt
 
 
 def void_receipt(receipt):
-    """Void an active receipt and update transaction compatibility flags."""
+    """Void an active receipt and update transaction receipt flags."""
     if receipt.voided_at is not None:
         return receipt
     receipt.voided_at = datetime.utcnow()
@@ -339,7 +271,7 @@ def void_receipt(receipt):
     db.session.add(receipt)
 
     for item in receipt.items:
-        sync_legacy_receipt_flag(item.transaction)
+        sync_receipt_flag(item.transaction)
 
     db.session.commit()
     return receipt
@@ -383,7 +315,7 @@ def reissue_receipt(receipt, org=None, treasurer=None):
         )
     db.session.flush()
     for item in receipt.items:
-        sync_legacy_receipt_flag(item.transaction)
+        sync_receipt_flag(item.transaction)
 
     db.session.commit()
     return replacement
