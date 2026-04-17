@@ -8,23 +8,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
-def _format_phone(value):
-    if value is None:
-        return ''
-    as_text = str(value)
-    digits = ''.join(ch for ch in as_text if ch.isdigit())
-    if len(digits) == 10:
-        return f'({digits[0:3]}) {digits[3:6]}-{digits[6:10]}'
-    return as_text
-
-
-def _display_newlines(value):
-    if value is None:
-        return ''
-    return str(value).replace('\n', '<br>')
-
-
 def create_app(config_filename='config.py'):
     app = Flask(__name__)
     app.config.from_pyfile(config_filename)
@@ -34,8 +17,21 @@ def create_app(config_filename='config.py'):
         or 'dev-secret-key'
     )
     app.secret_key = app.config['SECRET_KEY']
-    app.add_template_filter(_format_phone, 'phone_format')
-    app.add_template_filter(_display_newlines, 'display_newlines')
+    app.add_template_filter(
+        lambda value: (
+            ''
+            if value is None
+            else (
+                f"({''.join(ch for ch in str(value) if ch.isdigit())[0:3]}) "
+                f"{''.join(ch for ch in str(value) if ch.isdigit())[3:6]}-"
+                f"{''.join(ch for ch in str(value) if ch.isdigit())[6:10]}"
+                if len(''.join(ch for ch in str(value) if ch.isdigit())) == 10
+                else str(value)
+            )
+        ),
+        'phone_format',
+    )
+    app.add_template_filter(lambda value: '' if value is None else str(value).replace('\n', '<br>'), 'display_newlines')
 
     # Backup the database file
     backup_path = app.config['SQLALCHEMY_DATABASE_BACKUP_PATH']

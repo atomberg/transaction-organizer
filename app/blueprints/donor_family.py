@@ -86,33 +86,6 @@ def _ensure_family_for_person(person):
     return family
 
 
-def _donor_rows(query_text=''):
-    rows = []
-    q = (query_text or '').strip().lower()
-    tax_year = int(app.config.get('TAX_YEAR') or datetime.now().year)
-    for person in get_persons():
-        family = _active_family_for_person(person.id)
-        donation_total = sum(
-            transaction.amount
-            for transaction in person.transactions
-            if transaction.date.year == tax_year
-        )
-        row = {
-            'person_id': person.id,
-            'first_name': person.first_name,
-            'last_name': person.last_name,
-            'email': person.email or '',
-            'phone': person.phone or '',
-            'family_id': family.id if family else None,
-            'donation_total': donation_total,
-        }
-        haystack = f"{row['last_name']} {row['first_name']} {row['email']} {row['phone']}".lower()
-        if q and q not in haystack:
-            continue
-        rows.append(row)
-    return rows
-
-
 def _family_view_model(family):
     memberships = _active_family_members(family.id)
     members = []
@@ -162,20 +135,6 @@ def _signature_url():
     return '/static/sample-signature.png'
 
 
-def _receipt_context_from_record(receipt_record):
-    return {
-        'org': receipt_record.org_snapshot,
-        'treasurer': receipt_record.treasurer_snapshot,
-        'tax_year': receipt_record.tax_year,
-        'receipt_number': receipt_record.receipt_number,
-        'receipt_date': receipt_record.issued_at.strftime('%B %e, %Y'),
-        'name': receipt_record.name_snapshot,
-        'address': receipt_record.address_snapshot,
-        'amount': receipt_record.total_amount,
-        'signature_url': _signature_url(),
-    }
-
-
 def _family_people(family):
     people = []
     for member in _active_family_members(family.id):
@@ -192,19 +151,6 @@ def _recipient_for_family(family):
     return people[0], people
 
 
-def _eligible_family_transactions(people, year):
-    eligible = []
-    for person in people:
-        eligible.extend(
-            [
-                transaction
-                for transaction in person.transactions
-                if transaction.date.year == year and is_receipt_eligible(transaction)
-            ]
-        )
-    return eligible
-
-
 @bp.route('/')
 def home():
     return redirect(url_for('donor_family.donors'))
@@ -214,9 +160,31 @@ def home():
 def donors():
     query_text = request.args.get('q', '')
     tax_year = int(app.config.get('TAX_YEAR') or datetime.now().year)
+    donor_rows = []
+    q = (query_text or '').strip().lower()
+    for person in get_persons():
+        family = _active_family_for_person(person.id)
+        donation_total = sum(
+            transaction.amount
+            for transaction in person.transactions
+            if transaction.date.year == tax_year
+        )
+        row = {
+            'person_id': person.id,
+            'first_name': person.first_name,
+            'last_name': person.last_name,
+            'email': person.email or '',
+            'phone': person.phone or '',
+            'family_id': family.id if family else None,
+            'donation_total': donation_total,
+        }
+        haystack = f"{row['last_name']} {row['first_name']} {row['email']} {row['phone']}".lower()
+        if q and q not in haystack:
+            continue
+        donor_rows.append(row)
     return render_template(
         'donor_table.html.j2',
-        donors=_donor_rows(query_text=query_text),
+        donors=donor_rows,
         query_text=query_text,
         tax_year=tax_year,
     )
@@ -518,7 +486,15 @@ def donor_receipt_preview(donor_id, year):
     if recipient is None:
         return ('Family not found', 404)
 
-    eligible = _eligible_family_transactions(people, year)
+    eligible = []
+    for member in people:
+        eligible.extend(
+            [
+                transaction
+                for transaction in member.transactions
+                if transaction.date.year == year and is_receipt_eligible(transaction)
+            ]
+        )
     return render_template(
         'tax_receipt.html.j2',
         org=_org_value(),
@@ -567,7 +543,18 @@ def receipt_by_id(receipt_id):
     receipt_record = TaxReceipt.get_by_id(receipt_id)
     if receipt_record is None:
         return ('Receipt not found', 404)
-    return render_template('tax_receipt.html.j2', **_receipt_context_from_record(receipt_record))
+    return render_template(
+        'tax_receipt.html.j2',
+        org=receipt_record.org_snapshot,
+        treasurer=receipt_record.treasurer_snapshot,
+        tax_year=receipt_record.tax_year,
+        receipt_number=receipt_record.receipt_number,
+        receipt_date=receipt_record.issued_at.strftime('%B %e, %Y'),
+        name=receipt_record.name_snapshot,
+        address=receipt_record.address_snapshot,
+        amount=receipt_record.total_amount,
+        signature_url=_signature_url(),
+    )
 
 
 @bp.route('/donors/receipts/<int:receipt_id>/pdf', methods=['GET'])

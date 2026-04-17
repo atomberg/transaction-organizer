@@ -93,16 +93,10 @@ def next_annual_person_receipt_number(person_id, tax_year):
     return _next_receipt_number(f'{person_id}-Y{tax_year}')
 
 
-def _active_receipt_item(transaction):
-    for item in transaction.tax_receipt_items:
-        if item.tax_receipt.voided_at is None:
-            return item
-    return None
-
-
 def is_receipt_eligible(transaction):
     """Eligibility for new receipt issuance under active receipt model."""
-    return _active_receipt_item(transaction) is None and not bool(transaction.receipt)
+    has_active_item = any(item.tax_receipt.voided_at is None for item in transaction.tax_receipt_items)
+    return not has_active_item and not bool(transaction.receipt)
 
 
 def sync_receipt_flag(transaction):
@@ -119,22 +113,6 @@ def sync_receipt_flag(transaction):
     )
     transaction.receipt = has_active
     db.session.add(transaction)
-
-
-def _base_prefix_from_receipt_number(receipt_number):
-    prefix, sep, suffix = receipt_number.rpartition('-')
-    if sep and suffix.isdigit():
-        return prefix
-    return receipt_number
-
-
-def _active_receipt_for_transaction(transaction_id):
-    return (
-        TaxReceipt.query.join(TaxReceiptItem)
-        .filter(TaxReceiptItem.transaction_id == transaction_id, TaxReceipt.voided_at.is_(None))
-        .order_by(TaxReceipt.issued_at.desc())
-        .first()
-    )
 
 
 def get_receipts_for_person_ids(person_ids: Iterable[int], tax_year=None, include_voided=True):
@@ -160,7 +138,12 @@ def issue_single_transaction_receipt(transaction, org, treasurer):
     org = org or 'Unknown organisation'
     treasurer = treasurer or 'Unknown treasurer'
 
-    existing = _active_receipt_for_transaction(transaction.id)
+    existing = (
+        TaxReceipt.query.join(TaxReceiptItem)
+        .filter(TaxReceiptItem.transaction_id == transaction.id, TaxReceipt.voided_at.is_(None))
+        .order_by(TaxReceipt.issued_at.desc())
+        .first()
+    )
     if existing is not None:
         return existing
 
@@ -290,8 +273,10 @@ def reissue_receipt(receipt, org=None, treasurer=None):
     if ineligible:
         raise ValueError(f'Transactions already receipted elsewhere: {ineligible}')
 
+    prefix, sep, suffix = receipt.receipt_number.rpartition('-')
+    base_prefix = prefix if sep and suffix.isdigit() else receipt.receipt_number
     replacement = TaxReceipt(
-        receipt_number=_next_receipt_number(_base_prefix_from_receipt_number(receipt.receipt_number)),
+        receipt_number=_next_receipt_number(base_prefix),
         receipt_type=receipt.receipt_type,
         donor_id=receipt.donor_id,
         person_id=receipt.person_id,

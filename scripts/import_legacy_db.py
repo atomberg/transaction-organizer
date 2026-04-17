@@ -78,21 +78,6 @@ def create_empty_schema(target_db: Path) -> None:
         temp_config.unlink(missing_ok=True)
 
 
-def _text_or_none(value) -> str | None:
-    if value is None:
-        return None
-    as_text = str(value).strip()
-    return as_text or None
-
-
-def _combined_memo(memo, accepted_by) -> str | None:
-    memo_text = _text_or_none(memo)
-    accepted_text = _text_or_none(accepted_by)
-    if memo_text and accepted_text:
-        return f'{memo_text} {accepted_text}'
-    return memo_text or accepted_text
-
-
 def import_persons_and_families(source_conn: sqlite3.Connection, target_conn: sqlite3.Connection) -> dict[str, int]:
     source_person_columns = set(table_columns(source_conn, 'persons'))
     required = {'id', 'first_name', 'last_name'}
@@ -192,6 +177,21 @@ def import_transactions(source_conn: sqlite3.Connection, target_conn: sqlite3.Co
     txn_count = 0
     for row in rows:
         record = dict(row)
+        memo_text = (
+            str(record.get('memo')).strip()
+            if record.get('memo') is not None and str(record.get('memo')).strip()
+            else None
+        )
+        accepted_text = (
+            str(record.get('accepted_by')).strip()
+            if record.get('accepted_by') is not None and str(record.get('accepted_by')).strip()
+            else None
+        )
+        combined_memo = (
+            f'{memo_text} {accepted_text}'
+            if memo_text and accepted_text
+            else memo_text or accepted_text
+        )
         target_conn.execute(
             """
             INSERT INTO transactions (
@@ -205,7 +205,7 @@ def import_transactions(source_conn: sqlite3.Connection, target_conn: sqlite3.Co
                 record['method'],
                 record['amount'],
                 record.get('receipt', 0) or 0,
-                _combined_memo(record.get('memo'), record.get('accepted_by')),
+                combined_memo,
                 record.get('created_at'),
                 record.get('updated_at'),
                 record.get('deleted_at'),
