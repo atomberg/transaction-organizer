@@ -3,9 +3,7 @@
 
 {% block scripts %}
 <script type="text/javascript">
-    $("#people-nav").removeClass("active");
     $("#transactions-nav").removeClass("active");
-    $("#add-person-nav").removeClass("active");
     $("#add-transaction-nav").removeClass("active");
     $("#export-nav").removeClass("active");
 </script>
@@ -25,10 +23,10 @@
     <tbody>
       <form id="edit" method="POST" action="{{ url_for('transactions.update', transaction_id=transaction['id']) }}">
         <tr>
-          <th>Person</th>
+        <th>Donor</th>
           <td>
-            <select name="person_id" form="edit" class="form-control" value="{{ transaction['person'] }}">
-              <option value="{{ transaction['person_id'] }}">{{ transaction['person'] }}</option>
+            <select name="donor_id" form="edit" class="form-control" value="{{ transaction['donor'] }}">
+              <option value="{{ transaction['donor_id'] }}">{{ transaction['donor'] }}</option>
             </select>
           </td>
           <td rowspan="4">
@@ -59,14 +57,6 @@
             <input name="amount" form="edit" class="form-control" type="text"
               value="{{ transaction['amount'] }}">
           </td>
-        </tr>
-        <tr>
-          <th>Accepted by</th>
-          <td>
-            <input name="accepted_by" form="edit" class="categories form-control" type="text"
-              value="{{ transaction['accepted_by'] }}">
-          </td>
-          
         </tr>
         <tr>
           <th>Tax receipt status</th>

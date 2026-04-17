@@ -105,7 +105,6 @@
           <th>Date</th>
           <th>Method</th>
           <th>Amount</th>
-          <th>Accepted by</th>
           <th>Memo</th>
           <th>Actions</th>
         </tr>
@@ -116,7 +115,6 @@
           <td>{{ transaction.date }}</td>
           <td>{{ transaction.method }}</td>
           <td>{{ transaction.amount | currency_format}}</td>
-          <td>{{ transaction.accepted_by }}</td>
           <td>{{ transaction.memo }}</td>
           <td>
             <a href="{{ url_for('transactions.get', transaction_id=transaction.id) }}" class="btn btn-success">

@@ -208,7 +208,6 @@ def test_remove_donor_endpoint_blocks_when_transactions_exist(test_client, app):
                 date=date(2026, 1, 1),
                 method='Cash',
                 amount=10.0,
-                accepted_by='Treasurer',
             )
         )
         db.session.commit()
@@ -265,7 +264,6 @@ def test_donor_receipt_preview_aggregates_family_transactions(test_client, app):
                 date=date(2026, 1, 3),
                 method='Cash',
                 amount=15.0,
-                accepted_by='Treasurer',
             )
         )
         db.session.add(
@@ -274,7 +272,6 @@ def test_donor_receipt_preview_aggregates_family_transactions(test_client, app):
                 date=date(2026, 2, 10),
                 method='Cash',
                 amount=25.0,
-                accepted_by='Treasurer',
             )
         )
         db.session.commit()
@@ -298,14 +295,12 @@ def test_donor_receipt_issue_uses_primary_recipient_and_family_contributors(test
             date=date(2026, 3, 4),
             method='Cash',
             amount=11.0,
-            accepted_by='Treasurer',
         )
         tx_spouse = Transaction(
             person_id=spouse.id,
             date=date(2026, 4, 5),
             method='Cash',
             amount=29.0,
-            accepted_by='Treasurer',
         )
         db.session.add_all([tx_primary, tx_spouse])
         db.session.commit()
@@ -351,7 +346,6 @@ def test_donor_receipt_history_is_shared_for_any_family_member_view(test_client,
                 date=date(2026, 6, 1),
                 method='Cash',
                 amount=50.0,
-                accepted_by='Treasurer',
             )
         )
         db.session.commit()

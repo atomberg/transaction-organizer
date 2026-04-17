@@ -8,12 +8,12 @@ from flask import current_app as app
 from flask_weasyprint import render_pdf
 
 from app import db
-from app.models.person import Person, get_person_names
+from app.models.person import Person, get_donor_names
 from app.models.tax_receipt import (
     issue_single_transaction_receipt,
     next_single_transaction_receipt_number,
 )
-from app.models.transaction import Transaction, get_accepted_bys, get_transactions
+from app.models.transaction import Transaction, get_transactions
 
 bp = Blueprint('transactions', __name__, url_prefix='/transactions')
 
@@ -66,8 +66,7 @@ def get_latest():
     return render_template(
         'transaction_add.html.j2',
         today=date.today().strftime('%Y-%m-%d'),
-        persons=get_person_names(),
-        accepted_bys=get_accepted_bys(),
+        donors=get_donor_names(),
         transactions=get_transactions(lim=limit, reverse=True),
     )
 
@@ -75,13 +74,13 @@ def get_latest():
 @bp.route('/', methods=['POST'])
 def add():
     """Add a new transaction."""
+    donor_id = request.values.get('donor_id') or request.values.get('person_id')
     db.session.add(
         Transaction(
-            person_id=request.values['person_id'],
+            person_id=donor_id,
             date=datetime.strptime(request.values['day'], '%Y-%m-%d').date(),
             method=request.values['method'],
             amount=float(request.values['amount']),
-            accepted_by=request.values['accepted_by'],
             memo=request.values['memo'],
         )
     )
@@ -106,11 +105,10 @@ def update(transaction_id):
     t = Transaction.get_by_id(transaction_id)
     if t is None:
         return ('Transaction not found', 404)
-    t.person_id = request.values['person_id']
+    t.person_id = request.values.get('donor_id') or request.values.get('person_id')
     t.date = datetime.strptime(request.values['day'], '%Y-%m-%d').date()
     t.method = request.values['method']
     t.amount = float(request.values['amount'])
-    t.accepted_by = request.values['accepted_by']
     t.memo = request.values['memo']
     t.updated_at = datetime.now()
 
@@ -151,9 +149,9 @@ def receipt(transaction_id):
     t = Transaction.get_by_id(transaction_id)
     if t is None:
         return ('Transaction not found', 404)
-    p = Person.get_by_id(t.person_id)
-    if p is None:
-        return ('Person not found', 404)
+    donor = Person.get_by_id(t.person_id)
+    if donor is None:
+        return ('Donor not found', 404)
     return render_template(
         'tax_receipt.html.j2',
         org=_org_value(),
@@ -161,8 +159,8 @@ def receipt(transaction_id):
         tax_year=t.year,
         receipt_number=next_single_transaction_receipt_number(t),
         receipt_date=datetime.now().strftime("%B %e, %Y"),
-        name=p.full_name,
-        address=p.address,
+        name=donor.full_name,
+        address=donor.address,
         amount=t.amount,
         signature_url=_signature_url(),
     )
@@ -179,4 +177,4 @@ def receipt_pdf(transaction_id):
         _org_value(),
         _treasurer_value(),
     )
-    return render_pdf(url_for('persons.receipt_by_id', receipt_id=receipt_record.id))
+    return render_pdf(url_for('donor_family.receipt_by_id', receipt_id=receipt_record.id))

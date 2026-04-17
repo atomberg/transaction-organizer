@@ -20,20 +20,18 @@ class Transaction(db.Model):
     date = Column(Date, nullable=False)
     method = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
-    accepted_by = Column(String, nullable=False)
     receipt = Column(Boolean)
     memo = Column(String)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
     deleted_at = Column(DateTime)
 
-    def __init__(self, person_id, date, method, amount, accepted_by, memo=None):
+    def __init__(self, person_id, date, method, amount, memo=None):
         """Create a new transaction."""
         self.person_id = person_id
         self.date = date
         self.method = method
         self.amount = amount
-        self.accepted_by = accepted_by
         self.memo = memo
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
@@ -58,11 +56,12 @@ class Transaction(db.Model):
         return {
             'id': self.id,
             'person_id': self.person_id,
+            'donor_id': self.person_id,
             'person': self.person.full_name,
+            'donor': self.person.full_name,
             'date': self.date.strftime('%Y-%m-%d'),
             'method': self.method,
             'amount': self.amount,
-            'accepted_by': self.accepted_by,
             'last_modified': self.updated_at.strftime('%c'),
             'created_at': self.created_at.strftime('%c'),
             'memo': self.memo or '',
@@ -78,16 +77,12 @@ class Transaction(db.Model):
         """Human readable representation."""
         return (
             f"#{self.id:d} | {self.date.strftime('%d %b %Y')} | "
-            f"{self.method} | {self.amount:.2f} | {self.accepted_by}"
+            f"{self.method} | {self.amount:.2f}"
         )
 
 
 def get_methods():
     return [r.method for r in Transaction.query.with_entities(Transaction.method).distinct().all()]
-
-
-def get_accepted_bys():
-    return [r.accepted_by for r in Transaction.query.with_entities(Transaction.accepted_by).distinct().all()]
 
 
 def get_transactions(lim=None, reverse=False, begin=None, end=None):
@@ -112,7 +107,6 @@ def get_as_csv():
             'date',
             'method',
             'amount',
-            'accepted_by',
             'memo',
             'created_at',
             'updated_at',

@@ -29,7 +29,6 @@ def create_transaction(person_id, amount=20.0, day=date(2024, 1, 1), receipt=Fal
         date=day,
         method='Cash',
         amount=amount,
-        accepted_by='Treasurer',
         memo='Membership',
     )
     transaction.receipt = receipt
@@ -121,11 +120,10 @@ def test_transaction_add_route(test_client, app):
     response = test_client.post(
         '/transactions/',
         data={
-            'person_id': str(person_id),
+            'donor_id': str(person_id),
             'day': '2024-02-15',
             'method': 'Credit',
             'amount': '55.25',
-            'accepted_by': 'Treasurer',
             'memo': 'AGM membership',
         },
         follow_redirects=True,
@@ -151,11 +149,10 @@ def test_transaction_update_and_delete_routes(test_client, app):
     update_response = test_client.post(
         f'/transactions/{transaction_id}',
         data={
-            'person_id': str(person_id),
+            'donor_id': str(person_id),
             'day': '2024-03-01',
             'method': 'Cheque',
             'amount': '40.00',
-            'accepted_by': 'Assistant',
             'memo': 'Updated memo',
         },
         follow_redirects=True,
@@ -257,7 +254,7 @@ def test_transaction_receipt_pdf_marks_transaction_as_receipted(test_client, app
     assert response.status_code == 200
     assert response.mimetype == 'application/pdf'
     assert b'%PDF-test' in response.data
-    assert '/persons/receipts/' in called['url']
+    assert '/donors/receipts/' in called['url']
 
     with app.app_context():
         updated = db.session.get(Transaction, transaction_id)

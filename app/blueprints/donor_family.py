@@ -15,6 +15,7 @@ from app import db
 from app.models.family import Family, FamilyMember
 from app.models.person import Person, get_persons
 from app.models.tax_receipt import (
+    TaxReceipt,
     get_receipts_for_person_ids,
     is_receipt_eligible,
     issue_annual_donor_receipt,
@@ -163,6 +164,20 @@ def _signature_url():
     if (static_dir / 'signature.jpg').exists():
         return '/static/signature.jpg'
     return '/static/sample-signature.png'
+
+
+def _receipt_context_from_record(receipt_record):
+    return {
+        'org': receipt_record.org_snapshot,
+        'treasurer': receipt_record.treasurer_snapshot,
+        'tax_year': receipt_record.tax_year,
+        'receipt_number': receipt_record.receipt_number,
+        'receipt_date': receipt_record.issued_at.strftime('%B %e, %Y'),
+        'name': receipt_record.name_snapshot,
+        'address': receipt_record.address_snapshot,
+        'amount': receipt_record.total_amount,
+        'signature_url': _signature_url(),
+    }
 
 
 def _family_people(family):
@@ -548,4 +563,22 @@ def donor_receipt_pdf(donor_id, year):
         flash(str(exc))
         return redirect(url_for('donor_family.donor_get', donor_id=donor_id, year=year))
 
-    return render_pdf(url_for('persons.receipt_by_id', receipt_id=receipt_record.id))
+    return render_pdf(url_for('donor_family.receipt_by_id', receipt_id=receipt_record.id))
+
+
+@bp.route('/donors/receipts/<int:receipt_id>', methods=['GET'])
+def receipt_by_id(receipt_id):
+    """Render a previously issued tax receipt."""
+    receipt_record = TaxReceipt.get_by_id(receipt_id)
+    if receipt_record is None:
+        return ('Receipt not found', 404)
+    return render_template('tax_receipt.html.j2', **_receipt_context_from_record(receipt_record))
+
+
+@bp.route('/donors/receipts/<int:receipt_id>/pdf', methods=['GET'])
+def receipt_pdf_by_id(receipt_id):
+    """Download a previously issued tax receipt as PDF."""
+    receipt_record = TaxReceipt.get_by_id(receipt_id)
+    if receipt_record is None:
+        return ('Receipt not found', 404)
+    return render_pdf(url_for('donor_family.receipt_by_id', receipt_id=receipt_record.id))

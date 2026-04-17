@@ -4,9 +4,7 @@
 {% block scripts %}
 <script type="text/javascript">
   $(document).ready(function () {
-    $("#people-nav").removeClass("active");
     $("#transactions-nav").removeClass("active");
-    $("#add-person-nav").removeClass("active");
     $("#add-transaction-nav").addClass("active");
     $("#export-nav").removeClass("active");
   });
@@ -25,11 +23,10 @@
   <table id="last_transactions_table" class="table table-striped table-bordered" cellspacing="0">
     <thead>
       <tr>
-        <th>Person ID</th>
+        <th>Donor</th>
         <th>Date</th>
         <th>Method</th>
         <th>Amount</th>
-        <th>Accepted by</th>
         <th>Memo</th>
         <th>Actions</th>
       </tr>
@@ -41,7 +38,6 @@
         <td>{{ transaction.date }}</td>
         <td>{{ transaction.method }}</td>
         <td>{{ transaction.amount | currency_format }}</td>
-        <td>{{ transaction.accepted_by }}</td>
         <td>{{ transaction.memo or '' }}</td>
         <td>
           <a href="{{ url_for('transactions.get', transaction_id=transaction.id) }}" class="btn btn-success btn-sm">
@@ -53,10 +49,10 @@
       <form id="add" method="post" action="{{ url_for('transactions.add') }}">
         <tr>
           <td>
-            <select class="selectpicker persons form-control" data-live-search="true" name="person_id" form="add" 
-               id="person-input-id" placeholder="Person" list="persons">
-              {% for id, person in persons %}
-              <option value="{{ id }}">{{ person }}</option>
+            <select class="selectpicker donors form-control" data-live-search="true" name="donor_id" form="add" 
+               id="donor-input-id" placeholder="Donor" list="donors">
+              {% for id, donor in donors %}
+              <option value="{{ id }}">{{ donor }}</option>
               {% endfor %}
             </select>
           </td>
@@ -75,15 +71,6 @@
           </td>
           <td>
             <input name="amount" form="add" class="form-control" type="text" placeholder="Amount">
-          </td>
-          <td>
-            <input name="accepted_by" form="add" class="accepted_bys form-control" id="accepted_by-input-id" type="text"
-              placeholder="Accepted by" list="accepted_bys">
-            <datalist id="accepted_bys">
-              {% for by in accepted_bys %}
-              <option value="{{ by }}"></option>
-              {% endfor %}
-            </datalist>
           </td>
           <td>
             <input name="memo" form="add" class="form-control" type="text" placeholder="Memo">

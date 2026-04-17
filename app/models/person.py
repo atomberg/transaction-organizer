@@ -72,6 +72,11 @@ def get_person_names():
     return [(r.id, r.full_name) for r in Person.query.filter(Person.deleted_at.is_(None)).all()]
 
 
+def get_donor_names():
+    """Alias for donor-centric terminology in UI/routes."""
+    return get_person_names()
+
+
 def get_persons(lim=None, reverse=False):
     q = Person.query.filter(Person.deleted_at.is_(None))
     rows = q.order_by(Person.updated_at.desc()).limit(lim).all()
