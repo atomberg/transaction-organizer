@@ -224,14 +224,13 @@ def donor_edit(donor_id):
     family = _ensure_family_for_person(person)
     return render_template(
         'donor_edit.html.j2',
-    donor={
+        donor={
             'id': person.id,
             'first_name': person.first_name,
             'last_name': person.last_name,
             'full_name': person.full_name,
             'email': person.email or '',
             'phone': person.phone or '',
-            'notes': family.notes or '',
             'last_modified': person.updated_at.strftime('%c'),
             'created_at': person.created_at.strftime('%c'),
         },

@@ -19,16 +19,6 @@
   </div>
 </div>
 
-{% if placeholder_mode %}
-<div class="row">
-  <div class="col-lg-12">
-    <div class="alert alert-warning" role="alert">
-      <strong>Contract preview:</strong> currently backed by legacy person receipt history while `/donors/<id>/receipts` backend is finalized in Pass 2.
-    </div>
-  </div>
-</div>
-{% endif %}
-
 <div class="row">
   <div class="col-lg-12">
     <form method="get" action="{{ url_for('donor_family.donor_receipt_history', donor_id=donor['id']) }}" class="form-inline">
