@@ -27,14 +27,14 @@ def test_root_redirects_to_donor_workflow(test_client):
 
 
 def test_menu_driven_donor_creation_creates_family_of_one(test_client, app):
-    form_response = test_client.get('/donors/form')
+    form_response = test_client.get('/donors/add')
     assert form_response.status_code == 200
     assert b'Creating a donor automatically creates a family of one' in form_response.data
     assert b'Last name' in form_response.data
     assert b'First name' in form_response.data
 
     create_response = test_client.post(
-        '/donors',
+        '/donors/add',
         data={
             'first_name': 'Primary',
             'last_name': 'Donor',
@@ -74,7 +74,7 @@ def test_add_spouse_limited_to_two_members_and_shared_family_view(test_client, a
     assert b'readonly' in spouse_form.data
 
     spouse_create = test_client.post(
-        f'/donors/{donor_id}/spouse',
+        f'/donors/{donor_id}/spouse/add',
         data={
             'first_name': 'Taylor',
             'last_name': 'House',
@@ -99,7 +99,7 @@ def test_add_spouse_limited_to_two_members_and_shared_family_view(test_client, a
 
     # Third member should be blocked.
     blocked = test_client.post(
-        f'/donors/{donor_id}/spouse',
+        f'/donors/{donor_id}/spouse/add',
         data={'first_name': 'Third', 'last_name': 'House'},
         follow_redirects=True,
     )
